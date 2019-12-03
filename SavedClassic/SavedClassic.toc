@@ -1,0 +1,21 @@
+﻿## Interface: 11302
+## Title: Saved! Classic
+## Version: v0.3 beta 2
+## Notes: List locked instance, gold, points and customizable
+## Notes-koKR: 인스턴스 귀속 정보 및 골드 / 경험치 한눈에 보기
+## SavedVariables: SavedClassicDB
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3
+## DefaultState: enabled
+
+#@no-lib-strip@
+Libs\LibStub\LibStub.lua
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceLocale-3.0\AceLocale-3.0.xml
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+#@end-no-lib-strip@
+
+SavedClassic.lua
