@@ -34,7 +34,9 @@ local pt = {
 	["%l"] = "level",
 	["%e"] = "expCurrent",
 	["%E"] = "expMax",
+	["%p"] = "expPercent",
 --	["%R"] = "expRest",
+--	["%P"] = "expRestPercent",
 
 	["%F"] = "return '|cff'" , 
 	["%f"] = "return '|r'" , 
@@ -59,16 +61,13 @@ local dbDefault = {
 	},
 	realm = {
 		[player] = {
-			class = class,
-			frameShow = true,
-			frameX = 0,
-			frameY = 0,
-			showMinimapIcon = false,
+			frameX = 100,
+			frameY = 25,
 			showInfoPer = "realm",
 			hideLevelUnder = 1,
 
 			default = true,
-			minimapIcon = {}
+			minimapIcon = { hide = true }
 		}
 	}
 }
@@ -81,19 +80,10 @@ function SavedClassic:OnInitialize()
 	end
 	self.db.global.version = self.version
 
-	if self.db.realm[player].default then
-		self:InitPlayerDB()
-	end
+	if self.db.realm[player].default then self:InitPlayerDB() end
 
-	self.icon = LibStub("LibDBIcon-1.0")
-	self.iconLDB = LibStub("LibDataBroker-1.1"):NewDataObject(self.name .."Icon", {
-		type = "data source",
-		text = "Questie",
-		icon = "135757",
-		OnClick = function() LibStub("AceConfigDialog-3.0"):Open(self.name) end,
-		OnTooltipShow = function(tooltip) self:ShowInfoTooltip(tooltip) end,
-	})
-	self.icon:Register(self.name, self.iconLDB, self.db.realm[player].minimapIcon)
+	self:InitDBIcon()
+	self:InitUI()
 
 	self:BuildOptions() -- Build self.optionsTable
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, self.optionsTable)
@@ -144,12 +134,17 @@ function SavedClassic:InitPlayerDB()
 	playerdb.info3 = true
 
 	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
-	playerdb.info2_1 = "   %F99ccff%e / %E (+%R)%f"
+	playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"
 	playerdb.info2_2 = ""
 	playerdb.info3_1 = "   !n (!d) !e %Fccccaa!p/!P%f"
 	playerdb.info3_2 = "!t "
 	playerdb.instances = { }
+	playerdb.zone = ""
+	playerdb.subzone = ""
 	playerdb.lastUpdate = currentTime
+	playerdb.frameShow = true
+	playerdb.showMinimapIcon = false
+
 end
 
 function SavedClassic:SaveInfo()
@@ -209,6 +204,7 @@ function SavedClassic:PLAYER_XP_UPDATE()
 	db.level = UnitLevel("player")
 	db.expCurrent = UnitXP("player")
 	db.expMax = UnitXPMax("player")
+	db.expPercent = floor(db.expCurrent / db.expMax * 100)
 	db.expRest = GetXPExhaustion() or 0
 end
 
@@ -246,17 +242,29 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local currentTime = time()
 
 	if db["info1"] then
-		local line1_1 = string.gsub(db["info1_1"], "(%%R)", function(s) return floor(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax) end)
-		line1_1 = string.gsub(line1_1, "(%%%w)", function(s) return db[pt[s]] or loadstring(pt[s])() end)
-		local line1_2 = string.gsub(db["info1_2"], "(%%R)", function(s) return floor(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax) end)
-		line1_2 = string.gsub(line1_2, "(%%%w)", function(s) return db[pt[s]] or loadstring(pt[s])() end)
+		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s)
+				local r = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax), db.expMax * 1.5)
+				if s == "%R" then return r else return floor(r / db.expMax * 100) end
+			end)
+		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
+		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s)
+				local r = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax), db.expMax * 1.5)
+				if s == "%R" then return r else return floor(r / db.expMax * 100) end
+			end)
+		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
 	if db["info2"] then
-		local line2_1 = string.gsub(db["info2_1"], "(%%R)", floor(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax))
-		line2_1 = string.gsub(line2_1, "(%%%w)", function(s) return db[pt[s]] or loadstring(pt[s])() end)
-		local line2_2 = string.gsub(db["info2_2"], "(%%R)", floor(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax))
-		line2_2 = string.gsub(line2_2, "(%%%w)", function(s) return db[pt[s]] or loadstring(pt[s])() end)
+		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s)
+				local r = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax), db.expMax * 1.5)
+				if s == "%R" then return r else return floor(r / db.expMax * 100) end
+			end)
+		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
+		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s)
+				local r = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax), db.expMax * 1.5)
+				if s == "%R" then return r else return floor(r / db.expMax * 100) end
+			end)
+		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
@@ -278,6 +286,87 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 
 end
 
+function SavedClassic:InitUI()
+	local db = self.db.realm[player]
+	local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent)
+	self.ui = ui
+	ui:EnableMouse(true)
+	ui:SetWidth(db.frameX)
+	ui:SetHeight(db.frameY)
+	ui:SetMovable(true)
+	ui:SetBackdrop({
+		bgFile = "Interface/TutorialFrame/TutorialFrameBackground",
+		edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+		tile = true, tileSize = 16, edgeSize = 16,
+		insets = { left = 2, right = 2, top = 2, bottom = 2 },
+	})
+	ui:SetBackdropBorderColor(1,0.82,0,1)
+	ui:SetPoint("CENTER")
+
+	text = ui:CreateFontString()
+	text:SetAllPoints()
+	text:SetFontObject("GameFontNormal")
+	text:SetText("|cff00ff00Saved|r ")
+
+	ui:RegisterForDrag("LeftButton")
+	ui:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+
+	ui:SetUserPlaced(true)
+	ui:SetScript("OnEnter", function(s)
+		local divider = GetScreenHeight() / 2
+		local cursorY = select(2, GetCursorPosition())
+		GameTooltip:Hide()
+		GameTooltip:SetOwner(s, "ANCHOR_NONE", 0, 0)
+		if cursorY > divider then
+			GameTooltip:SetPoint("TOP", s , "BOTTOM")
+		else
+			GameTooltip:SetPoint("BOTTOM", s , "TOP")
+		end
+		self:ShowInfoTooltip(GameTooltip)
+		GameTooltip:Show()
+	end)
+	ui:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	ui:SetScript("OnClick", function(s, btn)
+		if (btn == "LeftButton" and not IsShiftKeyDown()) then
+			LibStub("AceConfigDialog-3.0"):Open(self.name)
+		end
+	end)
+	ui:SetScript("OnDragStart", function(s)
+		if IsShiftKeyDown() then
+			GameTooltip:Hide()
+			s:StartMoving()
+		end
+	end)
+	ui:SetScript("OnDragStop", function(s)
+		s:StopMovingOrSizing()
+		GameTooltip:Show()
+	end)
+
+	if self.db.realm[player].frameShow then
+		self.ui:Show()
+	else
+		self.ui:Hide()
+	end
+end
+
+function SavedClassic:InitDBIcon()
+	self.icon = LibStub("LibDBIcon-1.0")
+	self.iconLDB = LibStub("LibDataBroker-1.1"):NewDataObject(self.name .."Icon", {
+		type = "data source",
+		text = "Questie",
+		icon = "135757",
+		OnClick = function() LibStub("AceConfigDialog-3.0"):Open(self.name) end,
+		OnTooltipShow = function(tooltip) self:ShowInfoTooltip(tooltip) end,
+	})
+	if self.db.realm[player].showMinimapIcon then
+		self:RegisterDBIcon()
+	end
+end
+
+function SavedClassic:RegisterDBIcon()
+	self.icon:Register(self.name, self.iconLDB, self.db.realm[player].minimapIcon)
+end
+
 function SavedClassic:BuildOptions()
 	local db = self.db.realm[player]
 	self.optionsTable = {
@@ -296,14 +385,56 @@ function SavedClassic:BuildOptions()
 					frameShow = {
 						name = "별도프레임 표시",
 						type = "toggle",
-						order = 101
+						order = 101,
+						set = function(info, value)
+							db.frameShow = value
+							if value then
+								self.ui:Show()
+							else
+								self.ui:Hide()
+							end
+						end,
 					},
-		--			frameX = 0,
-		--			frameY = 0,
+					frameX = {
+						name = "프레임 너비",
+						type = "range",
+						min = 80,
+						max = 200,
+						step = 1,
+						order = 102,
+						set = function(info, value)
+							db.frameX = value
+							self.ui:SetWidth(value)
+						end
+					},
+					frameY = {
+						name = "프레임 높이",
+						type = "range",
+						min = 20,
+						max = 50,
+						step = 1,
+						order = 103,
+						set = function(info, value)
+							db.frameY = value
+							self.ui:SetHeight(value)
+						end
+					},
 					showMinimapIcon = {
 						name = "미니맵 아이콘 표시",
 						type = "toggle",
-						order = 111
+						order = 111,
+						set = function(info, value)
+							db.showMinimapIcon = value
+							if value then
+								if self.icon:IsRegistered(self.name) then
+									self.icon:Show(self.name)
+								else
+									self:RegisterDBIcon()
+								end
+							else
+								self.icon:Hide(self.name)
+							end
+						end,
 					},
 					showInfoPer = {
 						name = "정보표시",
@@ -405,27 +536,8 @@ function SavedClassic:BuildOptions()
 						width = "full",
 						order = 33
 					},
---[[
-					info4 = {
-						name = "영웅 던전 귀속 정보 표시줄",
-						type = "toggle",
-						order = 41
-					},
-					info4_1 = {
-						name = "왼쪽",
-						type = "input",
-						width = "full",
-						order = 42
-					},
-					info4_2 = {
-						name = "오른쪽",
-						type = "input",
-						width = "full",
-						order = 43
-					},
-]]
 					descChar = {
-						name = "|cff00ff00■|r 인스턴스 정보 사용법"
+						name = "|cff00ff00■|r 인스턴스 정보 사용법|n"
 							.."!n 인스턴스명             !d 인원 및 난이도     "
 							.."!t 리셋까지 남은 시간     !i 인스턴스 ID        "
 							.."!p 진행 상황(보스 킬 수)  !P 보스 수      !e 연장 표시"
@@ -436,6 +548,16 @@ function SavedClassic:BuildOptions()
 
 				},
 			},
+			resetButton = {
+				name = "설정 초기화",
+				type = "execute",
+				func = function()
+					self.db.realm[player] = {}
+					self:InitPlayerDB()
+				end,
+				confirm = function() return "정말로 초기화합니까?" end,
+				order = 99
+			}
 		},
 	}
 end
