@@ -60,7 +60,8 @@ local dbDefault = {
 			frameY = 25,
 			showInfoPer = "realm",
 			hideLevelUnder = 1,
-			isResting = false,
+			level = 1,
+--			isResting = false,
 
 			default = true,
 			minimapIcon = { hide = false }
@@ -77,6 +78,8 @@ function SavedClassic:OnInitialize()
 	self.db.global.version = self.version
 
 	if self.db.realm[player].default then self:InitPlayerDB() end
+
+	self:SetOrder()
 
 	self:InitUI()
 	self:InitDBIcon()
@@ -101,12 +104,22 @@ function SavedClassic:OnInitialize()
 			self.totalMoney = self.totalMoney + saved.money
 		end
 	end
+
 end
 
 function SavedClassic:OnEnable()
 end
 
 function SavedClassic:OnDisable()
+end
+
+function SavedClassic:SetOrder()
+	-- db for ordered list
+	self.order = { }
+	for k, v in pairs(self.db.realm) do
+		table.insert(self.order, { name = v.name, level = v.level })
+	end
+	table.sort(self.order, function(a,b) return a.level > b.level end)
 end
 
 function SavedClassic:InitPlayerDB()
@@ -177,7 +190,6 @@ function SavedClassic:SaveInfo()
 	)
 
 	db.instances = instances
-	db.isResting = IsResting()
 
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
@@ -201,11 +213,14 @@ function SavedClassic:PLAYER_XP_UPDATE()
 	db.expMax = UnitXPMax("player")
 	db.expPercent = floor(db.expCurrent / db.expMax * 100)
 	db.expRest = GetXPExhaustion() or 0
+
+	self:SetOrder()
 end
 
 function SavedClassic:SaveZone()
 	local db = self.db.realm[player]
 	local zone = GetZoneText()
+--	db.isResting = IsResting()
 	if zone and zone ~= "" then
 		db.zone = zone
 		db.subzone = GetSubZoneText()
@@ -222,10 +237,13 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 	tooltip:AddDoubleLine(SAVED_MSG_PREFIX .. realm .. SAVED_MSG_SUFFIX, totalGold.. SAVED_GOLD_ICON)
 
 	if db.showInfoPer == "realm" then
-		for character, _ in pairs(self.db.realm) do
+		--[[for character, _ in pairs(self.db.realm) do
 			if character then
 				self:ShowInstanceInfo(tooltip, character)
 			end
+		end]]
+		for _, v in ipairs(self.order) do
+			self:ShowInstanceInfo(tooltip, v.name)
 		end
 	else
 		self:ShowInstanceInfo(tooltip, player)
@@ -235,10 +253,11 @@ end
 function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local db = self.db.realm[character]
 	local currentTime = time()
-	local restXP = db.expRest
-	if db.isResting then
-		restXP = floor(min(restXP + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
-	end
+	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
+--	local restXP = db.expRest
+--	if db.isResting then
+--		restXP = floor(min(restXP + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
+--	end
 	local restPercent = floor(restXP / db.expMax * 100)
 
 	if db["info1"] then
