@@ -1,8 +1,8 @@
 ﻿## Interface: 11302
 ## Title: Saved! Classic
-## Version: v0.4 beta
+## Version: v0.5 beta 4
 ## Notes: List locked instance, gold, points and customizable
-## Notes-koKR: 인스턴스 귀속 정보 및 골드 / 경험치 한눈에 보기
+## Notes-koKR: 인스턴스 귀속 정보 및 골드, 경험치 한눈에 보기
 ## SavedVariables: SavedClassicDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3
 ## DefaultState: enabled

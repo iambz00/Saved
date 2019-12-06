@@ -3,8 +3,6 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(AddonName, "AceEvent-3.0")
 
 SavedClassic.name = AddonName
 SavedClassic.version = GetAddOnMetadata(AddonName, "Version")
-SavedClassic.prefix = "|cff00ff00■ |cffffaa00Saved!|r"
-SavedClassic.suffix = "|cff00ff00■|r"
 
 local SAVED_MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r"
 local SAVED_MSG_SUFFIX = "|cff00ff00■|r"
@@ -56,18 +54,16 @@ local pt = {
 }
 
 local dbDefault = {
-	global = {
-		version = SavedClassic.version
-	},
 	realm = {
 		[player] = {
 			frameX = 100,
 			frameY = 25,
 			showInfoPer = "realm",
 			hideLevelUnder = 1,
+			isResting = false,
 
 			default = true,
-			minimapIcon = { hide = true }
+			minimapIcon = { hide = false }
 		}
 	}
 }
@@ -75,15 +71,15 @@ local dbDefault = {
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 	if self.db.global.version ~= self.version then
-		print(SAVED_MSG_PREFIX.." - 버전 변경으로 모든 정보를 리셋합니다. ("..self.version..") "..SAVED_MSG_SUFFIX)
-		self.db:ResetDB()
+		--print(SAVED_MSG_PREFIX.." - 버전 변경으로 모든 정보를 리셋합니다. ("..self.version..") "..SAVED_MSG_SUFFIX)
+		--self.db:ResetDB()
 	end
 	self.db.global.version = self.version
 
 	if self.db.realm[player].default then self:InitPlayerDB() end
 
-	self:InitDBIcon()
 	self:InitUI()
+	self:InitDBIcon()
 
 	self:BuildOptions() -- Build self.optionsTable
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, self.optionsTable)
@@ -143,8 +139,6 @@ function SavedClassic:InitPlayerDB()
 	playerdb.subzone = ""
 	playerdb.lastUpdate = currentTime
 	playerdb.frameShow = true
-	playerdb.showMinimapIcon = false
-
 end
 
 function SavedClassic:SaveInfo()
@@ -183,6 +177,7 @@ function SavedClassic:SaveInfo()
 	)
 
 	db.instances = instances
+	db.isResting = IsResting()
 
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
@@ -240,30 +235,23 @@ end
 function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local db = self.db.realm[character]
 	local currentTime = time()
+	local restXP = db.expRest
+	if db.isResting then
+		restXP = floor(min(restXP + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
+	end
+	local restPercent = floor(restXP / db.expMax * 100)
 
 	if db["info1"] then
-		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s)
-				local r = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax), db.expMax * 1.5)
-				if s == "%R" then return r else return floor(r / db.expMax * 100) end
-			end)
+		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
-		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s)
-				local r = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax), db.expMax * 1.5)
-				if s == "%R" then return r else return floor(r / db.expMax * 100) end
-			end)
+		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
 	if db["info2"] then
-		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s)
-				local r = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax), db.expMax * 1.5)
-				if s == "%R" then return r else return floor(r / db.expMax * 100) end
-			end)
+		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
-		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s)
-				local r = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax), db.expMax * 1.5)
-				if s == "%R" then return r else return floor(r / db.expMax * 100) end
-			end)
+		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
@@ -311,7 +299,7 @@ function SavedClassic:InitUI()
 	ui:RegisterForDrag("LeftButton")
 	ui:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 
-	ui:SetUserPlaced(true)
+	--ui:SetUserPlaced(true)
 	ui:SetScript("OnEnter", function(s)
 		local divider = GetScreenHeight() / 2
 		local cursorY = select(2, GetCursorPosition())
@@ -358,12 +346,6 @@ function SavedClassic:InitDBIcon()
 		OnClick = function() LibStub("AceConfigDialog-3.0"):Open(self.name) end,
 		OnTooltipShow = function(tooltip) self:ShowInfoTooltip(tooltip) end,
 	})
-	if self.db.realm[player].showMinimapIcon then
-		self:RegisterDBIcon()
-	end
-end
-
-function SavedClassic:RegisterDBIcon()
 	self.icon:Register(self.name, self.iconLDB, self.db.realm[player].minimapIcon)
 end
 
@@ -387,7 +369,7 @@ function SavedClassic:BuildOptions()
 						type = "toggle",
 						order = 101,
 						set = function(info, value)
-							db.frameShow = value
+							db[info[#info]] = value
 							if value then
 								self.ui:Show()
 							else
@@ -423,14 +405,13 @@ function SavedClassic:BuildOptions()
 						name = "미니맵 아이콘 표시",
 						type = "toggle",
 						order = 111,
+						get = function(info)
+							return not db.minimapIcon.hide
+						end,
 						set = function(info, value)
-							db.showMinimapIcon = value
+							db.minimapIcon.hide = not value
 							if value then
-								if self.icon:IsRegistered(self.name) then
-									self.icon:Show(self.name)
-								else
-									self:RegisterDBIcon()
-								end
+								self.icon:Show(self.name)
 							else
 								self.icon:Hide(self.name)
 							end
@@ -498,14 +479,15 @@ function SavedClassic:BuildOptions()
 					},
 					descChar = {
 						name = "|cff00ff00■|r |cffccaa00캐릭터별 정보 사용법|r|n"
-							.."|cffccaa00%n|r 캐릭터명(직업색상)     |cffccaa00%N|r 캐릭터명(색상없음)|n"
-							.."%g 골드  %G |TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t     "
-							.."%s 실버  %S |TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t     "
-							.."%c 코퍼  %C |TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t|n"
-							.."%e 현재 경험치     %E 최대 경험치     %R 휴식경험치(예상치)|n"
-							.."%Z 현재 위치       %z 세부 위치       %r 한 줄 띄우기|n"
-							.."%F###### |cffffffff컬러 시작. RGB코드 000000~ffffff|r     "
-							.."%Fffffff흰색%f => |cffffffff흰색, |r %Fff0000빨간색%f => |cffff0000빨간색|r"
+							.."   |cffccaa00%n|r 캐릭터명(직업색상)     |cffccaa00%N|r 캐릭터명(색상없음)|n"
+							.."   |cffccaa00%g|r 골드      |cffccaa00%G|r "..SAVED_GOLD_ICON.."         "
+							.."|cffccaa00%s|r 실버      |cffccaa00%S|r "..SAVED_SILVER_ICON.."         "
+							.."|cffccaa00%c|r 코퍼      |cffccaa00%C|r "..SAVED_COPPER_ICON.."|n"
+							.."   |cffccaa00%l|r 현재 레벨        |cffccaa00%e|r 현재 경험치     |cffccaa00%E|r 최대 경험치|n"
+							.."   |cffccaa00%p|r 현재 경험치 %   |cffccaa00%R|r 휴식경험치(예상치)     |cffccaa00%P|r 휴식경험치 %(예상치)|n"
+							.."   |cffccaa00%Z|r 현재 위치        |cffccaa00%z|r 세부 위치        |cffccaa00%r|r 한 줄 띄우기|n"
+							.."   |cffccaa00%F######|r 컬러 시작. RGB코드 000000~ffffff         "
+							.."|cffccaa00(예시) %Fffffff흰색%f =>|r |cffffffff흰색, |r |cffccaa00%Fff0000빨간색%f|r => |cffff0000빨간색|r"
 						,
 						type = "description",
 						order = 99
@@ -538,9 +520,9 @@ function SavedClassic:BuildOptions()
 					},
 					descChar = {
 						name = "|cff00ff00■|r 인스턴스 정보 사용법|n"
-							.."!n 인스턴스명             !d 인원 및 난이도     "
-							.."!t 리셋까지 남은 시간     !i 인스턴스 ID        "
-							.."!p 진행 상황(보스 킬 수)  !P 보스 수      !e 연장 표시"
+							.."   |cffccaa00!n|r 인스턴스명                  |cffccaa00!d|r 인원 및 난이도          "
+							.."|cffccaa00!p|r 진행 상황(보스 킬 수)           |cffccaa00!P|r 보스 수|n"
+							.."   |cffccaa00!t|r 리셋까지 남은 시간           |cffccaa00!i|r 인스턴스 ID           |cffccaa00!e|r 연장여부"
 						,
 						type = "description",
 						order = 99
