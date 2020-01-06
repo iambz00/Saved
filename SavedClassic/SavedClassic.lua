@@ -4,14 +4,17 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(AddonName, "AceEvent-3.0")
 SavedClassic.name = AddonName
 SavedClassic.version = GetAddOnMetadata(AddonName, "Version")
 
-local SAVED_MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r"
-local SAVED_MSG_SUFFIX = "|cff00ff00■|r"
+local L = LibStub("AceLocale-3.0"):GetLocale(AddonName, true)
+
+local SAVED_MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
+local SAVED_MSG_SUFFIX = " |cff00ff00■|r"
 local SAVED_GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SAVED_SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
 local SAVED_COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
+local p = function(str) print(SAVED_MSG_PREFIX..str..SAVED_MSG_SUFFIX) end
 
 _G.SavedClassic = SavedClassic
 
@@ -60,8 +63,6 @@ local dbDefault = {
 			frameY = 25,
 			showInfoPer = "realm",
 			hideLevelUnder = 1,
-			level = 1,
---			isResting = false,
 
 			default = true,
 			minimapIcon = { hide = false }
@@ -72,7 +73,7 @@ local dbDefault = {
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 	if self.db.global.version ~= self.version then
-		--print(SAVED_MSG_PREFIX.." - 버전 변경으로 모든 정보를 리셋합니다. ("..self.version..") "..SAVED_MSG_SUFFIX)
+		--p(L["Reset database due to major upgrade"](self.db.global.version, self.version))
 		--self.db:ResetDB()
 	end
 	self.db.global.version = self.version
@@ -108,9 +109,11 @@ function SavedClassic:OnInitialize()
 end
 
 function SavedClassic:OnEnable()
+	p(L["Enabled"])
 end
 
 function SavedClassic:OnDisable()
+	p(L["Disabled"])
 end
 
 function SavedClassic:SetOrder()
@@ -119,12 +122,13 @@ function SavedClassic:SetOrder()
 	for k, v in pairs(self.db.realm) do
 		table.insert(self.order, { name = v.name, level = v.level })
 	end
-	table.sort(self.order, function(a,b) return a.level > b.level end)
+	table.sort(self.order, function(a,b) al = a.level or 0 bl = b.level or 0 return al > bl end)
 end
 
 function SavedClassic:InitPlayerDB()
 	local playerdb = self.db.realm[player]
 	local classColor = RAID_CLASS_COLORS[class]
+
 	playerdb.default = false
 	playerdb.name = player
 	playerdb.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
@@ -154,8 +158,31 @@ function SavedClassic:InitPlayerDB()
 	playerdb.frameShow = true
 end
 
+function SavedClassic:ResetCharDB()
+	for k,_ in pairs(self.db.realm[player]) do
+		self.db.realm[player][k] = nil
+	end
+	for k,v in pairs(dbDefault.realm[player]) do
+		self.db.realm[player][k] = v
+	end
+	self:InitPlayerDB()
+	self:SaveInfo()
+end
+
+function SavedClassic:ResetWholeDB()
+	self.db:ResetDB()
+	self:InitPlayerDB()
+	self:SetOrder()
+	self.totalMoney = 0
+	self:SaveInfo()
+end
+
 function SavedClassic:SaveInfo()
 	local db = self.db.realm[player]
+
+	local classColor = RAID_CLASS_COLORS[class]
+	db.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
+
 	local instances = {}
 
 	local currentTime = time()
@@ -172,7 +199,7 @@ function SavedClassic:SaveInfo()
 			numLocked = numLocked+1
 			instance.reset = remain + currentTime
 			if extended then
-				instance.extended = "(연장)"
+				instance.extended = L["extended"]
 			else
 				instance.extended = ""
 			end
@@ -220,7 +247,6 @@ end
 function SavedClassic:SaveZone()
 	local db = self.db.realm[player]
 	local zone = GetZoneText()
---	db.isResting = IsResting()
 	if zone and zone ~= "" then
 		db.zone = zone
 		db.subzone = GetSubZoneText()
@@ -237,13 +263,11 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 	tooltip:AddDoubleLine(SAVED_MSG_PREFIX .. realm .. SAVED_MSG_SUFFIX, totalGold.. SAVED_GOLD_ICON)
 
 	if db.showInfoPer == "realm" then
-		--[[for character, _ in pairs(self.db.realm) do
-			if character then
-				self:ShowInstanceInfo(tooltip, character)
-			end
-		end]]
 		for _, v in ipairs(self.order) do
-			self:ShowInstanceInfo(tooltip, v.name)
+			if v.level < db.hideLevelUnder then
+			else	
+				self:ShowInstanceInfo(tooltip, v.name)
+			end
 		end
 	else
 		self:ShowInstanceInfo(tooltip, player)
@@ -254,10 +278,6 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local db = self.db.realm[character]
 	local currentTime = time()
 	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
---	local restXP = db.expRest
---	if db.isResting then
---		restXP = floor(min(restXP + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
---	end
 	local restPercent = floor(restXP / db.expMax * 100)
 
 	if db["info1"] then
@@ -378,13 +398,13 @@ function SavedClassic:BuildOptions()
 		set = function(info, value) db[info[#info]] = value end,
 		args = {
 			show = {
-				name = "표시 설정",
+				name = L["Display settings"],
 				type = "group",
 				inline = true,
 				order = 1,
 				args = {
 					frameShow = {
-						name = "별도프레임 표시",
+						name = L["Show floating UI frame"],
 						type = "toggle",
 						order = 101,
 						set = function(info, value)
@@ -397,7 +417,7 @@ function SavedClassic:BuildOptions()
 						end,
 					},
 					frameX = {
-						name = "프레임 너비",
+						name = L["Floating UI width"],
 						type = "range",
 						min = 80,
 						max = 200,
@@ -409,7 +429,7 @@ function SavedClassic:BuildOptions()
 						end
 					},
 					frameY = {
-						name = "프레임 높이",
+						name = L["Floating UI height"],
 						type = "range",
 						min = 20,
 						max = 50,
@@ -421,7 +441,7 @@ function SavedClassic:BuildOptions()
 						end
 					},
 					showMinimapIcon = {
-						name = "미니맵 아이콘 표시",
+						name = L["Show minimap icon"],
 						type = "toggle",
 						order = 111,
 						get = function(info)
@@ -437,17 +457,17 @@ function SavedClassic:BuildOptions()
 						end,
 					},
 					showInfoPer = {
-						name = "정보표시",
+						name = L["Show info"],
 						type = "select",
 						values = {
-							char = "캐릭터별",
-							realm = "서버별"
+							char = L["per Character"],
+							realm = L["per Realm"]
 						},
 						style = "radio",
 						order = 121
 					},
 					hideLevelUnder = {
-						name = "다음 레벨 미만 감추기",
+						name = L["Hide info from level under"],
 						type = "range",
 						min = 1,
 						max = 59,
@@ -457,57 +477,47 @@ function SavedClassic:BuildOptions()
 				}
 			},
 			infoChar = {
-				name = "캐릭터별 정보",
+				name = L["Tooltip - Character info."],
 				type = "group",
 				inline = true,
 				order = 2,
 				args = {
 					info1 = {
-						name = "캐릭터별 정보 첫번째 줄",
+						name = L["Line 1 of char info."],
 						type = "toggle",
 						order = 11
 					},
 					info2 = {
-						name = "캐릭터별 정보 두번째 줄",
+						name = L["Line 2 of char info."],
 						type = "toggle",
 						order = 21
 					},
 					info1_1 = {
-						name = "왼쪽",
+						name = L["Left"],
 						type = "input",
 						width = "full",
 						order = 12
 					},
 					info1_2 = {
-						name = "오른쪽",
+						name = L["Right"],
 						type = "input",
 						width = "full",
 						order = 13
 					},
 					info2_1 = {
-						name = "왼쪽",
+						name = L["Left"],
 						type = "input",
 						width = "full",
 						order = 22
 					},
 					info2_2 = {
-						name = "오른쪽",
+						name = L["Right"],
 						type = "input",
 						width = "full",
 						order = 23
 					},
 					descChar = {
-						name = "|cff00ff00■|r |cffccaa00캐릭터별 정보 사용법|r|n"
-							.."   |cffccaa00%n|r 캐릭터명(직업색상)     |cffccaa00%N|r 캐릭터명(색상없음)|n"
-							.."   |cffccaa00%g|r 골드      |cffccaa00%G|r "..SAVED_GOLD_ICON.."         "
-							.."|cffccaa00%s|r 실버      |cffccaa00%S|r "..SAVED_SILVER_ICON.."         "
-							.."|cffccaa00%c|r 코퍼      |cffccaa00%C|r "..SAVED_COPPER_ICON.."|n"
-							.."   |cffccaa00%l|r 현재 레벨        |cffccaa00%e|r 현재 경험치     |cffccaa00%E|r 최대 경험치|n"
-							.."   |cffccaa00%p|r 현재 경험치 %   |cffccaa00%R|r 휴식경험치(예상치)     |cffccaa00%P|r 휴식경험치 %(예상치)|n"
-							.."   |cffccaa00%Z|r 현재 위치        |cffccaa00%z|r 세부 위치        |cffccaa00%r|r 한 줄 띄우기|n"
-							.."   |cffccaa00%F######|r 컬러 시작. RGB코드 000000~ffffff         "
-							.."|cffccaa00(예시) %Fffffff흰색%f =>|r |cffffffff흰색, |r |cffccaa00%Fff0000빨간색%f|r => |cffff0000빨간색|r"
-						,
+						name = L["Desc_Char"],
 						type = "description",
 						order = 99
 					},
@@ -515,49 +525,49 @@ function SavedClassic:BuildOptions()
 			},
 
 			infoInst = {
-				name = "귀속 정보",
+				name = L["Tooltip - Instance info"],
 				type = "group",
 				inline = true,
 				order = 3,
 				args = {
 					info3 = {
-						name = "공격대 귀속 정보 표시줄",
+						name = L["Lines of instance info"],
 						type = "toggle",
 						order = 31
 					},
 					info3_1 = {
-						name = "왼쪽",
+						name = L["Left"],
 						type = "input",
 						width = "full",
 						order = 32
 					},
 					info3_2 = {
-						name = "오른쪽",
+						name = L["Right"],
 						type = "input",
 						width = "full",
 						order = 33
 					},
 					descChar = {
-						name = "|cff00ff00■|r 인스턴스 정보 사용법|n"
-							.."   |cffccaa00!n|r 인스턴스명                  |cffccaa00!d|r 인원 및 난이도          "
-							.."|cffccaa00!p|r 진행 상황(보스 킬 수)           |cffccaa00!P|r 보스 수|n"
-							.."   |cffccaa00!t|r 리셋까지 남은 시간           |cffccaa00!i|r 인스턴스 ID           |cffccaa00!e|r 연장여부"
-						,
+						name = L["Desc_Inst"],
 						type = "description",
 						order = 99
 					},
 
 				},
 			},
-			resetButton = {
-				name = "설정 초기화",
+			resetButton1 = {
+				name = L["Reset current character"],
 				type = "execute",
-				func = function()
-					self.db.realm[player] = {}
-					self:InitPlayerDB()
-				end,
-				confirm = function() return "정말로 초기화합니까?" end,
-				order = 99
+				func = function() self:ResetCharDB() end,
+				confirm = function() return L["Are you really want to reset?"] end,
+				order = 91
+			},
+			resetButton2 = {
+				name = L["Reset all characters"],
+				type = "execute",
+				func = function() self:ResetWholeDB() end,
+				confirm = function() return L["Are you really want to reset?"] end,
+				order = 92
 			}
 		},
 	}
