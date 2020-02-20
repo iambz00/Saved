@@ -16,6 +16,7 @@ L["Display settings"] = true
 L["Show floating UI frame"] = true
 L["Floating UI width"] = true
 L["Floating UI height"] = true
+L["Desc - Frame"] = "|cff00ff00■|r |cffccaa00Shift - Drag to move the Frame|r"
 L["Show minimap icon"] = true
 L["Show info"] = true
 L["per Character"] = true

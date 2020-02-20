@@ -137,6 +137,7 @@ function SavedClassic:InitPlayerDB()
 	self:PLAYER_XP_UPDATE()
 
 	playerdb.info1 = true
+	-- Hide exp info on max level
 	if UnitLevel("player") < GetMaxPlayerLevel() then
 		playerdb.info2 = true
 		playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
@@ -439,6 +440,11 @@ function SavedClassic:BuildOptions()
 							db.frameY = value
 							self.ui:SetHeight(value)
 						end
+					},
+					frameDesc = {
+						name = L["Desc - Frame"],
+						type = "description",
+						order = 104
 					},
 					showMinimapIcon = {
 						name = L["Show minimap icon"],
