@@ -47,7 +47,7 @@ local pt = {
 
 	["!n"] = "name" ,
 	["!d"] = "difficultyName" ,
-	["!i"] = "ID" ,
+	["!i"] = "id" ,
 	["!p"] = "progress" ,
 	["!P"] = "numBoss" ,
 	["!e"] = "extended" ,
