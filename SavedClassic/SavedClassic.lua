@@ -50,7 +50,7 @@ local pt = {
 	["!i"] = "id" ,
 	["!p"] = "progress" ,
 	["!P"] = "numBoss" ,
-	["!e"] = "extended" ,
+	["!e"] = "return ''" ,	-- classic doesn't support extened
 	["!!"] = "return '!'" ,
 
 --	["!t"] = "" ,
@@ -159,7 +159,7 @@ function SavedClassic:InitPlayerDB()
 	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
 	playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"
 	playerdb.info2_2 = ""
-	playerdb.info3_1 = "   !n (!d) !e %Fccccaa!p/!P%f"
+	playerdb.info3_1 = "   !n (!d) %Fccccaa!p/!P%f"
 	playerdb.info3_2 = "!t "
 	playerdb.instances = { }
 	playerdb.zone = ""
@@ -168,7 +168,7 @@ function SavedClassic:InitPlayerDB()
 	playerdb.frameShow = true
 end
 
-function SavedClassic:ResetCharDB()
+function SavedClassic:ResetPlayerDB()
 	for k,_ in pairs(self.db.realm[player]) do
 		self.db.realm[player][k] = nil
 	end
@@ -292,16 +292,16 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 
 	if db["info1"] then
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
-		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
+		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
-		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
+		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
 	if db["info2"] then
 		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
-		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
+		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
-		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) return db[pt[s]] or loadstring(pt[s])() end)
+		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
@@ -313,9 +313,9 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		if remain and ( remain ~= "" ) then
 			if db["info3"] then
 				local line3_1 = string.gsub(db["info3_1"], "(!t)", remain)
-				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) return instance[pt[s]] or loadstring(pt[s])() end)
+				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or loadstring(pt[s])() else return s end end)
 				local line3_2 = string.gsub(db["info3_2"], "(!t)", remain)
-				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) return instance[pt[s]] or loadstring(pt[s])() end)
+				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or loadstring(pt[s])() else return s end end)
 				tooltip:AddDoubleLine(line3_1, line3_2)
 			end
 		end
@@ -399,19 +399,32 @@ function SavedClassic:InitDBIcon()
 end
 
 function SavedClassic:BuildOptions()
+	local rdb = self.db.realm
+	local ch = player
+
+	local names = {}
+	local order = self.order
+	for i = 1, #order do
+		names[order[i].name] = rdb[order[i].name].coloredName
+		--names[i] = rdb[order[i].name].coloredName /run for k,v in pairs(SavedClassic.orderedList) do print(k,v) end
+	end
+--	self.orderedList = names
+
 	local db = self.db.realm[player]
 	self.optionsTable = {
 		name = self.name .. " option",
 		handler = self,
 		type = 'group',
-		get = function(info) return db[info[#info]] end,
-		set = function(info, value) db[info[#info]] = value end,
+		get = function(info) return rdb[ch][info[#info]] end,
+		set = function(info, value) rdb[ch][info[#info]] = value end,
 		args = {
 			show = {
 				name = L["Display settings"],
 				type = "group",
 				inline = true,
-				order = 1,
+				order = 11,
+				get = function(info) return db[info[#info]] end,
+				set = function(info, value) db[info[#info]] = value end,
 				args = {
 					frameShow = {
 						name = L["Show floating UI frame"],
@@ -491,11 +504,41 @@ function SavedClassic:BuildOptions()
 					},
 				}
 			},
+			character = {
+				name = "캐릭터 선택",
+				type = "select",
+				values = names,
+				set = function(info, k) ch = k return k end,
+				get = function(info) return ch end,
+				order = 21
+			},
+			resetButton1 = {
+				name = L["Reset selected character"],
+				type = "execute",
+				func = function()
+						if player == ch then
+							self:ResetPlayerDB()
+						else
+							rdb[ch] = nil
+							ch = player
+							self:SetOrder()
+						end
+					end,
+				confirm = function() return L["Are you really want to reset?"] end,
+				order = 22
+			},
+			resetButton2 = {
+				name = L["Reset all characters"],
+				type = "execute",
+				func = function() self:ResetWholeDB() end,
+				confirm = function() return L["Are you really want to reset?"] end,
+				order = 23
+			},
 			infoChar = {
 				name = L["Tooltip - Character info."],
 				type = "group",
 				inline = true,
-				order = 2,
+				order = 31,
 				args = {
 					info1 = {
 						name = L["Line 1 of char info."],
@@ -511,30 +554,29 @@ function SavedClassic:BuildOptions()
 						name = L["Left"],
 						type = "input",
 						width = "full",
+						desc = L["Desc_Char"],
 						order = 12
 					},
 					info1_2 = {
 						name = L["Right"],
 						type = "input",
 						width = "full",
+						desc = L["Desc_Char"],
 						order = 13
 					},
 					info2_1 = {
 						name = L["Left"],
 						type = "input",
 						width = "full",
+						desc = L["Desc_Char"],
 						order = 22
 					},
 					info2_2 = {
 						name = L["Right"],
 						type = "input",
 						width = "full",
+						desc = L["Desc_Char"],
 						order = 23
-					},
-					descChar = {
-						name = L["Desc_Char"],
-						type = "description",
-						order = 99
 					},
 				},
 			},
@@ -543,7 +585,7 @@ function SavedClassic:BuildOptions()
 				name = L["Tooltip - Instance info"],
 				type = "group",
 				inline = true,
-				order = 3,
+				order = 41,
 				args = {
 					info3 = {
 						name = L["Lines of instance info"],
@@ -554,36 +596,18 @@ function SavedClassic:BuildOptions()
 						name = L["Left"],
 						type = "input",
 						width = "full",
+						desc = L["Desc_Inst"],
 						order = 32
 					},
 					info3_2 = {
 						name = L["Right"],
 						type = "input",
 						width = "full",
+						desc = L["Desc_Inst"],
 						order = 33
 					},
-					descChar = {
-						name = L["Desc_Inst"],
-						type = "description",
-						order = 99
-					},
-
 				},
 			},
-			resetButton1 = {
-				name = L["Reset current character"],
-				type = "execute",
-				func = function() self:ResetCharDB() end,
-				confirm = function() return L["Are you really want to reset?"] end,
-				order = 91
-			},
-			resetButton2 = {
-				name = L["Reset all characters"],
-				type = "execute",
-				func = function() self:ResetWholeDB() end,
-				confirm = function() return L["Are you really want to reset?"] end,
-				order = 92
-			}
 		},
 	}
 end

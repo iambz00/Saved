@@ -29,6 +29,32 @@ L["Line 2 of char info."] = true
 L["Left"] = true
 L["Right"] = true
 L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
+	.."|cffccaa00%n|r Name(Class color)|n|cffccaa00%N|r Name(No color)|n"
+	.."|cffccaa00%g|r Gold   |cffccaa00%s|r Silver   |cffccaa00%c|r Copper|n"
+	.."|cffccaa00%G|r "..SAVED_GOLD_ICON.."    |cffccaa00%S|r "..SAVED_SILVER_ICON.."    |cffccaa00%C|r "..SAVED_COPPER_ICON.."|n"
+	.."|cffccaa00%l|r Current Level   |cffccaa00%p|r Current Exp %|n"
+	.."|cffccaa00%e|r Current Exp   |cffccaa00%E|r Max Exp|n"
+	.."|cffccaa00%R|r Rest Exp   |cffccaa00%P|r Rest Exp %|n"
+	.."|cffccaa00%Z|r Currnet Zone   |cffccaa00%z|r Subzone치|n"
+	.."|cffccaa00%r|r New line|n"
+	.."|cffccaa00%F######|r Color starts(RGB code)|n|cffccaa00%f|r Color ends|n"
+	.."|cffccaa00(예시) %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
+L["Desc_Char2"] = true
+L["Tooltip - Instance info"] = true
+L["Lines of instance info"] = true
+L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
+	.."|cffccaa00!n|r Instance name|n"
+	.."|cffccaa00!d|r Size and Difficulty|n"
+	.."|cffccaa00!p|r Number of bosses killed|n"
+	.."|cffccaa00!P|r Number of bosses|n"
+	.."|cffccaa00!t|r Time to reset|n"
+	.."|cffccaa00!i|r Instance ID|n"
+L["Reset selected character"] = true
+L["Are you really want to reset?"] = true
+L["Reset all characters"] = true
+end
+--[[
+L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."   |cffccaa00%n|r Name(Class color)    |cffccaa00%N|r Name(No color)|n"
 	.."   |cffccaa00%g|r Gold      |cffccaa00%G|r "..SAVED_GOLD_ICON.."         "
 	.."|cffccaa00%s|r Silver    |cffccaa00%S|r "..SAVED_SILVER_ICON.."         "
@@ -38,14 +64,8 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."   |cffccaa00%Z|r Currnet Zone     |cffccaa00%z|r Subzone        |cffccaa00%r|r New line|n"
 	.."   |cffccaa00%F######|r Color start(RGB code 000000~ffffff)         |cffccaa00%f|r Color end|n"
 	.."    |cffccaa00(Ex) %FffffffWhite%f =>|r |cffffffffWhite, |r |cffccaa00%Fff0000Red%f|r => |cffff0000Red|r"
-L["Tooltip - Instance info"] = true
-L["Lines of instance info"] = true
 L["Desc_Inst"] = "|cff00ff00■|r Usage - Instance info|n"
 	.."   |cffccaa00!n|r Instance name                  |cffccaa00!d|r Size and Difficulty|n"
 	.."   |cffccaa00!p|r Number of bosses killed         |cffccaa00!P|r Number of bosses|n"
 	.."   |cffccaa00!t|r Time to reset           |cffccaa00!i|r Instance ID           |cffccaa00!e|r Extended"
-L["Reset current character"] = true
-L["Are you really want to reset?"] = true
-L["Reset all characters"] = true
-
-end
+]]
