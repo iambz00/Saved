@@ -122,7 +122,16 @@ function SavedClassic:SetOrder()
 	for k, v in pairs(self.db.realm) do
 		table.insert(self.order, { name = v.name, level = v.level })
 	end
-	table.sort(self.order, function(a,b) al = a.level or 0 bl = b.level or 0 return al > bl end)
+	table.sort(self.order,
+		function(a,b)
+			al = a.level or 0
+			bl = b.level or 0
+			if al == bl then
+				return a.name < b.name
+			else
+				return al > bl
+			end
+		end)
 end
 
 function SavedClassic:InitPlayerDB()
