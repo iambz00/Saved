@@ -188,6 +188,7 @@ function SavedClassic:ResetWholeDB()
 end
 
 function SavedClassic:SaveInfo()
+	RequestRaidInfo()
 	local db = self.db.realm[player]
 
 	local classColor = RAID_CLASS_COLORS[class]
