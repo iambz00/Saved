@@ -37,6 +37,7 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."|cffccaa00%R|r Rest Exp   |cffccaa00%P|r Rest Exp %|n"
 	.."|cffccaa00%Z|r Currnet Zone   |cffccaa00%z|r Subzone치|n"
 	.."|cffccaa00%r|r New line|n"
+	.."|cffccaa00%L|r Elapsed time after last update|n"
 	.."|cffccaa00%F######|r Color starts(RGB code)|n|cffccaa00%f|r Color ends|n"
 	.."|cffccaa00(예시) %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
 L["Desc_Char2"] = true
