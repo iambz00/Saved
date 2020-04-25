@@ -94,10 +94,11 @@ function SavedClassic:OnInitialize()
 	self:RegisterEvent("PLAYER_LEAVING_WORLD", "SaveZone")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "SaveInfo")
-	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")
 	self:RegisterEvent("ZONE_CHANGED", "SaveInfo")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "SaveInfo")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "SaveInfo")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "RequestRaidInfo")
+	-- API RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
+	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")
 
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
@@ -187,8 +188,11 @@ function SavedClassic:ResetWholeDB()
 	self:SaveInfo()
 end
 
+function SavedClassic:RequestRaidInfo()
+	RequestRaidInfo()	-- RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
+end
+
 function SavedClassic:SaveInfo()
-	RequestRaidInfo()
 	local db = self.db.realm[player]
 
 	local classColor = RAID_CLASS_COLORS[class]
