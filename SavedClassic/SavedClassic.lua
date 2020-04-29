@@ -236,7 +236,7 @@ function SavedClassic:SaveInfo()
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
 	self:SaveZone()	
-	db.lastUpdate = currentTime
+--	db.lastUpdate = currentTime -- Moved into SaveZone()
 end
 
 function SavedClassic:PLAYER_MONEY()
@@ -266,6 +266,7 @@ function SavedClassic:SaveZone()
 		db.zone = zone
 		db.subzone = GetSubZoneText()
 	end
+	db.lastUpdate = time()
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
