@@ -412,7 +412,7 @@ end
 function SavedClassic:BuildOptions()
 	local rdb = self.db.realm
 	local ch = player
-
+	local dupeTo = ""
 	local names = {}
 	local order = self.order
 	for i = 1, #order do
@@ -618,6 +618,32 @@ function SavedClassic:BuildOptions()
 						order = 33
 					},
 				},
+			},
+			dupeSettings = {
+				name = L["Dupe settings to"],
+				type = "select",
+				values = names,
+				set = function(info, k) dupeTo = k return k end,
+				get = function(info) return dupeTo end,
+				order = 91
+			},
+			dupeButton = {
+				name = L["Dupe"],
+				type = "execute",
+				func = function()
+					local tdb = self.db.realm[dupeTo]
+					tdb.info1 = rdb[ch].info1
+					tdb.info1_1 = rdb[ch].info1_1
+					tdb.info1_2 = rdb[ch].info1_2
+					tdb.info2 = rdb[ch].info2
+					tdb.info2_1 = rdb[ch].info2_1
+					tdb.info2_2 = rdb[ch].info2_2
+					tdb.info3 = rdb[ch].info3
+					tdb.info3_1 = rdb[ch].info3_1
+					tdb.info3_2 = rdb[ch].info3_2
+				end,
+				confirm = function() return L["Dupe settings will overwirte character/instance info."] end,
+				order = 92
 			},
 		},
 	}

@@ -53,6 +53,9 @@ L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
 L["Reset selected character"] = true
 L["Are you really want to reset?"] = true
 L["Reset all characters"] = true
+L["Dupe settings to"] = true
+L["Dupe"] = true
+L["Dupe settings will overwirte character/instance info settings."] = true
 end
 --[[
 L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"

@@ -52,6 +52,9 @@ L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00인스턴스 정보 사용법|r|n"
 L["Reset selected character"] = "초기화(선택된 캐릭터)"
 L["Are you really want to reset?"] = "정말로 초기화합니까?"
 L["Reset all characters"] = "초기화(전체 캐릭터)"
+L["Dupe settings to"] = "설정 복사하기"
+L["Dupe"] = "복사"
+L["Dupe settings will overwirte character/instance info."] = "설정을 복사하면 캐릭터/인스턴스 정보 설정을 덮어씁니다."
 
 end
 --[[
