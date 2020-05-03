@@ -401,7 +401,7 @@ function SavedClassic:InitDBIcon()
 	self.icon = LibStub("LibDBIcon-1.0")
 	self.iconLDB = LibStub("LibDataBroker-1.1"):NewDataObject(self.name .."Icon", {
 		type = "data source",
-		text = "Questie",
+		text = "Saved!",
 		icon = "135757",
 		OnClick = function() LibStub("AceConfigDialog-3.0"):Open(self.name) end,
 		OnTooltipShow = function(tooltip) self:ShowInfoTooltip(tooltip) end,
