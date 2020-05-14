@@ -16,6 +16,19 @@ local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(SAVED_MSG_PREFIX..str..SAVED_MSG_SUFFIX) end
 
+SavedClassic.wb = {	-- Texture pathes of world buffs
+	[23768] = "Interface/Icons/INV_Misc_orb_02",	-- DF damage 세이지 공격력
+	[23766] = "Interface/Icons/INV_Misc_orb_02",	-- DF int 세이지 지능
+	[22888] = "Interface/Icons/INV_Misc_Head_Dragon_01",	-- Ony, Nef 용사냥꾼 재집결의 외침
+	[24425] = "Interface/Icons/Ability_Creature_Poison_05",	-- Zul'gurub 잔달라의 기백
+	[22817] = "Interface/Icons/Spell_Nature_UndyingStrength",	-- DM1 펜구스의 흉포
+	[22818] = "Interface/Icons/Spell_Nature_MassTeleport",	-- DM2 몰다르의 투지
+	[22820] = "Interface/Icons/Spell_Holy_LesserHeal02",	-- DM3 슬립킥의 손재주
+	[24382] = "Interface/Icons/INV_Potion_30",	-- Zanza 잔자의 기백
+	[15366] = "Interface/Icons/Spell_Holy_MindVision",	-- SF 노래꽃의 세레나데
+	[16609] = "Interface/Icons/Spell_Arcane_TeleportOrgrimmar",	-- 대족장의 축복
+}
+
 _G.SavedClassic = SavedClassic
 
 local pt = {
@@ -38,6 +51,7 @@ local pt = {
 	["%p"] = "expPercent",
 --	["%R"] = "expRest",
 --	["%P"] = "expRestPercent",
+--	["%B"] = ""
 
 	["%F"] = "return '|cff'" , 
 	["%f"] = "return '|r'" , 
@@ -65,7 +79,8 @@ local dbDefault = {
 			hideLevelUnder = 1,
 
 			default = true,
-			minimapIcon = { hide = false }
+			minimapIcon = { hide = false },
+			worldBuffs = {}
 		}
 	}
 }
@@ -151,14 +166,16 @@ function SavedClassic:InitPlayerDB()
 	if UnitLevel("player") < GetMaxPlayerLevel() then
 		playerdb.info2 = true
 		playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
+		playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"	-- for exp
 	else
-		playerdb.info2 = false
+		--playerdb.info2 = false
+		playerdb.info2 = true
 		playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
+		playerdb.info2_1 = "   %Fcccccc%B%f"	-- for world buffs
 	end
 	playerdb.info3 = true
 
 	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
-	playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"
 	playerdb.info2_2 = ""
 	playerdb.info3_1 = "   !n (!d) %Fccccaa!p/!P%f"
 	playerdb.info3_2 = "!t "
@@ -236,6 +253,7 @@ function SavedClassic:SaveInfo()
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
 	self:SaveZone()	
+	self:SaveWorldBuff()
 --	db.lastUpdate = currentTime -- Moved into SaveZone()
 end
 
@@ -269,6 +287,18 @@ function SavedClassic:SaveZone()
 	db.lastUpdate = time()
 end
 
+function SavedClassic:SaveWorldBuff()
+	local db = self.db.realm[player]
+	db.worldBuffs = {}
+	for i=1,32 do
+		local name,icon,_,_,_,expire,_,_,_,id = UnitBuff("player", i)
+		if id and self.wb[id] then
+			db.worldBuffs[id] = floor((expire-GetTime())/60)	-- remining time in minutes
+		end
+	end
+end
+
+
 function SavedClassic:ShowInfoTooltip(tooltip)
 	local mode = ""
 	local db = self.db.realm[player]
@@ -296,25 +326,36 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
 	local restPercent = floor(restXP / db.expMax * 100)
 	local elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
+	local wbstr = ""
+	if db.worldBuffs and db.worldBuffs ~= {} then
+		for id,t in pairs(db.worldBuffs) do
+			wbstr = wbstr .. "|T".. self.wb[id] ..":14:14|t".. t..L["minites"].." "
+		end
+	end
 
 	if db["info1"] then
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_1 = string.gsub(line1_1, "(%%L)", function(s) return elapsedTime end)
+		line1_1 = string.gsub(line1_1, "(%%B)", function(s) return wbstr end)
 		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_2 = string.gsub(line1_2, "(%%L)", function(s) return elapsedTime end)
+		line1_2 = string.gsub(line1_2, "(%%B)", function(s) return wbstr end)
 		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
 	if db["info2"] then
 		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_1 = string.gsub(line2_1, "(%%L)", function(s) return elapsedTime end)
+		line2_1 = string.gsub(line2_1, "(%%B)", function(s) return wbstr end)
 		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_2 = string.gsub(line2_2, "(%%L)", function(s) return elapsedTime end)
+		line2_2 = string.gsub(line2_2, "(%%B)", function(s) return wbstr end)
 		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
+
 
 	if not db.instances then return end
 	local nMax = table.getn(db.instances)
