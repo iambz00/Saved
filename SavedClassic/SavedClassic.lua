@@ -29,6 +29,22 @@ SavedClassic.wb = {	-- Texture pathes of world buffs
 	[16609] = "Interface/Icons/Spell_Arcane_TeleportOrgrimmar",	-- 대족장의 축복
 }
 
+SavedClassic.ts = {	-- Tradeskills of long cooldowns
+	17187, 	-- 변환식: 아케이나이트 48
+	17559, 	-- 변환식: 바람을 불로 24
+	17560, 	-- 변환식: 불을 대지로 24
+	17561, 	-- 변환식: 대지를 물로 24
+	17562, 	-- 변환식: 물을 바람으로 24
+	17563, 	-- 변환식: 불사를 물로 24
+	17564, 	-- 변환식: 물을 불사로 24
+	17565, 	-- 변환식: 생명을 대지로 24
+	17566, 	-- 변환식: 대지를 생명으로 24
+	18560, 	-- 달빛 옷감 96
+	19566, 	-- 소금 정제기 72
+}
+
+
+
 _G.SavedClassic = SavedClassic
 
 local pt = {
@@ -80,7 +96,8 @@ local dbDefault = {
 
 			default = true,
 			minimapIcon = { hide = false },
-			worldBuffs = {}
+			worldBuffs = {},
+			tradeSkills = {},
 		}
 	}
 }
@@ -254,6 +271,7 @@ function SavedClassic:SaveInfo()
 	self:PLAYER_XP_UPDATE()
 	self:SaveZone()	
 	self:SaveWorldBuff()
+	self:SaveTSCooldowns()
 --	db.lastUpdate = currentTime -- Moved into SaveZone()
 end
 
@@ -298,6 +316,19 @@ function SavedClassic:SaveWorldBuff()
 	end
 end
 
+function SavedClassic:SaveTSCooldowns()
+	local db = self.db.realm[player]
+	db.tradeSkills = {}
+	for _,id in pairs(self.ts) do
+		local start,dur = GetSpellCooldown(id)
+		if dur > 0 then
+			db.tradeSkills[id] = {
+				start = start,
+				duration = dur,
+			}
+		end
+	end
+end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
 	local mode = ""
@@ -326,21 +357,36 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
 	local restPercent = floor(restXP / db.expMax * 100)
 	local elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
-	local wbstr = ""
-	if db.worldBuffs and db.worldBuffs ~= {} then
+	local wbstr,tsstr = "",""
+	if db.worldBuffs then
 		for id,t in pairs(db.worldBuffs) do
 			wbstr = wbstr .. "|T".. self.wb[id] ..":14:14|t".. t..L["minites"].." "
 		end
 	end
+	if db.tradeSkills then
+		for id,v in pairs(db.tradeSkills) do
+			local name = GetSpellInfo(id)
+			local remain = v.start + v.duration - GetTime()
+			if remain > 345600 then	-- if cooldown is over 96h, we've met server reset and addon's not able to calc it
+				remain = "확인 필요"
+			else
+				remain = SecondsToTime(remain)
+			end
+			tsstr = tsstr..name.."(|cffcccccc"..remain.."|r) "
+		end
+	end
+
 
 	if db["info1"] then
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_1 = string.gsub(line1_1, "(%%L)", function(s) return elapsedTime end)
 		line1_1 = string.gsub(line1_1, "(%%B)", function(s) return wbstr end)
+		line1_1 = string.gsub(line1_1, "(%%T)", function(s) return tsstr end)
 		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_2 = string.gsub(line1_2, "(%%L)", function(s) return elapsedTime end)
 		line1_2 = string.gsub(line1_2, "(%%B)", function(s) return wbstr end)
+		line1_2 = string.gsub(line1_2, "(%%T)", function(s) return tsstr end)
 		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
@@ -348,10 +394,12 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_1 = string.gsub(line2_1, "(%%L)", function(s) return elapsedTime end)
 		line2_1 = string.gsub(line2_1, "(%%B)", function(s) return wbstr end)
+		line2_1 = string.gsub(line2_1, "(%%T)", function(s) return tsstr end)
 		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_2 = string.gsub(line2_2, "(%%L)", function(s) return elapsedTime end)
 		line2_2 = string.gsub(line2_2, "(%%B)", function(s) return wbstr end)
+		line2_2 = string.gsub(line2_2, "(%%T)", function(s) return tsstr end)
 		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
