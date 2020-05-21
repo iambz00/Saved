@@ -31,7 +31,7 @@ SavedClassic.wb = {	-- Texture pathes of world buffs
 
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	17187, 	-- 변환식: 아케이나이트 48
-	17559, 	-- 변환식: 바람을 불로 24
+--[[	17559, 	-- 변환식: 바람을 불로 24
 	17560, 	-- 변환식: 불을 대지로 24
 	17561, 	-- 변환식: 대지를 물로 24
 	17562, 	-- 변환식: 물을 바람으로 24
@@ -39,6 +39,7 @@ SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	17564, 	-- 변환식: 물을 불사로 24
 	17565, 	-- 변환식: 생명을 대지로 24
 	17566, 	-- 변환식: 대지를 생명으로 24
+]]
 	18560, 	-- 달빛 옷감 96
 	19566, 	-- 소금 정제기 72
 }
