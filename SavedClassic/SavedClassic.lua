@@ -105,10 +105,15 @@ local dbDefault = {
 
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
-	if self.db.global.version ~= self.version then
-		--p(L["Reset database due to major upgrade"](self.db.global.version, self.version))
+--[[	if self.db.global.version ~= self.version then
+		--p(L["Reset due to update"](self.db.global.version, self.version))
 		--self.db:ResetDB()
+		p("버전 업데이트로 인해 전문기술 쿨다운 정보가 삭제됩니다.")
+		for k,v in pairs(self.db.realm) do
+			v.tradeSkills = {}
+		end
 	end
+]]
 	self.db.global.version = self.version
 
 	if self.db.realm[player].default then self:InitPlayerDB() end
@@ -132,6 +137,8 @@ function SavedClassic:OnInitialize()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "RequestRaidInfo")
 	-- API RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")
+
+	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
 
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
@@ -319,14 +326,16 @@ end
 
 function SavedClassic:SaveTSCooldowns()
 	local db = self.db.realm[player]
-	db.tradeSkills = {}
+	local currentTime = time()
 	for _,id in pairs(self.ts) do
-		local start,dur = GetSpellCooldown(id)
-		if dur > 0 then
-			db.tradeSkills[id] = {
-				start = start,
-				duration = dur,
-			}
+		local start,duration = GetSpellCooldown(id)
+		if duration > 0 then
+			local remain =  start + duration - GetTime()
+			if remain > 0 and remain < duration+100 then
+				local ends = currentTime + remain	-- resolve game time to real time
+				db.tradeSkills[id] = db.tradeSkills[id] or {}
+				db.tradeSkills[id].ends = ends
+			end
 		end
 	end
 end
@@ -353,6 +362,8 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 end
 
 function SavedClassic:ShowInstanceInfo(tooltip, character)
+	self:SaveWorldBuff()
+
 	local db = self.db.realm[character]
 	local currentTime = time()
 	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
@@ -366,14 +377,12 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	end
 	if db.tradeSkills then
 		for id,v in pairs(db.tradeSkills) do
-			local name = GetSpellInfo(id)
-			local remain = v.start + v.duration - GetTime()
-			if remain > 345600 then	-- if cooldown is over 96h, we've met server reset and addon's not able to calc it
-				remain = "확인 필요"
-			else
-				remain = SecondsToTime(remain)
+			if v and v.ends then
+				local remain = v.ends - currentTime
+				if remain > 0 then
+					tsstr = tsstr..GetSpellInfo(id).."(|cffcccccc"..SecondsToTime(remain).."|r) "
+				end
 			end
-			tsstr = tsstr..name.."(|cffcccccc"..remain.."|r) "
 		end
 	end
 

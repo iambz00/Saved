@@ -6,7 +6,7 @@ local SAVED_COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
 if L then
 
-L["Reset database due to major upgrade"] = function(oldv, newv) return "대규모 업데이트 인해 모든 정보를 리셋합니다. ("..oldv.." -> "..newv ")" end
+L["Reset due to update"] = function(oldv, newv) return "업데이트로 인해 일부 또는 모든 정보를 리셋합니다. ("..oldv.." -> "..newv ")" end
 L["extended"] = "(연장)"
 
 L["minites"] = "분"
