@@ -1,10 +1,10 @@
-﻿local AddonName, Addon = ...
-SavedClassic = LibStub("AceAddon-3.0"):NewAddon(AddonName, "AceEvent-3.0")
+﻿local addonName, addon = ...
+SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
-SavedClassic.name = AddonName
-SavedClassic.version = GetAddOnMetadata(AddonName, "Version")
+SavedClassic.name = addonName
+SavedClassic.version = GetAddOnMetadata(addonName, "Version")
 
-local L = LibStub("AceLocale-3.0"):GetLocale(AddonName, true)
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 local SAVED_MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
 local SAVED_MSG_SUFFIX = " |cff00ff00■|r"
@@ -105,15 +105,31 @@ local dbDefault = {
 
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
---[[	if self.db.global.version ~= self.version then
-		--p(L["Reset due to update"](self.db.global.version, self.version))
-		--self.db:ResetDB()
-		p("버전 업데이트로 인해 전문기술 쿨다운 정보가 삭제됩니다.")
-		for k,v in pairs(self.db.realm) do
-			v.tradeSkills = {}
+	if self.db.global.version ~= self.version then
+		-- rebuild world buff table
+		for ch, db in pairs(self.db.realm) do
+			p(ch)
+			if db.worldBuffs then
+				local newWorldBuffs = {}
+				for id, remain in pairs(db.worldBuffs) do
+					p(id, remain)
+					table.insert(newWorldBuffs, {id = id, remain = remain})
+				end
+				table.sort(newWorldBuffs,
+					function(a,b)
+						ar = a.remain or 0
+						br = b.remain or 0
+						return ar > br
+					end
+				)
+				db.worldBuffs = newWorldBuffs
+			end
 		end
+	--	for k,v in pairs(self.db.realm) do
+	--		v.tradeSkills = {}
+	--	end
 	end
-]]
+
 	self.db.global.version = self.version
 
 	if self.db.realm[player].default then self:InitPlayerDB() end
@@ -319,9 +335,16 @@ function SavedClassic:SaveWorldBuff()
 	for i=1,32 do
 		local name,icon,_,_,_,expire,_,_,_,id = UnitBuff("player", i)
 		if id and self.wb[id] then
-			db.worldBuffs[id] = floor((expire-GetTime())/60)	-- remining time in minutes
+			table.insert(db.worldBuffs, { id = id, remain = floor((expire-GetTime())/60) })
 		end
 	end
+	table.sort(db.worldBuffs,
+		function(a,b)
+			ar = a.remain or 0
+			br = b.remain or 0
+			return ar > br
+		end
+	)
 end
 
 function SavedClassic:SaveTSCooldowns()
@@ -371,8 +394,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
 	local wbstr,tsstr = "",""
 	if db.worldBuffs then
-		for id,t in pairs(db.worldBuffs) do
-			wbstr = wbstr .. "|T".. self.wb[id] ..":14:14|t".. t..L["minites"].." "
+		for _,b in ipairs(db.worldBuffs) do
+			wbstr = wbstr .. "|T".. self.wb[b.id] ..":14:14|t".. b.remain ..L["minites"].." "
 		end
 	end
 	if db.tradeSkills then
