@@ -103,31 +103,35 @@ local dbDefault = {
 	}
 }
 
+
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
+
+	local function ResetWB(db)
+		if db.worldBuffs then
+			local newWorldBuffs = {}
+			for id, remain in pairs(db.worldBuffs) do
+				p(id, remain)
+				table.insert(newWorldBuffs, {id = id, remain = remain})
+			end
+			table.sort(newWorldBuffs,
+				function(a,b)
+					ar = a.remain or 0
+					br = b.remain or 0
+					return ar > br
+				end
+			)
+			db.worldBuffs = newWorldBuffs
+		end
+	end
+
 	if self.db.global.version ~= self.version then
 		-- rebuild world buff table
 		for ch, db in pairs(self.db.realm) do
-			p(ch)
-			if db.worldBuffs then
-				local newWorldBuffs = {}
-				for id, remain in pairs(db.worldBuffs) do
-					p(id, remain)
-					table.insert(newWorldBuffs, {id = id, remain = remain})
-				end
-				table.sort(newWorldBuffs,
-					function(a,b)
-						ar = a.remain or 0
-						br = b.remain or 0
-						return ar > br
-					end
-				)
-				db.worldBuffs = newWorldBuffs
+			if not pcall(ResetWB, db) then
+				db.worldBuffs = {}
 			end
 		end
-	--	for k,v in pairs(self.db.realm) do
-	--		v.tradeSkills = {}
-	--	end
 	end
 
 	self.db.global.version = self.version
@@ -385,6 +389,7 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 end
 
 function SavedClassic:ShowInstanceInfo(tooltip, character)
+	self:SaveZone()
 	self:SaveWorldBuff()
 
 	local db = self.db.realm[character]
@@ -395,7 +400,9 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local wbstr,tsstr = "",""
 	if db.worldBuffs then
 		for _,b in ipairs(db.worldBuffs) do
-			wbstr = wbstr .. "|T".. self.wb[b.id] ..":14:14|t".. b.remain ..L["minites"].." "
+			if b.id abd b.remain then
+				wbstr = wbstr .. "|T".. self.wb[b.id] ..":14:14|t".. b.remain ..L["minites"].." "
+			end
 		end
 	end
 	if db.tradeSkills then
