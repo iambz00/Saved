@@ -400,7 +400,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local wbstr,tsstr = "",""
 	if db.worldBuffs then
 		for _,b in ipairs(db.worldBuffs) do
-			if b.id abd b.remain then
+			if b.id and b.remain then
 				wbstr = wbstr .. "|T".. self.wb[b.id] ..":14:14|t".. b.remain ..L["minites"].." "
 			end
 		end
