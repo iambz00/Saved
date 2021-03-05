@@ -16,19 +16,6 @@ local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(SAVED_MSG_PREFIX..str..SAVED_MSG_SUFFIX) end
 
-SavedClassic.wb = {	-- Texture pathes of world buffs
-	[23768] = "Interface/Icons/INV_Misc_orb_02",	-- DF damage 세이지 공격력
-	[23766] = "Interface/Icons/INV_Misc_orb_02",	-- DF int 세이지 지능
-	[22888] = "Interface/Icons/INV_Misc_Head_Dragon_01",	-- Ony, Nef 용사냥꾼 재집결의 외침
-	[24425] = "Interface/Icons/Ability_Creature_Poison_05",	-- Zul'gurub 잔달라의 기백
-	[22817] = "Interface/Icons/Spell_Nature_UndyingStrength",	-- DM1 펜구스의 흉포
-	[22818] = "Interface/Icons/Spell_Nature_MassTeleport",	-- DM2 몰다르의 투지
-	[22820] = "Interface/Icons/Spell_Holy_LesserHeal02",	-- DM3 슬립킥의 손재주
-	[24382] = "Interface/Icons/INV_Potion_30",	-- Zanza 잔자의 기백
-	[15366] = "Interface/Icons/Spell_Holy_MindVision",	-- SF 노래꽃의 세레나데
-	[16609] = "Interface/Icons/Spell_Arcane_TeleportOrgrimmar",	-- 대족장의 축복
-}
-
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	17187, 	-- 변환식: 아케이나이트 48
 --[[	17559, 	-- 변환식: 바람을 불로 24
@@ -43,8 +30,6 @@ SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	18560, 	-- 달빛 옷감 96
 	19566, 	-- 소금 정제기 72
 }
-
-
 
 _G.SavedClassic = SavedClassic
 
@@ -97,7 +82,6 @@ local dbDefault = {
 
 			default = true,
 			minimapIcon = { hide = false },
-			worldBuffs = {},
 			tradeSkills = {},
 		}
 	}
@@ -107,29 +91,11 @@ local dbDefault = {
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 
-	local function ResetWB(db)
-		if db.worldBuffs then
-			local newWorldBuffs = {}
-			for id, remain in pairs(db.worldBuffs) do
-				p(id, remain)
-				table.insert(newWorldBuffs, {id = id, remain = remain})
-			end
-			table.sort(newWorldBuffs,
-				function(a,b)
-					ar = a.remain or 0
-					br = b.remain or 0
-					return ar > br
-				end
-			)
-			db.worldBuffs = newWorldBuffs
-		end
-	end
-
+	-- Clean classic debris - world buffs
 	if self.db.global.version ~= self.version then
-		-- rebuild world buff table
 		for ch, db in pairs(self.db.realm) do
-			if not pcall(ResetWB, db) then
-				db.worldBuffs = {}
+			if db.worldBuffs then
+				db.worldBuffs = nil
 			end
 		end
 	end
@@ -298,7 +264,6 @@ function SavedClassic:SaveInfo()
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
 	self:SaveZone()	
-	self:SaveWorldBuff()
 	self:SaveTSCooldowns()
 --	db.lastUpdate = currentTime -- Moved into SaveZone()
 end
@@ -331,24 +296,6 @@ function SavedClassic:SaveZone()
 		db.subzone = GetSubZoneText()
 	end
 	db.lastUpdate = time()
-end
-
-function SavedClassic:SaveWorldBuff()
-	local db = self.db.realm[player]
-	db.worldBuffs = {}
-	for i=1,32 do
-		local name,icon,_,_,_,expire,_,_,_,id = UnitBuff("player", i)
-		if id and self.wb[id] then
-			table.insert(db.worldBuffs, { id = id, remain = floor((expire-GetTime())/60) })
-		end
-	end
-	table.sort(db.worldBuffs,
-		function(a,b)
-			ar = a.remain or 0
-			br = b.remain or 0
-			return ar > br
-		end
-	)
 end
 
 function SavedClassic:SaveTSCooldowns()
@@ -390,21 +337,13 @@ end
 
 function SavedClassic:ShowInstanceInfo(tooltip, character)
 	self:SaveZone()
-	self:SaveWorldBuff()
 
 	local db = self.db.realm[character]
 	local currentTime = time()
 	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
 	local restPercent = floor(restXP / db.expMax * 100)
 	local elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
-	local wbstr,tsstr = "",""
-	if db.worldBuffs then
-		for _,b in ipairs(db.worldBuffs) do
-			if b.id and b.remain then
-				wbstr = wbstr .. "|T".. self.wb[b.id] ..":14:14|t".. b.remain ..L["minites"].." "
-			end
-		end
-	end
+	local tsstr = ""
 	if db.tradeSkills then
 		for id,v in pairs(db.tradeSkills) do
 			if v and v.ends then
@@ -420,12 +359,10 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	if db["info1"] then
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_1 = string.gsub(line1_1, "(%%L)", function(s) return elapsedTime end)
-		line1_1 = string.gsub(line1_1, "(%%B)", function(s) return wbstr end)
 		line1_1 = string.gsub(line1_1, "(%%T)", function(s) return tsstr end)
 		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_2 = string.gsub(line1_2, "(%%L)", function(s) return elapsedTime end)
-		line1_2 = string.gsub(line1_2, "(%%B)", function(s) return wbstr end)
 		line1_2 = string.gsub(line1_2, "(%%T)", function(s) return tsstr end)
 		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
@@ -433,12 +370,10 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	if db["info2"] then
 		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_1 = string.gsub(line2_1, "(%%L)", function(s) return elapsedTime end)
-		line2_1 = string.gsub(line2_1, "(%%B)", function(s) return wbstr end)
 		line2_1 = string.gsub(line2_1, "(%%T)", function(s) return tsstr end)
 		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_2 = string.gsub(line2_2, "(%%L)", function(s) return elapsedTime end)
-		line2_2 = string.gsub(line2_2, "(%%B)", function(s) return wbstr end)
 		line2_2 = string.gsub(line2_2, "(%%T)", function(s) return tsstr end)
 		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
