@@ -18,55 +18,41 @@ local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
-	17187, 	-- 변환식: 아케이나이트 48
-	18560, 	-- 달빛 옷감 96
-	19566, 	-- 소금 정제기 72
+	[17187] = { altName = L["Transmute"], },
+	[18560] = { },
+	[19566] = { },
 }
 
 local pt = {
-	["%Z"] = "zone" ,
-	["%z"] = "subzone" ,
+	["%n"] = "coloredName",	["%N"] = "name",
+	["%Z"] = "zone" ,	["%z"] = "subzone" ,
 
-	["%n"] = "coloredName",
-	["%N"] = "name",
-
-	["%g"] = "gold" ,
-	["%G"] = "return '"..GOLD_ICON.."'" ,
-	["%s"] = "silver" ,
-	["%S"] = "return '"..SILVER_ICON.."'" ,
-	["%c"] = "copper" ,
-	["%C"] = "return '"..COPPER_ICON.."'" ,
+	["%g"] = "gold" ,	["%G"] = "return '"..GOLD_ICON.."'" ,
+	["%s"] = "silver" ,	["%S"] = "return '"..SILVER_ICON.."'" ,
+	["%c"] = "copper" ,	["%C"] = "return '"..COPPER_ICON.."'" ,
 
 	["%l"] = "level",
-	["%e"] = "expCurrent",
-	["%E"] = "expMax",
-	["%p"] = "expPercent",
---	["%R"] = "expRest",
---	["%P"] = "expRestPercent",
---	["%B"] = ""
+	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
+--	["%R"] = "expRest",	["%P"] = "expRestPercent",
 
-	["%F"] = "return '|cff'" , 
-	["%f"] = "return '|r'" , 
-	["%r"] = "return '\\n'" ,
-
+	["%F"] = "return '|cff'" , 	["%f"] = "return '|r'" , 	["%r"] = "return '\\n'" ,
 	["%%"] = "return '%'" ,
 
-	["!n"] = "name" ,
-	["!d"] = "difficultyName" ,
-	["!i"] = "id" ,
-	["!p"] = "progress" ,
-	["!P"] = "numBoss" ,
-	["!e"] = "return ''" ,	-- classic doesn't support extened
+	["!n"] = "name" ,	["!d"] = "difficultyName" ,
+	["!i"] = "id" ,	["!p"] = "progress" ,	["!P"] = "numBoss" ,
+--	["!e"] = "return ''" ,	-- classic doesn't support extened
 	["!!"] = "return '!'" ,
-
 --	["!t"] = "" ,
+
+	["%h"] = "honorPoint",
+--	["%H"] = "honorMax",
+	["%j"] = "justice",	-- Badge of justice
 }
 
 local dbDefault = {
 	realm = {
 		[player] = {
-			frameX = 100,
-			frameY = 25,
+			frameX = 100,	frameY = 25,
 			showInfoPer = "realm",
 			hideLevelUnder = 1,
 
@@ -77,24 +63,27 @@ local dbDefault = {
 			info1 = true,
 			info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
 			info1_2 = "%r%Fffee99%g%G%f  ",
-
 			info2 = false,
 			info2_1 = "   %Fcccccc%T%f"	-- Tradeskill cooldowns
 			info2_2 = "",
-
 			info3 = true,
 			info3_1 = "   !n (!d) %Fccccaa!p/!P%f",
 			info3_2 = "!t ",
-
 			info4 = true,
 			info4_1 = "   %Fcffff99!n (!d)%f %Fccccaa!p/!P%f",
 			info4_2 = "!t ",
 
-			raids = { },
-			heroics = { },
+			raids = { },	heroics = { },
 
-			zone = "",
-			subzone = ""
+			zone = "",	subzone = "",
+
+			money = 0,	gold = 0,	silver = 0,	copper = 0,
+
+			level = 1,
+			expCurrent = 0,	expMax = 0,	expPercent = 0,
+			expRest = 0,
+
+			honorPoint = 0,	justice = 0,
 		}
 	}
 }
@@ -139,6 +128,11 @@ function SavedClassic:OnInitialize()
 
 	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
 
+--[[
+	HONOR_CURRENCY_UPDATE
+	TRADE_CURRENCY_CHANGED
+	PLAYER_TRADE_CURRENCY
+]]
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
 		if character and (character ~= player) and saved.money then
@@ -271,6 +265,15 @@ function SavedClassic:PLAYER_MONEY()
 	db.copper = floor(money % 100)
 end
 
+function SavedClassic:FOR_CURRENCY_UPDATE(...)
+	local db = self.db.realm[player]
+	-- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
+	-- For honor point
+	local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
+	
+	local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
+end
+
 function SavedClassic:PLAYER_XP_UPDATE()
 	local db = self.db.realm[player]
 	db.level = UnitLevel("player")
@@ -295,15 +298,18 @@ end
 function SavedClassic:SaveTSCooldowns()
 	local db = self.db.realm[player]
 	local currentTime = time()
-	for _,id in pairs(self.ts) do
-		local start,duration = GetSpellCooldown(id)
+	for id,alt in pairs(self.ts) do
+		local start, duration = GetSpellCooldown(id)
 		if duration > 0 then
 			local remain =  start + duration - GetTime()
 			if remain > 0 and remain < duration+100 then
 				local ends = currentTime + remain	-- resolve game time to real time
 				db.tradeSkills[id] = db.tradeSkills[id] or {}
 				db.tradeSkills[id].ends = ends
+				db.tradeSkills[id].name = ts.altName or GetSpellInfo(ts.id)
 			end
+		else
+			db.tradeSkills[id] = nil
 		end
 	end
 end
@@ -339,16 +345,16 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
 	local tsstr = ""
 	if db.tradeSkills then
-		for id,v in pairs(db.tradeSkills) do
-			if v and v.ends then
-				local remain = v.ends - currentTime
+		for id, ts in pairs(db.tradeSkills) do
+			if ts and ts.ends then
+				ts.name = ts.name or GetSpellInfo(id)
+				local remain = ts.ends - currentTime
 				if remain > 0 then
-					tsstr = tsstr..GetSpellInfo(id).."(|cffcccccc"..SecondsToTime(remain).."|r) "
+					tsstr = tsstr..ts.name.."(|cffcccccc"..SecondsToTime(remain).."|r) "
 				end
 			end
 		end
 	end
-
 
 	if db["info1"] then
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
@@ -361,6 +367,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
+
 	if db["info2"] then
 		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_1 = string.gsub(line2_1, "(%%L)", function(s) return elapsedTime end)
@@ -373,9 +380,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
-	if not db.raids then return end
-	local nMax = table.getn(db.raids)
-	for i = 1, raids do
+	for i = 1, #db.raids do
 		local raidInstance = db.raids[i]
 		local remain = SecondsToTime(raidInstance.reset - time())
 		if remain and ( remain ~= "" ) then
@@ -389,9 +394,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		end
 	end
 
-	if not db.heroics then return end
-	local nMax = table.getn(db.heroics)
-	for i = 1, nMax do
+	for i = 1, #db.heroics do
 		local heroicInstance = db.heroics[i]
 		local remain = SecondsToTime(heroicInstance.reset - time())
 		if remain and ( remain ~= "" ) then
