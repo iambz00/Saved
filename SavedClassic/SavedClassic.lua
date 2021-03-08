@@ -2,36 +2,26 @@
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
-SavedClassic.version = GetAddOnMetadata(addonName, "Version")
+--SavedClassic.version = GetAddOnMetadata(addonName, "Version")
+SavedClassic.version = "1.3"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-local SAVED_MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
-local SAVED_MSG_SUFFIX = " |cff00ff00■|r"
-local SAVED_GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
-local SAVED_SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
-local SAVED_COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
+local MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
+local MSG_SUFFIX = " |cff00ff00■|r"
+local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
+local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
+local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
-local p = function(str) print(SAVED_MSG_PREFIX..str..SAVED_MSG_SUFFIX) end
+local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	17187, 	-- 변환식: 아케이나이트 48
---[[	17559, 	-- 변환식: 바람을 불로 24
-	17560, 	-- 변환식: 불을 대지로 24
-	17561, 	-- 변환식: 대지를 물로 24
-	17562, 	-- 변환식: 물을 바람으로 24
-	17563, 	-- 변환식: 불사를 물로 24
-	17564, 	-- 변환식: 물을 불사로 24
-	17565, 	-- 변환식: 생명을 대지로 24
-	17566, 	-- 변환식: 대지를 생명으로 24
-]]
 	18560, 	-- 달빛 옷감 96
 	19566, 	-- 소금 정제기 72
 }
-
-_G.SavedClassic = SavedClassic
 
 local pt = {
 	["%Z"] = "zone" ,
@@ -41,11 +31,11 @@ local pt = {
 	["%N"] = "name",
 
 	["%g"] = "gold" ,
-	["%G"] = "return '"..SAVED_GOLD_ICON.."'" ,
+	["%G"] = "return '"..GOLD_ICON.."'" ,
 	["%s"] = "silver" ,
-	["%S"] = "return '"..SAVED_SILVER_ICON.."'" ,
+	["%S"] = "return '"..SILVER_ICON.."'" ,
 	["%c"] = "copper" ,
-	["%C"] = "return '"..SAVED_COPPER_ICON.."'" ,
+	["%C"] = "return '"..COPPER_ICON.."'" ,
 
 	["%l"] = "level",
 	["%e"] = "expCurrent",
@@ -83,6 +73,28 @@ local dbDefault = {
 			default = true,
 			minimapIcon = { hide = false },
 			tradeSkills = {},
+
+			info1 = true,
+			info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
+			info1_2 = "%r%Fffee99%g%G%f  ",
+
+			info2 = false,
+			info2_1 = "   %Fcccccc%T%f"	-- Tradeskill cooldowns
+			info2_2 = "",
+
+			info3 = true,
+			info3_1 = "   !n (!d) %Fccccaa!p/!P%f",
+			info3_2 = "!t ",
+
+			info4 = true,
+			info4_1 = "   %Fcffff99!n (!d)%f %Fccccaa!p/!P%f",
+			info4_2 = "!t ",
+
+			raids = { },
+			heroics = { },
+
+			zone = "",
+			subzone = ""
 		}
 	}
 }
@@ -91,12 +103,13 @@ local dbDefault = {
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 
-	-- Clean classic debris - world buffs
+	-- Clean classic debris - world buffs, instances
 	if self.db.global.version ~= self.version then
 		for ch, db in pairs(self.db.realm) do
 			if db.worldBuffs then
 				db.worldBuffs = nil
 			end
+			db.instances = nil
 		end
 	end
 
@@ -172,27 +185,12 @@ function SavedClassic:InitPlayerDB()
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
 
-	playerdb.info1 = true
-	-- Hide exp info on max level
+	-- Show level and exp for characters under 70
 	if UnitLevel("player") < GetMaxPlayerLevel() then
-		playerdb.info2 = true
 		playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
 		playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"	-- for exp
-	else
-		--playerdb.info2 = false
-		playerdb.info2 = true
-		playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
-		playerdb.info2_1 = "   %Fcccccc%B%f"	-- for world buffs
 	end
-	playerdb.info3 = true
 
-	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
-	playerdb.info2_2 = ""
-	playerdb.info3_1 = "   !n (!d) %Fccccaa!p/!P%f"
-	playerdb.info3_2 = "!t "
-	playerdb.instances = { }
-	playerdb.zone = ""
-	playerdb.subzone = ""
 	playerdb.lastUpdate = currentTime
 	playerdb.frameShow = true
 end
@@ -226,46 +224,42 @@ function SavedClassic:SaveInfo()
 	local classColor = RAID_CLASS_COLORS[class]
 	db.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
 
-	local instances = {}
+	local raids, heroics = { }, { }
 
 	local currentTime = time()
 
 	-- instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName
 	--		= GetSavedInstanceInfo(index)
 	local numSaved = GetNumSavedInstances()
-	local numLocked = 0
 	for i = 1, numSaved do
 		local instance = { }
-		local isLocked, extended, remain
-		instance.name, instance.id, remain, _, isLocked, extended, _, instance.isRaid, _, instance.difficultyName, instance.numBoss, instance.progress = GetSavedInstanceInfo(i)
-		if isLocked or instance.extended then	-- Save & count only locked or extended instances
-			numLocked = numLocked+1
+		local isLocked, extended, remain, isRaid
+		instance.name, instance.id, remain, _, isLocked, extended, _, isRaid, _, instance.difficultyName, instance.numBoss, instance.progress = GetSavedInstanceInfo(i)
+		if isLocked or extended then
 			instance.reset = remain + currentTime
 			if extended then
 				instance.extended = L["extended"]
 			else
 				instance.extended = ""
 			end
-			table.insert(instances, instance)
+			if isRaid then
+				table.insert(raids, instance)
+			else
+				table.insert(heroics, instance)
+			end
 		end
 	end
 
-	table.sort(instances,
-		function(a,b)
-			if a.isRaid and not b.isRaid then return true
-			elseif b.isRaid and not a.isRaid then return false
-			else return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName )
-			end
-		end
-	)
+	table.sort(raids, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end end)
+	table.sort(heroics, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end end)
 
-	db.instances = instances
+	db.raids = raids
+	db.heoics = heroics
 
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
 	self:SaveZone()	
 	self:SaveTSCooldowns()
---	db.lastUpdate = currentTime -- Moved into SaveZone()
 end
 
 function SavedClassic:PLAYER_MONEY()
@@ -321,7 +315,7 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 	if db.showInfoPer == "realm" then realm = " - " .. GetRealmName() end
 
 	local totalGold = floor((self.totalMoney + db.money) / 10000)
-	tooltip:AddDoubleLine(SAVED_MSG_PREFIX .. realm .. SAVED_MSG_SUFFIX, totalGold.. SAVED_GOLD_ICON)
+	tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold.. GOLD_ICON)
 
 	if db.showInfoPer == "realm" then
 		for _, v in ipairs(self.order) do
@@ -379,19 +373,34 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
-
-	if not db.instances then return end
-	local nMax = table.getn(db.instances)
-	for i = 1, nMax do
-		local instance = db.instances[i]
-		local remain = SecondsToTime(instance.reset - time())
+	if not db.raids then return end
+	local nMax = table.getn(db.raids)
+	for i = 1, raids do
+		local raidInstance = db.raids[i]
+		local remain = SecondsToTime(raidInstance.reset - time())
 		if remain and ( remain ~= "" ) then
 			if db["info3"] then
 				local line3_1 = string.gsub(db["info3_1"], "(!t)", remain)
-				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or loadstring(pt[s])() else return s end end)
+				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) if pt[s] then return raidInstance[pt[s]] or loadstring(pt[s])() else return s end end)
 				local line3_2 = string.gsub(db["info3_2"], "(!t)", remain)
-				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or loadstring(pt[s])() else return s end end)
+				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return raidInstance[pt[s]] or loadstring(pt[s])() else return s end end)
 				tooltip:AddDoubleLine(line3_1, line3_2)
+			end
+		end
+	end
+
+	if not db.heroics then return end
+	local nMax = table.getn(db.heroics)
+	for i = 1, nMax do
+		local heroicInstance = db.heroics[i]
+		local remain = SecondsToTime(heroicInstance.reset - time())
+		if remain and ( remain ~= "" ) then
+			if db["info4"] then
+				local line4_1 = string.gsub(db["info4_1"], "(!t)", remain)
+				line4_1 = string.gsub(line4_1, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or loadstring(pt[s])() else return s end end)
+				local line4_2 = string.gsub(db["info4_2"], "(!t)", remain)
+				line4_2 = string.gsub(line4_2, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or loadstring(pt[s])() else return s end end)
+				tooltip:AddDoubleLine(line4_1, line4_2)
 			end
 		end
 	end
@@ -573,7 +582,7 @@ function SavedClassic:BuildOptions()
 						name = L["Hide info from level under"],
 						type = "range",
 						min = 1,
-						max = 59,
+						max = 69,
 						step = 1,
 						order = 131
 					},
@@ -656,14 +665,14 @@ function SavedClassic:BuildOptions()
 				},
 			},
 
-			infoInst = {
-				name = L["Tooltip - Instance info"],
+			infoRaid = {
+				name = L["Tooltip - Raid instances"],
 				type = "group",
 				inline = true,
 				order = 41,
 				args = {
 					info3 = {
-						name = L["Lines of instance info"],
+						name = L["Lines of raid instances"],
 						type = "toggle",
 						order = 31
 					},
@@ -683,6 +692,35 @@ function SavedClassic:BuildOptions()
 					},
 				},
 			},
+
+			infoHeroic = {
+				name = L["Tooltip - Heroic instances"],
+				type = "group",
+				inline = true,
+				order = 51,
+				args = {
+					info4 = {
+						name = L["Lines of heroic instances"],
+						type = "toggle",
+						order = 31
+					},
+					info4_1 = {
+						name = L["Left"],
+						type = "input",
+						width = "full",
+						desc = L["Desc_Inst"],
+						order = 32
+					},
+					info4_2 = {
+						name = L["Right"],
+						type = "input",
+						width = "full",
+						desc = L["Desc_Inst"],
+						order = 33
+					},
+				},
+			},
+
 			dupeSettings = {
 				name = L["Dupe settings to"],
 				type = "select",
@@ -705,6 +743,9 @@ function SavedClassic:BuildOptions()
 					tdb.info3 = rdb[ch].info3
 					tdb.info3_1 = rdb[ch].info3_1
 					tdb.info3_2 = rdb[ch].info3_2
+					tdb.info4 = rdb[ch].info4
+					tdb.info4_1 = rdb[ch].info4_1
+					tdb.info4_2 = rdb[ch].info4_2
 				end,
 				confirm = function() return L["Dupe settings will overwirte character/instance info."] end,
 				order = 92
