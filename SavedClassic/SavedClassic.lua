@@ -47,6 +47,8 @@ local pt = {
 	["%h"] = "honorPoint",
 --	["%H"] = "honorMax",
 	["%j"] = "justice",	-- Badge of justice
+
+	["%dc"] = dqComplete,	["%dm"] = dqMax,	["%dr"] = dqReset,
 }
 
 local dbDefault = {
@@ -84,6 +86,7 @@ local dbDefault = {
 			expRest = 0,
 
 			honorPoint = 0,	justice = 0,
+			dqComplete = 0,	dqMax = 25,	dqReset = 0
 		}
 	}
 }
@@ -127,6 +130,8 @@ function SavedClassic:OnInitialize()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")
 
 	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
+
+	self:RegisterEvent("QUEST_TURNED_IN")
 
 --[[
 	HONOR_CURRENCY_UPDATE
@@ -271,6 +276,14 @@ function SavedClassic:FOR_CURRENCY_UPDATE(...)
 	local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
 end
 
+function SavedClassic:QUEST_TURNED_IN()
+	local db = self.db.realm[player]
+	
+	db.dqComplete = GetDailyQuestsCompleted() or 0
+	db.dqMax = GetMaxDailyQuests or 0
+	db.dqReset = time() + (GetQuestResetTime or 0)	-- resolve game time to real time
+end
+
 function SavedClassic:PLAYER_XP_UPDATE()
 	local db = self.db.realm[player]
 	db.level = UnitLevel("player")
@@ -357,11 +370,11 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_1 = string.gsub(line1_1, "(%%L)", function(s) return elapsedTime end)
 		line1_1 = string.gsub(line1_1, "(%%T)", function(s) return tsstr end)
-		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
+		line1_1 = string.gsub(line1_1, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_2 = string.gsub(line1_2, "(%%L)", function(s) return elapsedTime end)
 		line1_2 = string.gsub(line1_2, "(%%T)", function(s) return tsstr end)
-		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
+		line1_2 = string.gsub(line1_2, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
 
@@ -369,11 +382,11 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_1 = string.gsub(line2_1, "(%%L)", function(s) return elapsedTime end)
 		line2_1 = string.gsub(line2_1, "(%%T)", function(s) return tsstr end)
-		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
+		line2_1 = string.gsub(line2_1, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_2 = string.gsub(line2_2, "(%%L)", function(s) return elapsedTime end)
 		line2_2 = string.gsub(line2_2, "(%%T)", function(s) return tsstr end)
-		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
+		line2_2 = string.gsub(line2_2, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
