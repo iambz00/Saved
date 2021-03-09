@@ -214,18 +214,15 @@ end
 
 function SavedClassic:SaveInfo()
 	local db = self.db.realm[player]
-
 	local classColor = RAID_CLASS_COLORS[class]
 	db.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
 
 	local raids, heroics = { }, { }
-
 	local currentTime = time()
 
 	-- instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName
 	--		= GetSavedInstanceInfo(index)
-	local numSaved = GetNumSavedInstances()
-	for i = 1, numSaved do
+	for i = 1, GetNumSavedInstances() do
 		local instance = { }
 		local isLocked, extended, remain, isRaid
 		instance.name, instance.id, remain, _, isLocked, extended, _, isRaid, _, instance.difficultyName, instance.numBoss, instance.progress = GetSavedInstanceInfo(i)
@@ -493,9 +490,7 @@ function SavedClassic:BuildOptions()
 	local order = self.order
 	for i = 1, #order do
 		names[order[i].name] = rdb[order[i].name].coloredName
-		--names[i] = rdb[order[i].name].coloredName /run for k,v in pairs(SavedClassic.orderedList) do print(k,v) end
 	end
---	self.orderedList = names
 
 	local db = self.db.realm[player]
 	self.optionsTable = {
