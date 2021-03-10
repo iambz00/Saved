@@ -27,21 +27,22 @@ local pt = {
 	["%n"] = "coloredName",	["%N"] = "name",
 	["%Z"] = "zone" ,	["%z"] = "subzone" ,
 
-	["%g"] = "gold" ,	["%G"] = "return '"..GOLD_ICON.."'" ,
-	["%s"] = "silver" ,	["%S"] = "return '"..SILVER_ICON.."'" ,
-	["%c"] = "copper" ,	["%C"] = "return '"..COPPER_ICON.."'" ,
+	["%g"] = "gold" ,	["%G"] = SAVED_GOLD_ICON ,
+	["%s"] = "silver" ,	["%S"] = SAVED_SILVER_ICON ,
+	["%c"] = "copper" ,	["%C"] = SAVED_COPPER_ICON ,
 
 	["%l"] = "level",
 	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
 --	["%R"] = "expRest",	["%P"] = "expRestPercent",
 
-	["%F"] = "return '|cff'" , 	["%f"] = "return '|r'" , 	["%r"] = "return '\\n'" ,
-	["%%"] = "return '%'" ,
+	["%F"] = "|cff" ,	["%f"] = "|r" ,	["%r"] = "|n" ,
+	["%%"] = "%" ,
 
 	["!n"] = "name" ,	["!d"] = "difficultyName" ,
 	["!i"] = "id" ,	["!p"] = "progress" ,	["!P"] = "numBoss" ,
---	["!e"] = "return ''" ,	-- classic doesn't support extened
-	["!!"] = "return '!'" ,
+	["!e"] = "" ,	-- classic doesn't support extened
+	["!!"] = "!" ,
+
 --	["!t"] = "" ,
 
 	["%h"] = "honorPoint",
@@ -370,11 +371,11 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_1 = string.gsub(line1_1, "(%%L)", function(s) return elapsedTime end)
 		line1_1 = string.gsub(line1_1, "(%%T)", function(s) return tsstr end)
-		line1_1 = string.gsub(line1_1, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
+		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_2 = string.gsub(line1_2, "(%%L)", function(s) return elapsedTime end)
 		line1_2 = string.gsub(line1_2, "(%%T)", function(s) return tsstr end)
-		line1_2 = string.gsub(line1_2, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
+		line1_2 = string.gsub(line1_2, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
 
@@ -382,11 +383,11 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_1 = string.gsub(line2_1, "(%%L)", function(s) return elapsedTime end)
 		line2_1 = string.gsub(line2_1, "(%%T)", function(s) return tsstr end)
-		line2_1 = string.gsub(line2_1, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
+		line2_1 = string.gsub(line2_1, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_2 = string.gsub(line2_2, "(%%L)", function(s) return elapsedTime end)
 		line2_2 = string.gsub(line2_2, "(%%T)", function(s) return tsstr end)
-		line2_2 = string.gsub(line2_2, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or loadstring(pt[s])() else return s end end)
+		line2_2 = string.gsub(line2_2, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
@@ -396,9 +397,9 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		if remain and ( remain ~= "" ) then
 			if db["info3"] then
 				local line3_1 = string.gsub(db["info3_1"], "(!t)", remain)
-				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) if pt[s] then return raidInstance[pt[s]] or loadstring(pt[s])() else return s end end)
+				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or pt[s] else return s end end)
 				local line3_2 = string.gsub(db["info3_2"], "(!t)", remain)
-				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return raidInstance[pt[s]] or loadstring(pt[s])() else return s end end)
+				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or pt[s] else return s end end)
 				tooltip:AddDoubleLine(line3_1, line3_2)
 			end
 		end
@@ -410,9 +411,9 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		if remain and ( remain ~= "" ) then
 			if db["info4"] then
 				local line4_1 = string.gsub(db["info4_1"], "(!t)", remain)
-				line4_1 = string.gsub(line4_1, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or loadstring(pt[s])() else return s end end)
+				line4_1 = string.gsub(line4_1, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or pt[s] else return s end end)
 				local line4_2 = string.gsub(db["info4_2"], "(!t)", remain)
-				line4_2 = string.gsub(line4_2, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or loadstring(pt[s])() else return s end end)
+				line4_2 = string.gsub(line4_2, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or pt[s] else return s end end)
 				tooltip:AddDoubleLine(line4_1, line4_2)
 			end
 		end
