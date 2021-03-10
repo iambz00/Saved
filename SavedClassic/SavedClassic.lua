@@ -45,42 +45,27 @@ SavedClassic.ts = {	-- Tradeskills of long cooldowns
 }
 
 local pt = {
-	["%Z"] = "zone" ,
-	["%z"] = "subzone" ,
+	["%n"] = "coloredName",	["%N"] = "name",
+	["%Z"] = "zone" ,	["%z"] = "subzone" ,
 
-	["%n"] = "coloredName",
-	["%N"] = "name",
-
-	["%g"] = "gold" ,
-	["%G"] = SAVED_GOLD_ICON ,
-	["%s"] = "silver" ,
-	["%S"] = SAVED_SILVER_ICON ,
-	["%c"] = "copper" ,
-	["%C"] = SAVED_COPPER_ICON ,
+	["%g"] = "gold" ,	["%G"] = SAVED_GOLD_ICON ,
+	["%s"] = "silver" ,	["%S"] = SAVED_SILVER_ICON ,
+	["%c"] = "copper" ,	["%C"] = SAVED_COPPER_ICON ,
 
 	["%l"] = "level",
-	["%e"] = "expCurrent",
-	["%E"] = "expMax",
-	["%p"] = "expPercent",
---	["%R"] = "expRest",
---	["%P"] = "expRestPercent",
---	["%B"] = ""
+	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
+--	["%R"] = "expRest",	["%P"] = "expRestPercent",
 
-	["%F"] = "|cff" , 
-	["%f"] = "|r" , 
-	["%r"] = "|n" ,
-
+	["%F"] = "|cff" ,	["%f"] = "|r" ,	["%r"] = "|n" ,
 	["%%"] = "%" ,
 
-	["!n"] = "name" ,
-	["!d"] = "difficultyName" ,
-	["!i"] = "id" ,
-	["!p"] = "progress" ,
-	["!P"] = "numBoss" ,
+	["!n"] = "name" ,	["!d"] = "difficultyName" ,
+	["!i"] = "id" ,	["!p"] = "progress" ,	["!P"] = "numBoss" ,
 	["!e"] = "" ,	-- classic doesn't support extened
 	["!!"] = "!" ,
 
 --	["!t"] = "" ,
+
 }
 
 local dbDefault = {
