@@ -27,6 +27,9 @@ SavedClassic.wb = {	-- Texture pathes of world buffs
 	[24382] = "Interface/Icons/INV_Potion_30",	-- Zanza 잔자의 기백
 	[15366] = "Interface/Icons/Spell_Holy_MindVision",	-- SF 노래꽃의 세레나데
 	[16609] = "Interface/Icons/Spell_Arcane_TeleportOrgrimmar",	-- 대족장의 축복
+	[17626] = "Interface/Icons/INV_Potion_62",	-- 티탄
+	[17627] = "Interface/Icons/INV_Potion_97",	-- 순지
+	[17628] = "Interface/Icons/INV_Potion_41",	-- 강마
 }
 
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
