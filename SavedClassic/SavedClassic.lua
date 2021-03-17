@@ -55,6 +55,8 @@ local pt = {
 	["%s"] = "silver" ,	["%S"] = SAVED_SILVER_ICON ,
 	["%c"] = "copper" ,	["%C"] = SAVED_COPPER_ICON ,
 
+	["%w"] = "soulshards",
+
 	["%l"] = "level",
 	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
 --	["%R"] = "expRest",	["%P"] = "expRestPercent",
@@ -83,6 +85,7 @@ local dbDefault = {
 			minimapIcon = { hide = false },
 			worldBuffs = {},
 			tradeSkills = {},
+			soulshards = 0,
 		}
 	}
 }
@@ -143,6 +146,10 @@ function SavedClassic:OnInitialize()
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")
 
 	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
+
+	if class == "WARLOCK" then
+		self:RegisterEvent("BAG_UPDATE", "SaveSoulShards")
+	end
 
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
@@ -349,6 +356,10 @@ function SavedClassic:SaveTSCooldowns()
 			end
 		end
 	end
+end
+
+function SavedClassic:SaveSoulShards()
+	self.db.realm[player].soulshards = GetItemCount(6265) or 0
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
