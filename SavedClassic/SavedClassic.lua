@@ -55,7 +55,7 @@ local pt = {
 	["%s"] = "silver" ,	["%S"] = SAVED_SILVER_ICON ,
 	["%c"] = "copper" ,	["%C"] = SAVED_COPPER_ICON ,
 
-	["%w"] = "soulshards",
+	["%w"] = "soulshards",	["%W"] = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t",
 
 	["%l"] = "level",
 	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
