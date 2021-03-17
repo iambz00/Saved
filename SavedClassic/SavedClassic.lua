@@ -94,30 +94,10 @@ local dbDefault = {
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 
-	local function ResetWB(db)
-		if db.worldBuffs then
-			local newWorldBuffs = {}
-			for id, remain in pairs(db.worldBuffs) do
-				p(id, remain)
-				table.insert(newWorldBuffs, {id = id, remain = remain})
-			end
-			table.sort(newWorldBuffs,
-				function(a,b)
-					ar = a.remain or 0
-					br = b.remain or 0
-					return ar > br
-				end
-			)
-			db.worldBuffs = newWorldBuffs
-		end
-	end
-
 	if self.db.global.version < "1.21" then
 		-- rebuild world buff table
 		for ch, db in pairs(self.db.realm) do
-			if not pcall(ResetWB, db) then
-				db.worldBuffs = {}
-			end
+			db.worldBuffs = {}
 		end
 	end
 
