@@ -86,6 +86,7 @@ local dbDefault = {
 			worldBuffs = {},
 			tradeSkills = {},
 			soulshards = 0,
+			lastUpdate = 0,
 		}
 	}
 }
@@ -93,14 +94,14 @@ local dbDefault = {
 
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
+	self.db.global.version = self.db.global.version or self.version
 
 	if self.db.global.version < "1.21" then
-		-- rebuild world buff table
+		-- rebuild world buff table after 1.21
 		for ch, db in pairs(self.db.realm) do
 			db.worldBuffs = {}
 		end
 	end
-
 	self.db.global.version = self.version
 
 	if self.db.realm[player].default then self:InitPlayerDB() end
