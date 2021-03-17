@@ -1,0 +1,5 @@
+package-as: SavedClassic
+enable-nolib-creation: no
+
+move-folders:
+	SavedClassic: SavedClassic

@@ -109,7 +109,7 @@ function SavedClassic:OnInitialize()
 		end
 	end
 
-	if self.db.global.version ~= self.version then
+	if self.db.global.version < "1.21" then
 		-- rebuild world buff table
 		for ch, db in pairs(self.db.realm) do
 			if not pcall(ResetWB, db) then
