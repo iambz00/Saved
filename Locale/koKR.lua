@@ -1,11 +1,12 @@
 ﻿local AddonName, Addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "koKR")
-local SAVED_GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
-local SAVED_SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
-local SAVED_COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
+local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
+local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
+local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 local SOUL_SHARD_ICON = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t"
 
 if L then
+L["Transmute"] = "변환"
 
 L["Reset due to update"] = function(oldv, newv) return "업데이트로 인해 일부 또는 모든 정보를 리셋합니다. ("..oldv.." -> "..newv ")" end
 L["extended"] = "(연장)"
@@ -33,7 +34,7 @@ L["Right"] = "오른쪽"
 L["Desc_Char"] = "|cff00ff00■|r |cffccaa00캐릭터별 정보 사용법|r|n"
 	.."|cffccaa00%n|r 캐릭터명(직업색상)|n|cffccaa00%N|r 캐릭터명(색상없음)|n"
 	.."|cffccaa00%g|r 골드   |cffccaa00%s|r 실버   |cffccaa00%c|r 코퍼|n"
-	.."|cffccaa00%G|r "..SAVED_GOLD_ICON.."    |cffccaa00%S|r "..SAVED_SILVER_ICON.."    |cffccaa00%C|r "..SAVED_COPPER_ICON.."|n"
+	.."|cffccaa00%G|r "..GOLD_ICON.."    |cffccaa00%S|r "..SILVER_ICON.."    |cffccaa00%C|r "..COPPER_ICON.."|n"
 	.."|cffccaa00%l|r 현재 레벨   |cffccaa00%p|r 현재 경험치 %|n"
 	.."|cffccaa00%e|r 현재 경험치   |cffccaa00%E|r 최대 경험치|n"
 	.."|cffccaa00%R|r 휴식경험치   |cffccaa00%P|r 휴식경험치 %|n"

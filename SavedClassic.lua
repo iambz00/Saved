@@ -6,15 +6,15 @@ SavedClassic.version = GetAddOnMetadata(addonName, "Version")
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-local SAVED_MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
-local SAVED_MSG_SUFFIX = " |cff00ff00■|r"
-local SAVED_GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
-local SAVED_SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
-local SAVED_COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
+local MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
+local MSG_SUFFIX = " |cff00ff00■|r"
+local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
+local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
+local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
-local p = function(str) print(SAVED_MSG_PREFIX..str..SAVED_MSG_SUFFIX) end
+local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
 SavedClassic.wb = {	-- Texture pathes of world buffs
 	[23768] = "Interface/Icons/INV_Misc_orb_02",	-- DF damage 세이지 공격력
@@ -33,27 +33,17 @@ SavedClassic.wb = {	-- Texture pathes of world buffs
 }
 
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
-	17187, 	-- 변환식: 아케이나이트 48
---[[	17559, 	-- 변환식: 바람을 불로 24
-	17560, 	-- 변환식: 불을 대지로 24
-	17561, 	-- 변환식: 대지를 물로 24
-	17562, 	-- 변환식: 물을 바람으로 24
-	17563, 	-- 변환식: 불사를 물로 24
-	17564, 	-- 변환식: 물을 불사로 24
-	17565, 	-- 변환식: 생명을 대지로 24
-	17566, 	-- 변환식: 대지를 생명으로 24
-]]
-	18560, 	-- 달빛 옷감 96
-	19566, 	-- 소금 정제기 72
+	[17187] = { altName = L["Transmute"], },	-- 연금 변환
+	[18560] = { },	-- 달빛 옷감 96
+	[19566] = { },	-- 소금 정제기 72
 }
-
 local pt = {
 	["%n"] = "coloredName",	["%N"] = "name",
 	["%Z"] = "zone" ,	["%z"] = "subzone" ,
 
-	["%g"] = "gold" ,	["%G"] = SAVED_GOLD_ICON ,
-	["%s"] = "silver" ,	["%S"] = SAVED_SILVER_ICON ,
-	["%c"] = "copper" ,	["%C"] = SAVED_COPPER_ICON ,
+	["%g"] = "gold" ,	["%G"] = GOLD_ICON ,
+	["%s"] = "silver" ,	["%S"] = SILVER_ICON ,
+	["%c"] = "copper" ,	["%C"] = COPPER_ICON ,
 
 	["%w"] = "soulshards",	["%W"] = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t",
 
@@ -326,18 +316,24 @@ end
 function SavedClassic:SaveTSCooldowns()
 	local db = self.db.realm[player]
 	local currentTime = time()
-	for _,id in pairs(self.ts) do
-		local start,duration = GetSpellCooldown(id)
+
+	for id,alt in pairs(self.ts) do
+		local start, duration = GetSpellCooldown(id)
 		if duration > 0 then
 			local remain =  start + duration - GetTime()
 			if remain > 0 and remain < duration+100 then
 				local ends = currentTime + remain	-- resolve game time to real time
 				db.tradeSkills[id] = db.tradeSkills[id] or {}
 				db.tradeSkills[id].ends = ends
+				db.tradeSkills[id].name = alt.altName or GetSpellInfo(id)
 			end
+		else
+			db.tradeSkills[id] = nil
 		end
 	end
 end
+
+
 
 function SavedClassic:SaveSoulShards()
 	self.db.realm[player].soulshards = GetItemCount(6265) or 0
@@ -350,7 +346,7 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 	if db.showInfoPer == "realm" then realm = " - " .. GetRealmName() end
 
 	local totalGold = floor((self.totalMoney + db.money) / 10000)
-	tooltip:AddDoubleLine(SAVED_MSG_PREFIX .. realm .. SAVED_MSG_SUFFIX, totalGold.. SAVED_GOLD_ICON)
+	tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold.. GOLD_ICON)
 
 	if db.showInfoPer == "realm" then
 		for _, v in ipairs(self.order) do
@@ -382,16 +378,16 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		end
 	end
 	if db.tradeSkills then
-		for id,v in pairs(db.tradeSkills) do
-			if v and v.ends then
-				local remain = v.ends - currentTime
+		for id,ts in pairs(db.tradeSkills) do
+			if ts and ts.ends then
+				ts.name = ts.name or GetSpellInfo(id)
+				local remain = ts.ends - currentTime
 				if remain > 0 then
-					tsstr = tsstr..GetSpellInfo(id).."(|cffcccccc"..SecondsToTime(remain).."|r) "
+					tsstr = tsstr..ts.name.."(|cffcccccc"..SecondsToTime(remain).."|r) "
 				end
 			end
 		end
 	end
-
 
 	if db["info1"] then
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)

@@ -1,11 +1,12 @@
 ﻿local AddonName, Addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "enUS", true)
-local SAVED_GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
-local SAVED_SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
-local SAVED_COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
+local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
+local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
+local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 local SOUL_SHARD_ICON = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t"
 
 if L then
+L["Transmute"] = true
 
 L["Reset due to update"] = function(oldv, newv) return "Reset some or entire data due to version update ("..oldv.." -> "..newv ")" end
 L["extended"] = "(extended)"
@@ -33,7 +34,7 @@ L["Right"] = true
 L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."|cffccaa00%n|r Name(Class color)|n|cffccaa00%N|r Name(No color)|n"
 	.."|cffccaa00%g|r Gold   |cffccaa00%s|r Silver   |cffccaa00%c|r Copper|n"
-	.."|cffccaa00%G|r "..SAVED_GOLD_ICON.."    |cffccaa00%S|r "..SAVED_SILVER_ICON.."    |cffccaa00%C|r "..SAVED_COPPER_ICON.."|n"
+	.."|cffccaa00%G|r "..GOLD_ICON.."    |cffccaa00%S|r "..SILVER_ICON.."    |cffccaa00%C|r "..COPPER_ICON.."|n"
 	.."|cffccaa00%l|r Current Level   |cffccaa00%p|r Current Exp %|n"
 	.."|cffccaa00%e|r Current Exp   |cffccaa00%E|r Max Exp|n"
 	.."|cffccaa00%R|r Rest Exp   |cffccaa00%P|r Rest Exp %|n"
