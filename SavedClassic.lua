@@ -206,6 +206,7 @@ end
 
 function SavedClassic:ResetWholeDB()
 	self.db:ResetDB()
+	self.db.global.version = self.version
 	self:InitPlayerDB()
 	self:SetOrder()
 	self.totalMoney = 0
