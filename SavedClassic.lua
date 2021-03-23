@@ -16,7 +16,7 @@ local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
-SavedClassic.wb = {	-- Texture pathes of world buffs
+SavedClassic.wb = {	-- id, texture path
 	[23768] = "Interface/Icons/INV_Misc_orb_02",	-- DF damage 세이지 공격력
 	[23766] = "Interface/Icons/INV_Misc_orb_02",	-- DF int 세이지 지능
 	[22888] = "Interface/Icons/INV_Misc_Head_Dragon_01",	-- Ony, Nef 용사냥꾼 재집결의 외침
@@ -33,7 +33,7 @@ SavedClassic.wb = {	-- Texture pathes of world buffs
 }
 
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
-	[17187] = { altName = L["Transmute"], },	-- 연금 변환
+	[17187] = { altName = L["Transmute"], },	-- 연금 변환(아케이나이트)
 	[18560] = { },	-- 달빛 옷감 96
 	[19566] = { },	-- 소금 정제기 72
 }
@@ -75,8 +75,8 @@ local dbDefault = {
 			minimapIcon = { hide = false },
 			worldBuffs = {},
 			tradeSkills = {},
-			soulshards = 0,
-			lastUpdate = 0,
+			soulshards = -1,
+			lastUpdate = -1,
 		}
 	}
 }
@@ -611,7 +611,7 @@ function SavedClassic:BuildOptions()
 						name = L["Hide info from level under"],
 						type = "range",
 						min = 1,
-						max = 59,
+						max = GetMaxPlayerLevel(),
 						step = 1,
 						order = 131
 					},
