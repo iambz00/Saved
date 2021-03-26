@@ -46,9 +46,8 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."|cffccaa00%T|r Tradeskill cooldowns|n"
 	.."|cffccaa00%F######|r Color starts(RGB code)|n|cffccaa00%f|r Color ends|n"
 	.."|cffccaa00(ex) %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
-L["Desc_Char2"] = true
-L["Tooltip - Instance info"] = true
-L["Lines of instance info"] = true
+L["Tooltip - Raid instances"] = true
+L["Lines of raid instances"] = true
 L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
 	.."|cffccaa00!n|r Instance name|n"
 	.."|cffccaa00!d|r Size and Difficulty|n"
@@ -56,10 +55,14 @@ L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
 	.."|cffccaa00!P|r Number of bosses|n"
 	.."|cffccaa00!t|r Time to reset|n"
 	.."|cffccaa00!i|r Instance ID|n"
+L["Tooltip - Heroic instances"] = true
+L["Lines of heroic instances"] = true
+
 L["Reset selected character"] = true
 L["Are you really want to reset?"] = true
 L["Reset all characters"] = true
 L["Dupe settings to"] = true
 L["Dupe"] = true
 L["Dupe settings will overwirte character/instance info settings."] = true
+
 end

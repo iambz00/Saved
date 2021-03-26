@@ -2,7 +2,8 @@
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
-SavedClassic.version = GetAddOnMetadata(addonName, "Version")
+--SavedClassic.version = GetAddOnMetadata(addonName, "Version")
+SavedClassic.version = "2.0"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -16,20 +17,10 @@ local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
-SavedClassic.wb = {	-- id, texture path
-	[23768] = "Interface/Icons/INV_Misc_orb_02",	-- DF damage 세이지 공격력
-	[23766] = "Interface/Icons/INV_Misc_orb_02",	-- DF int 세이지 지능
-	[22888] = "Interface/Icons/INV_Misc_Head_Dragon_01",	-- Ony, Nef 용사냥꾼 재집결의 외침
-	[24425] = "Interface/Icons/Ability_Creature_Poison_05",	-- Zul'gurub 잔달라의 기백
-	[22817] = "Interface/Icons/Spell_Nature_UndyingStrength",	-- DM1 펜구스의 흉포
-	[22818] = "Interface/Icons/Spell_Nature_MassTeleport",	-- DM2 몰다르의 투지
-	[22820] = "Interface/Icons/Spell_Holy_LesserHeal02",	-- DM3 슬립킥의 손재주
-	[24382] = "Interface/Icons/INV_Potion_30",	-- Zanza 잔자의 기백
-	[15366] = "Interface/Icons/Spell_Holy_MindVision",	-- SF 노래꽃의 세레나데
-	[16609] = "Interface/Icons/Spell_Arcane_TeleportOrgrimmar",	-- 대족장의 축복
-	[17626] = "Interface/Icons/INV_Potion_62",	-- 티탄
-	[17627] = "Interface/Icons/INV_Potion_97",	-- 순지
-	[17628] = "Interface/Icons/INV_Potion_41",	-- 강마
+SavedClassic.drugs = {	-- Elixirs and flasks
+	[17626] = { texture = "Interface/Icons/INV_Potion_62" }
+	[17627] = { texture = "Interface/Icons/INV_Potion_97" }
+	[17628] = { texture = "Interface/Icons/INV_Potion_41" }
 }
 
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
@@ -61,20 +52,27 @@ local pt = {
 
 --	["!t"] = "" ,
 
+	["%h"] = "honorPoint",
+--	["%H"] = "honorMax",
+	["%j"] = "justice",	-- Badge of justice
+
+	["%dc"] = dqComplete,	["%dm"] = dqMax,	["%dr"] = dqReset,
 }
 
 local dbDefault = {
 	realm = {
 		[player] = {
-			frameX = 100,
-			frameY = 25,
+			frameX = 100,	frameY = 25,
 			showInfoPer = "realm",
 			hideLevelUnder = 1,
 
 			default = true,
 			minimapIcon = { hide = false },
-			worldBuffs = {},
 			tradeSkills = {},
+
+			honorPoint = -1, justice = -1,
+			dqComplete = -1, dqMax = -1, dqReset = -1,
+
 			soulshards = -1,
 			lastUpdate = -1,
 		}
@@ -86,10 +84,14 @@ function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 	self.db.global.version = self.db.global.version or self.version
 
-	if self.db.global.version < "1.21" then
-		-- rebuild world buff table after 1.21
+	-- Clean classic debris - world buffs, instances
+	if self.db.global.version ~= "1.3" then
 		for ch, db in pairs(self.db.realm) do
-			db.worldBuffs = {}
+			if db.worldBuffs then
+				db.worldBuffs = nil
+			end
+			db.instances = nil
+
 		end
 	end
 	self.db.global.version = self.version
@@ -118,6 +120,13 @@ function SavedClassic:OnInitialize()
 
 	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
 
+	self:RegisterEvent("QUEST_TURNED_IN")
+
+--[[
+	HONOR_CURRENCY_UPDATE
+	TRADE_CURRENCY_CHANGED
+	PLAYER_TRADE_CURRENCY
+]]
 	if class == "WARLOCK" then
 		self:RegisterEvent("BAG_UPDATE", "SaveSoulShards")
 	end
@@ -169,26 +178,31 @@ function SavedClassic:InitPlayerDB()
 	self:PLAYER_XP_UPDATE()
 
 	playerdb.info1 = true
-	-- Hide exp info on max level
+	playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
+	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
+	playerdb.info2 = false
+	playerdb.info2_1 = "   %Fcccccc%T%f"	-- Tradeskill cooldowns
+	playerdb.info2_2 = ""
+
+	-- Show level and exp for characters under 70
 	if UnitLevel("player") < GetMaxPlayerLevel() then
-		playerdb.info2 = true
 		playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
 		playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"	-- for exp
-	else
-		--playerdb.info2 = false
-		playerdb.info2 = true
-		playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
-		playerdb.info2_1 = "   %Fcccccc%B%f"	-- for world buffs
 	end
-	playerdb.info3 = true
 
-	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
-	playerdb.info2_2 = ""
+	playerdb.info3 = true
 	playerdb.info3_1 = "   !n (!d) %Fccccaa!p/!P%f"
 	playerdb.info3_2 = "!t "
-	playerdb.instances = { }
+	playerdb.info4 = true
+	playerdb.info4_1 = "   %Fcffff99!n (!d)%f %Fccccaa!p/!P%f"
+	playerdb.info4_2 = "!t "
+
+	playerdb.raids = { }
+	playerdb.heroics = { }
+
 	playerdb.zone = ""
 	playerdb.subzone = ""
+
 	playerdb.lastUpdate = currentTime
 	playerdb.frameShow = true
 end
@@ -219,51 +233,43 @@ end
 
 function SavedClassic:SaveInfo()
 	local db = self.db.realm[player]
-
 	local classColor = RAID_CLASS_COLORS[class]
 	db.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
 
-	local instances = {}
-
+	local raids, heroics = { }, { }
 	local currentTime = time()
 
 	-- instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName
 	--		= GetSavedInstanceInfo(index)
-	local numSaved = GetNumSavedInstances()
-	local numLocked = 0
-	for i = 1, numSaved do
+	for i = 1, GetNumSavedInstances() do
 		local instance = { }
-		local isLocked, extended, remain
-		instance.name, instance.id, remain, _, isLocked, extended, _, instance.isRaid, _, instance.difficultyName, instance.numBoss, instance.progress = GetSavedInstanceInfo(i)
-		if isLocked or instance.extended then	-- Save & count only locked or extended instances
-			numLocked = numLocked+1
+		local isLocked, extended, remain, isRaid
+		instance.name, instance.id, remain, _, isLocked, extended, _, isRaid, _, instance.difficultyName, instance.numBoss, instance.progress = GetSavedInstanceInfo(i)
+		if isLocked or extended then
 			instance.reset = remain + currentTime
 			if extended then
 				instance.extended = L["extended"]
 			else
 				instance.extended = ""
 			end
-			table.insert(instances, instance)
+			if isRaid then
+				table.insert(raids, instance)
+			else
+				table.insert(heroics, instance)
+			end
 		end
 	end
 
-	table.sort(instances,
-		function(a,b)
-			if a.isRaid and not b.isRaid then return true
-			elseif b.isRaid and not a.isRaid then return false
-			else return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName )
-			end
-		end
-	)
+	table.sort(raids, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end end)
+	table.sort(heroics, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end end)
 
-	db.instances = instances
+	db.raids = raids
+	db.heoics = heroics
 
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
 	self:SaveZone()	
-	self:SaveWorldBuff()
 	self:SaveTSCooldowns()
---	db.lastUpdate = currentTime -- Moved into SaveZone()
 end
 
 function SavedClassic:PLAYER_MONEY()
@@ -273,6 +279,23 @@ function SavedClassic:PLAYER_MONEY()
 	db.gold = floor(money / 10000)
 	db.silver = floor(money % 10000 / 100)
 	db.copper = floor(money % 100)
+end
+
+function SavedClassic:FOR_CURRENCY_UPDATE(...)
+	local db = self.db.realm[player]
+	-- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
+	-- For honor point
+	local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
+	
+	local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
+end
+
+function SavedClassic:QUEST_TURNED_IN()
+	local db = self.db.realm[player]
+	
+	db.dqComplete = GetDailyQuestsCompleted() or 0
+	db.dqMax = GetMaxDailyQuests or 0
+	db.dqReset = time() + (GetQuestResetTime or 0)	-- resolve game time to real time
 end
 
 function SavedClassic:PLAYER_XP_UPDATE()
@@ -296,16 +319,16 @@ function SavedClassic:SaveZone()
 	db.lastUpdate = time()
 end
 
-function SavedClassic:SaveWorldBuff()
+function SavedClassic:SaveDrugs()
 	local db = self.db.realm[player]
-	db.worldBuffs = {}
+	db.drugs = {}
 	for i=1,32 do
 		local name,icon,_,_,_,expire,_,_,_,id = UnitBuff("player", i)
-		if id and self.wb[id] then
-			table.insert(db.worldBuffs, { id = id, remain = floor((expire-GetTime())/60) })
+		if id and self.drugs[id] then
+			table.insert(db.drugs, { id = id, remain = floor((expire-GetTime())/60) })
 		end
 	end
-	table.sort(db.worldBuffs,
+	table.sort(db.drugs,
 		function(a,b)
 			ar = a.remain or 0
 			br = b.remain or 0
@@ -363,18 +386,17 @@ end
 
 function SavedClassic:ShowInstanceInfo(tooltip, character)
 	self:SaveZone()
-	self:SaveWorldBuff()
 
 	local db = self.db.realm[character]
 	local currentTime = time()
 	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
 	local restPercent = floor(restXP / db.expMax * 100)
 	local elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
-	local wbstr,tsstr = "",""
-	if db.worldBuffs then
-		for _,b in ipairs(db.worldBuffs) do
-			if b.id and b.remain then
-				wbstr = wbstr .. "|T".. self.wb[b.id] ..":14:14|t".. b.remain ..L["minites"].." "
+	local tsstr, drugstr = "", ""
+	if db.drugs then
+		for _, d in ipairs(db.drugs) do
+			if d.id and d.remain then
+				drugstr = drugstr .. "|T".. self.drugs[d.id].texture ..":14:14|t".. d.remain ..L["minites"].." "
 			end
 		end
 	end
@@ -393,36 +415,34 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	if db["info1"] then
 		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_1 = string.gsub(line1_1, "(%%L)", function(s) return elapsedTime end)
-		line1_1 = string.gsub(line1_1, "(%%B)", function(s) return wbstr end)
+		line1_1 = string.gsub(line1_1, "(%%B)", function(s) return drugstr end)
 		line1_1 = string.gsub(line1_1, "(%%T)", function(s) return tsstr end)
 		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line1_2 = string.gsub(line1_2, "(%%L)", function(s) return elapsedTime end)
-		line1_2 = string.gsub(line1_2, "(%%B)", function(s) return wbstr end)
+		line1_2 = string.gsub(line1_2, "(%%B)", function(s) return drugstr end)
 		line1_2 = string.gsub(line1_2, "(%%T)", function(s) return tsstr end)
-		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
+		line1_2 = string.gsub(line1_2, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
+
 	if db["info2"] then
 		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_1 = string.gsub(line2_1, "(%%L)", function(s) return elapsedTime end)
-		line2_1 = string.gsub(line2_1, "(%%B)", function(s) return wbstr end)
+		line2_1 = string.gsub(line2_1, "(%%B)", function(s) return drugstr end)
 		line2_1 = string.gsub(line2_1, "(%%T)", function(s) return tsstr end)
-		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
+		line2_1 = string.gsub(line2_1, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
 		line2_2 = string.gsub(line2_2, "(%%L)", function(s) return elapsedTime end)
-		line2_2 = string.gsub(line2_2, "(%%B)", function(s) return wbstr end)
+		line2_2 = string.gsub(line2_2, "(%%B)", function(s) return drugstr end)
 		line2_2 = string.gsub(line2_2, "(%%T)", function(s) return tsstr end)
-		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
+		line2_2 = string.gsub(line2_2, "(%%d?[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
-
-	if not db.instances then return end
-	local nMax = table.getn(db.instances)
-	for i = 1, nMax do
-		local instance = db.instances[i]
-		local remain = SecondsToTime(instance.reset - time())
+	for i = 1, #db.raids do
+		local raidInstance = db.raids[i]
+		local remain = SecondsToTime(raidInstance.reset - time())
 		if remain and ( remain ~= "" ) then
 			if db["info3"] then
 				local line3_1 = string.gsub(db["info3_1"], "(!t)", remain)
@@ -430,6 +450,20 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 				local line3_2 = string.gsub(db["info3_2"], "(!t)", remain)
 				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or pt[s] else return s end end)
 				tooltip:AddDoubleLine(line3_1, line3_2)
+			end
+		end
+	end
+
+	for i = 1, #db.heroics do
+		local heroicInstance = db.heroics[i]
+		local remain = SecondsToTime(heroicInstance.reset - time())
+		if remain and ( remain ~= "" ) then
+			if db["info4"] then
+				local line4_1 = string.gsub(db["info4_1"], "(!t)", remain)
+				line4_1 = string.gsub(line4_1, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or pt[s] else return s end end)
+				local line4_2 = string.gsub(db["info4_2"], "(!t)", remain)
+				line4_2 = string.gsub(line4_2, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or pt[s] else return s end end)
+				tooltip:AddDoubleLine(line4_1, line4_2)
 			end
 		end
 	end
@@ -519,9 +553,7 @@ function SavedClassic:BuildOptions()
 	local order = self.order
 	for i = 1, #order do
 		names[order[i].name] = rdb[order[i].name].coloredName
-		--names[i] = rdb[order[i].name].coloredName /run for k,v in pairs(SavedClassic.orderedList) do print(k,v) end
 	end
---	self.orderedList = names
 
 	local db = self.db.realm[player]
 	self.optionsTable = {
@@ -694,14 +726,14 @@ function SavedClassic:BuildOptions()
 				},
 			},
 
-			infoInst = {
-				name = L["Tooltip - Instance info"],
+			infoRaid = {
+				name = L["Tooltip - Raid instances"],
 				type = "group",
 				inline = true,
 				order = 41,
 				args = {
 					info3 = {
-						name = L["Lines of instance info"],
+						name = L["Lines of raid instances"],
 						type = "toggle",
 						order = 31
 					},
@@ -721,6 +753,35 @@ function SavedClassic:BuildOptions()
 					},
 				},
 			},
+
+			infoHeroic = {
+				name = L["Tooltip - Heroic instances"],
+				type = "group",
+				inline = true,
+				order = 51,
+				args = {
+					info4 = {
+						name = L["Lines of heroic instances"],
+						type = "toggle",
+						order = 31
+					},
+					info4_1 = {
+						name = L["Left"],
+						type = "input",
+						width = "full",
+						desc = L["Desc_Inst"],
+						order = 32
+					},
+					info4_2 = {
+						name = L["Right"],
+						type = "input",
+						width = "full",
+						desc = L["Desc_Inst"],
+						order = 33
+					},
+				},
+			},
+
 			dupeSettings = {
 				name = L["Dupe settings to"],
 				type = "select",
@@ -743,6 +804,9 @@ function SavedClassic:BuildOptions()
 					tdb.info3 = rdb[ch].info3
 					tdb.info3_1 = rdb[ch].info3_1
 					tdb.info3_2 = rdb[ch].info3_2
+					tdb.info4 = rdb[ch].info4
+					tdb.info4_1 = rdb[ch].info4_1
+					tdb.info4_2 = rdb[ch].info4_2
 				end,
 				confirm = function() return L["Dupe settings will overwirte character/instance info."] end,
 				order = 92
