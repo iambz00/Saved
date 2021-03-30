@@ -12,24 +12,25 @@ local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
 local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
+
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
-SavedClassic.wb = {	-- id, texture path
-	[23768] = "Interface/Icons/INV_Misc_orb_02",	-- DF damage 세이지 공격력
-	[23766] = "Interface/Icons/INV_Misc_orb_02",	-- DF int 세이지 지능
-	[22888] = "Interface/Icons/INV_Misc_Head_Dragon_01",	-- Ony, Nef 용사냥꾼 재집결의 외침
-	[24425] = "Interface/Icons/Ability_Creature_Poison_05",	-- Zul'gurub 잔달라의 기백
-	[22817] = "Interface/Icons/Spell_Nature_UndyingStrength",	-- DM1 펜구스의 흉포
-	[22818] = "Interface/Icons/Spell_Nature_MassTeleport",	-- DM2 몰다르의 투지
-	[22820] = "Interface/Icons/Spell_Holy_LesserHeal02",	-- DM3 슬립킥의 손재주
-	[24382] = "Interface/Icons/INV_Potion_30",	-- Zanza 잔자의 기백
-	[15366] = "Interface/Icons/Spell_Holy_MindVision",	-- SF 노래꽃의 세레나데
-	[16609] = "Interface/Icons/Spell_Arcane_TeleportOrgrimmar",	-- 대족장의 축복
-	[17626] = "Interface/Icons/INV_Potion_62",	-- 티탄
-	[17627] = "Interface/Icons/INV_Potion_97",	-- 순지
-	[17628] = "Interface/Icons/INV_Potion_41",	-- 강마
+SavedClassic.wb = {	-- World buffs and Flasks
+	[23768] = { },	-- DF damage 세이지 공격력
+	[23766] = { },	-- DF int 세이지 지능
+	[22888] = { },	-- Ony, Nef 용사냥꾼 재집결의 외침
+	[24425] = { },	-- Zul'gurub 잔달라의 기백
+	[22817] = { },	-- DM1 펜구스의 흉포
+	[22818] = { },	-- DM2 몰다르의 투지
+	[22820] = { },	-- DM3 슬립킥의 손재주
+	[24382] = { },	-- Zanza 잔자의 기백
+	[15366] = { },	-- SF 노래꽃의 세레나데
+	[16609] = { },	-- BoW 대족장의 축복
+	[17626] = { },	-- Titan 티탄
+	[17627] = { },	-- Distilled Wisdom 순지
+	[17628] = { },	-- Supreme Power 강마
 }
 
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
@@ -45,7 +46,7 @@ local pt = {
 	["%s"] = "silver" ,	["%S"] = SILVER_ICON ,
 	["%c"] = "copper" ,	["%C"] = COPPER_ICON ,
 
-	["%w"] = "soulshards",	["%W"] = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t",
+	["%w"] = "soulshards",	["%W"] = "|T"..GetItemIcon(6265)..":14:14|t",
 
 	["%l"] = "level",
 	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
@@ -334,8 +335,6 @@ function SavedClassic:SaveTSCooldowns()
 	end
 end
 
-
-
 function SavedClassic:SaveSoulShards()
 	self.db.realm[player].soulshards = GetItemCount(6265) or 0
 end
@@ -374,7 +373,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	if db.worldBuffs then
 		for _,b in ipairs(db.worldBuffs) do
 			if b.id and b.remain then
-				wbstr = wbstr .. "|T".. self.wb[b.id] ..":14:14|t".. b.remain ..L["minites"].." "
+				local icon = GetSpellTexture(b.id) or ""
+				wbstr = wbstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
 			end
 		end
 	end
