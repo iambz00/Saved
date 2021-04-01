@@ -173,13 +173,20 @@ function SavedClassic:InitPlayerDB()
 	-- Hide exp info on max level
 	if UnitLevel("player") < GetMaxPlayerLevel() then
 		playerdb.info2 = true
-		playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
+		if class == "WARLOCK" then
+			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %W%Fcc66cc%w %Fffffff(%Z: %z)%f"
+		else
+			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
+		end
 		playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"	-- for exp
 	else
-		--playerdb.info2 = false
 		playerdb.info2 = true
-		playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
-		playerdb.info2_1 = "   %Fcccccc%B%f"	-- for world buffs
+		if class == "WARLOCK" then
+			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %W%Fcc66cc%w %Fffffff(%Z: %z)%f"
+		else
+			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
+		end
+		playerdb.info2_1 = "   %Fcccccc%B%f"	-- For World buffs and Flasks
 	end
 	playerdb.info3 = true
 
