@@ -13,16 +13,17 @@ local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
 local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
+
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
-SavedClassic.drugs = {	-- Elixirs and flasks
-	[17626] = { texture = "Interface/Icons/INV_Potion_62" }
-	[17627] = { texture = "Interface/Icons/INV_Potion_97" }
-	[17628] = { texture = "Interface/Icons/INV_Potion_41" }
-}
 
+SavedClassic.drugs = {	-- World buffs and Flasks
+	[17626] = { },	-- Flask of Titan 티탄
+	[17627] = { },	-- Flask of Distilled Wisdom 순지
+	[17628] = { },	-- Flask of Supreme Power 강마
+}
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[17187] = { altName = L["Transmute"], },	-- 연금 변환(아케이나이트)
 	[18560] = { },	-- 달빛 옷감 96
@@ -36,7 +37,7 @@ local pt = {
 	["%s"] = "silver" ,	["%S"] = SILVER_ICON ,
 	["%c"] = "copper" ,	["%C"] = COPPER_ICON ,
 
-	["%w"] = "soulshards",	["%W"] = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t",
+	["%w"] = "soulshards",	["%W"] = "|T"..GetItemIcon(6265)..":14:14|t",
 
 	["%l"] = "level",
 	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
@@ -357,8 +358,6 @@ function SavedClassic:SaveTSCooldowns()
 	end
 end
 
-
-
 function SavedClassic:SaveSoulShards()
 	self.db.realm[player].soulshards = GetItemCount(6265) or 0
 end
@@ -396,7 +395,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	if db.drugs then
 		for _, d in ipairs(db.drugs) do
 			if d.id and d.remain then
-				drugstr = drugstr .. "|T".. self.drugs[d.id].texture ..":14:14|t".. d.remain ..L["minites"].." "
+				local icon = GetSpellTexture(d.id) or ""
+				drugstr = drugstr .. "|T".. icon ..":14:14|t".. d.remain ..L["minites"].." "
 			end
 		end
 	end
