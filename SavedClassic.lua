@@ -23,11 +23,33 @@ SavedClassic.drugs = {	-- World buffs and Flasks
 	[17626] = { },	-- Flask of Titan 티탄
 	[17627] = { },	-- Flask of Distilled Wisdom 순지
 	[17628] = { },	-- Flask of Supreme Power 강마
+	[28518] = { },	-- Flask of Fortification  Health/Defense
+	[28519] = { },	-- Flask of Mighty Restoration  Mana Regen
+	[28520] = { },	-- Flask of Relentless Assault  AP
+	[28521] = { },	-- Flask of Blinding Light  Arcane/Holy/Nature
+	[28540] = { },	-- Flask of Pure Death  Shadow/Fire/Frost
+	[17537] = { },	-- [B] Elixir of Brute Force
+	[11406] = { },	-- [B] Elixir of Demonslaying
+	[33721] = { },	-- [B] Adept's Elixir
+	[28490] = { },	-- [B] Major Strength
+	[28491] = { },	-- [B] Major Healing Power
+	[28492] = { },	-- [B] Major Strength
+	[28493] = { },	-- [B] Major Frost Power
+	[28497] = { },	-- [B] Major Agility
+	[28501] = { },	-- [B] Major Firepower
+	[28503] = { },	-- [B] Major Shadow Power
+	[28514] = { },	-- [G] Empowerment
+	[39625] = { },	-- [G] Elixir of Major Fortitude
+	[39626] = { },	-- [G] Earthen Elixir
+	[39627] = { },	-- [G] Elixir of Draenic Wisdom
+	[39628] = { },	-- [G] Elixir of Ironskin
+	[28502] = { },	-- [G] Major Armor
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
-	[17187] = { altName = L["Transmute"], },	-- 연금 변환(아케이나이트)
-	[18560] = { },	-- 달빛 옷감 96
-	[19566] = { },	-- 소금 정제기 72
+	[29688] = { altName = L["Transmute"], },	-- Transmute: Primal Might
+	[26751] = { },	-- Primal Mooncloth
+	[31373] = { },	-- SpellCloth
+	[36686] = { },	-- Shadowcloth
 }
 local pt = {
 	["%n"] = "coloredName",	["%N"] = "name",
@@ -79,7 +101,6 @@ local dbDefault = {
 		}
 	}
 }
-
 
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
