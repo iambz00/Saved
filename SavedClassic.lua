@@ -93,6 +93,8 @@ local dbDefault = {
 			minimapIcon = { hide = false },
 			tradeSkills = {},
 
+			expCurrent = -1, expMax = -1, expPercent = -1, ExpRest = -1,
+
 			honorPoint = -1, justice = -1,
 			dqComplete = -1, dqMax = -1, dqReset = -1,
 
@@ -106,15 +108,9 @@ function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 	self.db.global.version = self.db.global.version or self.version
 
-	-- Clean classic debris - world buffs, instances
-	if self.db.global.version ~= "1.3" then
-		for ch, db in pairs(self.db.realm) do
-			if db.worldBuffs then
-				db.worldBuffs = nil
-			end
-			db.instances = nil
-
-		end
+	-- Clean old data
+	if self.db.global.version < "2.0" then
+		self.db.realm = { }
 	end
 	self.db.global.version = self.version
 
@@ -208,6 +204,7 @@ function SavedClassic:InitPlayerDB()
 
 	-- Show level and exp for characters under 70
 	if UnitLevel("player") < GetMaxPlayerLevel() then
+		playerdb.info2 = true
 		playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
 		playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"	-- for exp
 	end
@@ -282,11 +279,11 @@ function SavedClassic:SaveInfo()
 		end
 	end
 
-	table.sort(raids, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end end)
-	table.sort(heroics, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end end)
+	table.sort(raids, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end)
+	table.sort(heroics, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end)
 
 	db.raids = raids
-	db.heoics = heroics
+	db.heroics = heroics
 
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
@@ -307,9 +304,12 @@ function SavedClassic:FOR_CURRENCY_UPDATE(...)
 	local db = self.db.realm[player]
 	-- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
 	-- For honor point
-	local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
+--	local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
 	
-	local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
+--	local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
+	db.honorPoint = 0
+	db.justice = 0
+
 end
 
 function SavedClassic:QUEST_TURNED_IN()
@@ -325,6 +325,7 @@ function SavedClassic:PLAYER_XP_UPDATE()
 	db.level = UnitLevel("player")
 	db.expCurrent = UnitXP("player")
 	db.expMax = UnitXPMax("player")
+	if db.expMax == 0 then db.expMax = 1 end
 	db.expPercent = floor(db.expCurrent / db.expMax * 100)
 	db.expRest = GetXPExhaustion() or 0
 
@@ -409,7 +410,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 
 	local db = self.db.realm[character]
 	local currentTime = time()
-	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
+	local restXP = floor(min(db.expRest + (currentTime - (db.lastUpdate or 0)) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
 	local restPercent = floor(restXP / db.expMax * 100)
 	local elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
 	local tsstr, drugstr = "", ""
@@ -492,7 +493,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 end
 
 function SavedClassic:InitUI()
-	local db = self.db.realm[player]
+--[[	local db = self.db.realm[player]
 	local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent)
 	self.ui = ui
 	ui:EnableMouse(true)
@@ -551,7 +552,7 @@ function SavedClassic:InitUI()
 		self.ui:Show()
 	else
 		self.ui:Hide()
-	end
+	end]]
 end
 
 function SavedClassic:InitDBIcon()
