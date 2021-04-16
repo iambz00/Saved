@@ -77,7 +77,7 @@ local pt = {
 
 	["%h"] = "honorPoint",
 --	["%H"] = "honorMax",
-	["%j"] = "justice",	-- Badge of justice
+	["%j"] = "justice",	["%J"] = "|T"..GetItemIcon(29434)..":14:14|t",
 
 	["%dc"] = dqComplete,	["%dm"] = dqMax,	["%dr"] = dqReset,
 }
@@ -139,15 +139,12 @@ function SavedClassic:OnInitialize()
 	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
 
 	self:RegisterEvent("QUEST_TURNED_IN")
-
+	self:RegisterEvent("BAG_UPDATE")	-- badges, shards
 --[[
 	HONOR_CURRENCY_UPDATE
 	TRADE_CURRENCY_CHANGED
 	PLAYER_TRADE_CURRENCY
 ]]
-	if class == "WARLOCK" then
-		self:RegisterEvent("BAG_UPDATE", "SaveSoulShards")
-	end
 
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
@@ -300,18 +297,6 @@ function SavedClassic:PLAYER_MONEY()
 	db.copper = floor(money % 100)
 end
 
-function SavedClassic:FOR_CURRENCY_UPDATE(...)
-	local db = self.db.realm[player]
-	-- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
-	-- For honor point
---	local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
-	
---	local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
-	db.honorPoint = 0
-	db.justice = 0
-
-end
-
 function SavedClassic:QUEST_TURNED_IN()
 	local db = self.db.realm[player]
 	
@@ -380,8 +365,17 @@ function SavedClassic:SaveTSCooldowns()
 	end
 end
 
-function SavedClassic:SaveSoulShards()
-	self.db.realm[player].soulshards = GetItemCount(6265) or 0
+function SavedClassic:FOR_CURRENCY_UPDATE(...)
+	-- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
+	-- For honor point
+--	local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
+--	local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
+end
+
+function SavedClassic:BAG_UPDATE()
+	local db = self.db.realm[player]
+	db.soulshards = GetItemCount(6265) or 0
+	db.justice = GetItemCount(29434) or 0
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)

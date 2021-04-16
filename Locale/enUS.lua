@@ -3,7 +3,6 @@ local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "enUS", true)
 local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
 local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
-local SOUL_SHARD_ICON = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t"
 
 if L then
 L["Transmute"] = true
@@ -41,8 +40,9 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."|cffccaa00%Z|r Currnet Zone   |cffccaa00%z|r Subzone치|n"
 	.."|cffccaa00%r|r New line|n"
 	.."|cffccaa00%L|r Elapsed time after last update|n"
-	.."|cffccaa00%B|r World buffs and Elixir status|n"
-	.."|cffccaa00%w|r Soul shard count   |cffccaa00%W|r"..SOUL_SHARD_ICON.."|n"
+	.."|cffccaa00%B|r Flasks and elixirs|n"
+	.."|cffccaa00%j|r Badge of Justice   |cffccaa00%J|r".."|T"..GetItemIcon(29434)..":14:14|t".."|n"
+	.."|cffccaa00%w|r Soul shard count   |cffccaa00%W|r".."|T"..GetItemIcon(6265)..":14:14|t".."|n"
 	.."|cffccaa00%T|r Tradeskill cooldowns|n"
 	.."|cffccaa00%F######|r Color starts(RGB code)|n|cffccaa00%f|r Color ends|n"
 	.."|cffccaa00(ex) %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
