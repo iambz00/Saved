@@ -13,37 +13,52 @@ local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
 local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
-
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
+SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
+	[17626] = { inv = 13510, },	-- Flask of Titan
+	[17627] = { inv = 13511, },	-- Flask of Distilled Wisdom
+	[17628] = { inv = 13512, },	-- Flask of Supreme Power
+	[17629] = { inv = 13513, }, -- Flask of Chromatic Resistance
+	[28518] = { inv = 22851, },	-- Flask of Fortification - Health/Defense
+	[28519] = { inv = 22853, },	-- Flask of Mighty Restoration - Mana Regen
+	[28520] = { inv = 22854, },	-- Flask of Relentless Assault - AP
+	[28521] = { inv = 22861, },	-- Flask of Blinding Light - Arcane/Holy/Nature
+	[28540] = { inv = 22866, },	-- Flask of Pure Death - Shadow/Fire/Frost
+	[42735] = { inv = 33208, }, -- Flask of Chromatic Resistance
+	[46839] = { inv = 35717, }, -- Shattrath Flask of Blinding Light
+	[41608] = { inv = 32901, }, -- Shattrath Flask of Relentless Assault
+	[41609] = { inv = 32898, }, -- Shattrath Flask of Fortification
+	[41610] = { inv = 32899, }, -- Shattrath Flask of Mighty Restoration
+	[41611] = { inv = 32900, }, -- Shattrath Flask of Supreme Power
+	[46837] = { inv = 35716, }, -- Shattrath Flask of Pure Death
+	[11406] = { inv =  9224, }, -- [B] Elixir of Demonslaying
+	[17537] = { inv = 13453, }, -- [B] Elixir of Brute Force
+	[33720] = { inv = 28102, }, -- [B] Onslaught Elixir
+	[33721] = { inv = 28103, }, -- [B] Adept's Elixir
+	[28490] = { inv = 22824, }, -- [B] Elixir of Major Strength
+	[28491] = { inv = 22825, }, -- [B] Elixir of Major Healing Power
+	[28493] = { inv = 22827, }, -- [B] Elixir of Major Frost Power
+	[28497] = { inv = 22831, }, -- [B] Elixir of Major Agility
+	[28501] = { inv = 22833, }, -- [B] Elixir of Major Firepower
+	[28503] = { inv = 22835, }, -- [B] Elixir of Major Shadow Power
+	[28104] = { inv = 33726, }, -- [B] Elixir of Mastery / All stats
+	[28502] = { inv = 22834, }, -- [G] Major Armor
+	[28509] = { inv = 22840, }, -- [G] Elixir of Major Mageblood / Greater Mana Regeneration
+	[28514] = { inv = 22848, }, -- [G] Elixir of Empowerment / Target resist -30
+	[39625] = { inv = 32062, }, -- [G] Elixir of Major Fortitude
+	[39626] = { inv = 32063, }, -- [G] Earthen Elixir
+	[39627] = { inv = 32067, }, -- [G] Elixir of Draenic Wisdom
+	[39628] = { inv = 32068, }, -- [G] Elixir of Ironskin / Resilence
+	[38954] = { inv = 31679, }, -- [B] Fel Strength Elixir / AP
+	[45373] = { inv = 34537, }, -- [B] Bloodberry Elixir / All stats @ Sunwell
+	[28489] = { inv = 22823, }, -- Elixir of Camouflage / Cannot be tracked
+	[28496] = { inv = 22830, }, -- Elixir of the Searching Eye / Stealth detection
 
-SavedClassic.drugs = {	-- World buffs and Flasks
-	[17626] = { },	-- Flask of Titan 티탄
-	[17627] = { },	-- Flask of Distilled Wisdom 순지
-	[17628] = { },	-- Flask of Supreme Power 강마
-	[28518] = { },	-- Flask of Fortification  Health/Defense
-	[28519] = { },	-- Flask of Mighty Restoration  Mana Regen
-	[28520] = { },	-- Flask of Relentless Assault  AP
-	[28521] = { },	-- Flask of Blinding Light  Arcane/Holy/Nature
-	[28540] = { },	-- Flask of Pure Death  Shadow/Fire/Frost
-	[17537] = { },	-- [B] Elixir of Brute Force
-	[11406] = { },	-- [B] Elixir of Demonslaying
-	[33721] = { },	-- [B] Adept's Elixir
-	[28490] = { },	-- [B] Major Strength
-	[28491] = { },	-- [B] Major Healing Power
-	[28492] = { },	-- [B] Major Strength
-	[28493] = { },	-- [B] Major Frost Power
-	[28497] = { },	-- [B] Major Agility
-	[28501] = { },	-- [B] Major Firepower
-	[28503] = { },	-- [B] Major Shadow Power
-	[28514] = { },	-- [G] Empowerment
-	[39625] = { },	-- [G] Elixir of Major Fortitude
-	[39626] = { },	-- [G] Earthen Elixir
-	[39627] = { },	-- [G] Elixir of Draenic Wisdom
-	[39628] = { },	-- [G] Elixir of Ironskin
-	[28502] = { },	-- [G] Major Armor
+	[17538] = { inv = 13452, }, -- [B] Elixir of the Mongoose
+	[11405] = { inv =  9206, }, -- [B] Elixir of Giants
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[29688] = { altName = L["Transmute"], },	-- Transmute: Primal Might
@@ -95,7 +110,8 @@ local dbDefault = {
 
 			expCurrent = -1, expMax = -1, expPercent = -1, ExpRest = -1,
 
-			honorPoint = -1, justice = -1,
+			justice = -1,
+			honorPoint = -1, arenaPoint = -1,
 			dqComplete = -1, dqMax = -1, dqReset = -1,
 
 			soulshards = -1,
@@ -309,8 +325,9 @@ function SavedClassic:PLAYER_XP_UPDATE()
 	local db = self.db.realm[player]
 	db.level = UnitLevel("player")
 	db.expCurrent = UnitXP("player")
-	db.expMax = UnitXPMax("player")
-	if db.expMax == 0 then db.expMax = 1 end
+	local expMax = UnitXPMax("player")
+	if expMax == 0 then expMax = db.expMax or 1 end
+	db.expMax = expMax
 	db.expPercent = floor(db.expCurrent / db.expMax * 100)
 	db.expRest = GetXPExhaustion() or 0
 
@@ -330,10 +347,14 @@ end
 function SavedClassic:SaveDrugs()
 	local db = self.db.realm[player]
 	db.drugs = {}
-	for i=1,32 do
+	for i=1,40 do
 		local name,icon,_,_,_,expire,_,_,_,id = UnitBuff("player", i)
-		if id and self.drugs[id] then
-			table.insert(db.drugs, { id = id, remain = floor((expire-GetTime())/60) })
+		if id then
+			if self.drugs[id] then
+				table.insert(db.drugs, { id = id, remain = floor((expire-GetTime())/60) })
+			end
+		else
+			break
 		end
 	end
 	table.sort(db.drugs,
@@ -411,7 +432,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	if db.drugs then
 		for _, d in ipairs(db.drugs) do
 			if d.id and d.remain then
-				local icon = GetSpellTexture(d.id) or ""
+				local icon = GetItemIcon(self.drugs[d.id].inv) or ""
 				drugstr = drugstr .. "|T".. icon ..":14:14|t".. d.remain ..L["minites"].." "
 			end
 		end
