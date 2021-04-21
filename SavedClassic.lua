@@ -125,7 +125,7 @@ function SavedClassic:OnInitialize()
 	self.db.global.version = self.db.global.version or self.version
 
 	-- Clean old data
-	if self.db.global.version < "2.0" then
+	if self.db.global.version < self.version then
 		self.db.realm = { }
 	end
 	self.db.global.version = self.version
@@ -301,6 +301,7 @@ function SavedClassic:SaveInfo()
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
 	self:SaveZone()	
+	self:SaveDrugs()
 	self:SaveTSCooldowns()
 end
 
@@ -422,6 +423,7 @@ end
 
 function SavedClassic:ShowInstanceInfo(tooltip, character)
 	self:SaveZone()
+	self:SaveDrugs()
 
 	local db = self.db.realm[character]
 	local currentTime = time()
