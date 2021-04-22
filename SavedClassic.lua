@@ -310,6 +310,7 @@ end
 function SavedClassic:SaveWorldBuff()
 	local db = self.db.realm[player]
 	db.worldBuffs = {}
+	db.chrono = {}
 	for i=1,32 do
 		local name,icon,_,_,_,expire,_,_,_,id = UnitBuff("player", i)
 		if id and self.wb[id] then
@@ -330,7 +331,6 @@ end
 
 function SavedClassic:SaveChoronoBuff(numBuff)
 	local db = self.db.realm[player]
-	db.chrono = {}
 	local displacer = { UnitBuff("player", numBuff) }
 	for i=1,8 do
 		table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[i+15]/60) })
