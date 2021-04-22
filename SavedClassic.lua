@@ -1,4 +1,4 @@
-﻿local addonName, addon = ...
+local addonName, addon = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
@@ -32,7 +32,9 @@ SavedClassic.wb = {	-- World buffs and Flasks
 	[17627] = { },	-- Distilled Wisdom 순지
 	[17628] = { },	-- Supreme Power 강마
 }
-
+SavedClassic.cd = {	-- for Chronoboon Displacer
+	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768
+}
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[17187] = { altName = L["Transmute"], },	-- 연금 변환(아케이나이트)
 	[18560] = { },	-- 달빛 옷감 96
@@ -75,6 +77,7 @@ local dbDefault = {
 			default = true,
 			minimapIcon = { hide = false },
 			worldBuffs = {},
+			chrono = {},
 			tradeSkills = {},
 			soulshards = -1,
 			lastUpdate = -1,
@@ -312,8 +315,27 @@ function SavedClassic:SaveWorldBuff()
 		if id and self.wb[id] then
 			table.insert(db.worldBuffs, { id = id, remain = floor((expire-GetTime())/60) })
 		end
+		if id == 349981 then
+			self:SaveChoronoBuff(i)
+		end
 	end
 	table.sort(db.worldBuffs,
+		function(a,b)
+			ar = a.remain or 0
+			br = b.remain or 0
+			return ar > br
+		end
+	)
+end
+
+function SavedClassic:SaveChoronoBuff(numBuff)
+	local db = self.db.realm[player]
+	db.chrono = {}
+	local displacer = { UnitBuff("player", numBuff) }
+	for i=1,8 do
+		table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[i+15]/60) })
+	end
+	table.sort(db.chrono,
 		function(a,b)
 			ar = a.remain or 0
 			br = b.remain or 0
@@ -383,6 +405,18 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 				local icon = GetSpellTexture(b.id) or ""
 				wbstr = wbstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
 			end
+		end
+	end
+	if db.chrono then
+		local cdstr = ""
+		for _,b in ipairs(db.chrono) do
+			if b.id and b.remain and b.remain > 0 then
+				local icon = GetSpellTexture(b.id) or ""
+				cdstr = cdstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
+			end
+		end
+		if cdstr ~= "" then
+			wbstr = wbstr.."|T133881:14:14|t("..cdstr..")"
 		end
 	end
 	if db.tradeSkills then
