@@ -20,20 +20,25 @@ local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 SavedClassic.wb = {	-- World buffs and Flasks
 	[23768] = { },	-- DF damage 세이지 공격력
 	[23766] = { },	-- DF int 세이지 지능
-	[22888] = { },	-- Ony, Nef 용사냥꾼 재집결의 외침
-	[24425] = { },	-- Zul'gurub 잔달라의 기백
 	[22817] = { },	-- DM1 펜구스의 흉포
 	[22818] = { },	-- DM2 몰다르의 투지
 	[22820] = { },	-- DM3 슬립킥의 손재주
-	[24382] = { },	-- Zanza 잔자의 기백
 	[15366] = { },	-- SF 노래꽃의 세레나데
-	[16609] = { },	-- BoW 대족장의 축복
+	[22888] = { }, [355363] = { },	-- Ony, Nef 용사냥꾼 재집결의 외침
+	[24425] = { }, [355365] = { },	-- Zul'gurub 잔달라의 기백
+	[16609] = { }, [355366] = { },	-- BoW 대족장의 축복
+	[24382] = { }, 	-- Zanza 잔자의 기백
 	[17626] = { },	-- Titan 티탄
 	[17627] = { },	-- Distilled Wisdom 순지
 	[17628] = { },	-- Supreme Power 강마
 }
 SavedClassic.cd = {	-- for Chronoboon Displacer
-	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768
+	22817, 22818, 22820,
+	22888, 355363, 
+	16609, 355366,
+	24425, 355365,
+	15366,
+	23768,
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[17187] = { altName = L["Transmute"], },	-- 연금 변환(아케이나이트)
