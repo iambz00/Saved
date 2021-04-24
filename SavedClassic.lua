@@ -33,12 +33,7 @@ SavedClassic.wb = {	-- World buffs and Flasks
 	[17628] = { },	-- Supreme Power 강마
 }
 SavedClassic.cd = {	-- for Chronoboon Displacer
-	22817, 22818, 22820,
-	22888, 355363, 
-	16609, 355366,
-	24425, 355365,
-	15366,
-	23768,
+	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768,
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[17187] = { altName = L["Transmute"], },	-- 연금 변환(아케이나이트)
