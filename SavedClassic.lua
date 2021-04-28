@@ -2,7 +2,8 @@ local addonName, addon = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
-SavedClassic.version = GetAddOnMetadata(addonName, "Version")
+--SavedClassic.version = GetAddOnMetadata(addonName, "Version")
+SavedClassic.version = "1.3"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -11,7 +12,6 @@ local MSG_SUFFIX = " |cff00ff00■|r"
 local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
 local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
-
 
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
@@ -40,6 +40,10 @@ SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[18560] = { },	-- 달빛 옷감 96
 	[19566] = { },	-- 소금 정제기 72
 }
+SavedClassic.items = {	-- Items to count always
+	[6265] = { },	-- Soulshard
+	[184937] = { },	-- Chronoboon Displacer
+}
 local pt = {
 	["%n"] = "coloredName",	["%N"] = "name",
 	["%Z"] = "zone" ,	["%z"] = "subzone" ,
@@ -48,11 +52,15 @@ local pt = {
 	["%s"] = "silver" ,	["%S"] = SILVER_ICON ,
 	["%c"] = "copper" ,	["%C"] = COPPER_ICON ,
 
-	["%w"] = "soulshards",	["%W"] = "|T"..GetItemIcon(6265)..":14:14|t",
+	["%B"] = "wbstr",	["%T"] = "tsstr",
+	["%L"] = "elapsedTime",
+
+--	["%w"] = "soulshards",
+	["%W"] = "|T"..GetItemIcon(6265)..":14:14|t",
 
 	["%l"] = "level",
 	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
---	["%R"] = "expRest",	["%P"] = "expRestPercent",
+	["%R"] = "restXP",	["%P"] = "restPercent",
 
 	["%F"] = "|cff" ,	["%f"] = "|r" ,	["%r"] = "|n" ,
 	["%%"] = "%" ,
@@ -76,26 +84,29 @@ local dbDefault = {
 
 			default = true,
 			minimapIcon = { hide = false },
-			worldBuffs = {},
-			chrono = {},
-			tradeSkills = {},
-			soulshards = -1,
+			worldBuffs = { },
+			chrono = { },
+			tradeSkills = { },
+			itemCount = { },
 			lastUpdate = -1,
 		}
 	}
 }
 
-
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
-	self.db.global.version = self.db.global.version or self.version
+	self.db.global.version = self.db.global.version or ""
 
-	if self.db.global.version < "1.21" then
-		-- rebuild world buff table after 1.21
-		for ch, db in pairs(self.db.realm) do
+	for ch, db in pairs(self.db.realm) do
+		-- Clear old world buff table before 1.21
+		if db.worldBuffs and db.worldBuffs[1] and type(db.worldBuffs[1]) ~= "table" then
 			db.worldBuffs = {}
 		end
+		-- Convert old soulshard count to new after 1.3
+		db.itemCount = db.itemCount or { }
+		db.itemCount[6265] = db.soulshards or 0
 	end
+
 	self.db.global.version = self.version
 
 	if self.db.realm[player].default then self:InitPlayerDB() end
@@ -112,19 +123,17 @@ function SavedClassic:OnInitialize()
 	self:RegisterEvent("PLAYER_MONEY")
 	self:RegisterEvent("PLAYER_XP_UPDATE")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD", "SaveZone")
-
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "SaveInfo")
+
 	self:RegisterEvent("ZONE_CHANGED", "SaveInfo")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "SaveInfo")
+	self:RegisterEvent("PLAYER_UPDATE_RESTING")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "RequestRaidInfo")
-	-- API RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
-	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")
+	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")	-- API RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
 
 	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
 
-	if class == "WARLOCK" then
-		self:RegisterEvent("BAG_UPDATE", "SaveSoulShards")
-	end
+	self:RegisterEvent("BAG_UPDATE_DELAYED")
 
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
@@ -151,8 +160,8 @@ function SavedClassic:SetOrder()
 	end
 	table.sort(self.order,
 		function(a,b)
-			al = a.level or 0
-			bl = b.level or 0
+			local al = a.level or 0
+			local bl = b.level or 0
 			if al == bl then
 				return a.name < b.name
 			else
@@ -185,7 +194,7 @@ function SavedClassic:InitPlayerDB()
 	else
 		playerdb.info2 = true
 		if class == "WARLOCK" then
-			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %W%Fcc66cc%w %Fffffff(%Z: %z)%f"
+			playerdb.info1_1 = "%r%F00ff00■%f [%n] %W%Fcc66cc%w %Fffffff(%Z: %z)%f"
 		else
 			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
 		end
@@ -297,6 +306,25 @@ function SavedClassic:PLAYER_XP_UPDATE()
 	self:SetOrder()
 end
 
+function SavedClassic:PLAYER_UPDATE_RESTING(...)
+	if IsResting() then
+		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	else
+		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	end
+end
+
+function SavedClassic:COMBAT_LOG_EVENT_UNFILTERED(...)
+	local playerGUID = UnitGUID("player")
+	local _, combatEvent, _, sourceGUID, _, _, _, destGUID, _, _, _, 
+		spellId = CombatLogGetCurrentEventInfo()
+	if combatEvent == "SPELL_AURA_APPLIED" and destGUID == playerGUID then
+		if self.wb[spellId] then
+			self:SaveWorldBuff()
+		end
+	end
+end
+
 function SavedClassic:SaveZone()
 	local db = self.db.realm[player]
 	local zone = GetZoneText()
@@ -320,28 +348,16 @@ function SavedClassic:SaveWorldBuff()
 			self:SaveChoronoBuff(i)
 		end
 	end
-	table.sort(db.worldBuffs,
-		function(a,b)
-			ar = a.remain or 0
-			br = b.remain or 0
-			return ar > br
-		end
-	)
+	table.sort(db.worldBuffs, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
 end
 
 function SavedClassic:SaveChoronoBuff(numBuff)
 	local db = self.db.realm[player]
 	local displacer = { UnitBuff("player", numBuff) }
-	for i=1,8 do
+	for i=1,#self.cd do
 		table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[i+15]/60) })
 	end
-	table.sort(db.chrono,
-		function(a,b)
-			ar = a.remain or 0
-			br = b.remain or 0
-			return ar > br
-		end
-	)
+	table.sort(db.chrono, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
 end
 
 function SavedClassic:SaveTSCooldowns()
@@ -364,8 +380,11 @@ function SavedClassic:SaveTSCooldowns()
 	end
 end
 
-function SavedClassic:SaveSoulShards()
-	self.db.realm[player].soulshards = GetItemCount(6265) or 0
+function SavedClassic:BAG_UPDATE_DELAYED()
+	local db = self.db.realm[player]
+	for id, _ in pairs(self.items) do
+		db.itemCount[id] = GetItemCount(id) or 0
+	end
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
@@ -395,9 +414,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 
 	local db = self.db.realm[character]
 	local currentTime = time()
-	local restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
-	local restPercent = floor(restXP / db.expMax * 100)
-	local elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
+
 	local wbstr,tsstr = "",""
 	if db.worldBuffs then
 		for _,b in ipairs(db.worldBuffs) do
@@ -407,16 +424,18 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 			end
 		end
 	end
+	wbstr = wbstr.."|T133881:14:14|t"..(db.itemCount[184937] or 0)
 	if db.chrono then
 		local cdstr = ""
-		for _,b in ipairs(db.chrono) do
+		for i,b in ipairs(db.chrono) do
 			if b.id and b.remain and b.remain > 0 then
 				local icon = GetSpellTexture(b.id) or ""
 				cdstr = cdstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
 			end
 		end
 		if cdstr ~= "" then
-			wbstr = wbstr.."|T133881:14:14|t("..cdstr..")"
+			cdstr = string.sub(cdstr,1,-2)	-- trim trailing space
+			wbstr = wbstr.."("..cdstr..")"
 		end
 	end
 	if db.tradeSkills then
@@ -431,33 +450,26 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		end
 	end
 
+	db.wbstr = wbstr
+	db.tsstr = tsstr
+	db.elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
+	db.restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
+	db.restPercent = floor(db.restXP / db.expMax * 100)
+
 	if db["info1"] then
-		local line1_1 = string.gsub(db["info1_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
-		line1_1 = string.gsub(line1_1, "(%%L)", function(s) return elapsedTime end)
-		line1_1 = string.gsub(line1_1, "(%%B)", function(s) return wbstr end)
-		line1_1 = string.gsub(line1_1, "(%%T)", function(s) return tsstr end)
+		local line1_1 = string.gsub(db["info1_1"], "(%%w)", db.itemCount[6265] or 0)
 		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
-		local line1_2 = string.gsub(db["info1_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
-		line1_2 = string.gsub(line1_2, "(%%L)", function(s) return elapsedTime end)
-		line1_2 = string.gsub(line1_2, "(%%B)", function(s) return wbstr end)
-		line1_2 = string.gsub(line1_2, "(%%T)", function(s) return tsstr end)
+		local line1_2 = string.gsub(db["info1_2"], "(%%w)", db.itemCount[6265] or 0)
 		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
 	if db["info2"] then
-		local line2_1 = string.gsub(db["info2_1"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
-		line2_1 = string.gsub(line2_1, "(%%L)", function(s) return elapsedTime end)
-		line2_1 = string.gsub(line2_1, "(%%B)", function(s) return wbstr end)
-		line2_1 = string.gsub(line2_1, "(%%T)", function(s) return tsstr end)
+		local line2_1 = string.gsub(db["info2_1"], "(%%w)", db.itemCount[6265] or 0)
 		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
-		local line2_2 = string.gsub(db["info2_2"], "(%%[RP])", function(s) if s == "%R" then return restXP else return restPercent end end)
-		line2_2 = string.gsub(line2_2, "(%%L)", function(s) return elapsedTime end)
-		line2_2 = string.gsub(line2_2, "(%%B)", function(s) return wbstr end)
-		line2_2 = string.gsub(line2_2, "(%%T)", function(s) return tsstr end)
+		local line2_2 = string.gsub(db["info2_2"], "(%%w)", db.itemCount[6265] or 0)
 		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
-
 
 	if not db.instances then return end
 	local nMax = table.getn(db.instances)
