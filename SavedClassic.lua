@@ -55,9 +55,6 @@ local pt = {
 	["%B"] = "wbstr",	["%T"] = "tsstr",
 	["%L"] = "elapsedTime",
 
---	["%w"] = "soulshards",
-	["%W"] = "|T"..GetItemIcon(6265)..":14:14|t",
-
 	["%l"] = "level",
 	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
 	["%R"] = "restXP",	["%P"] = "restPercent",
@@ -71,7 +68,6 @@ local pt = {
 	["!!"] = "!" ,
 
 --	["!t"] = "" ,
-
 }
 
 local dbDefault = {
@@ -102,9 +98,14 @@ function SavedClassic:OnInitialize()
 		if db.worldBuffs and db.worldBuffs[1] and type(db.worldBuffs[1]) ~= "table" then
 			db.worldBuffs = {}
 		end
-		-- Convert old soulshard count to new after 1.3
+		-- Convert old soulshard count to new one
 		db.itemCount = db.itemCount or { }
-		db.itemCount[6265] = db.soulshards or 0
+		db.itemCount[6265] = db.itemCount[6265] or db.soulshards or 0
+		db.soulshards = nil
+		db.info1_1 = string.gsub(string.gsub(db.info1_1, "%%W%%w", "%%I{6265}"), "%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{6265}" end)
+		db.info1_2 = string.gsub(string.gsub(db.info1_2, "%%W%%w", "%%I{6265}"), "%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{6265}" end)
+		db.info2_1 = string.gsub(string.gsub(db.info2_1, "%%W%%w", "%%I{6265}"), "%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{6265}" end)
+		db.info2_2 = string.gsub(string.gsub(db.info2_2, "%%W%%w", "%%I{6265}"), "%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{6265}" end)
 	end
 
 	self.db.global.version = self.version
@@ -142,6 +143,9 @@ function SavedClassic:OnInitialize()
 		end
 	end
 
+	self:PLAYER_UPDATE_RESTING()
+	self:ClearItemCount()
+	self:BAG_UPDATE_DELAYED()
 end
 
 function SavedClassic:OnEnable()
@@ -186,7 +190,7 @@ function SavedClassic:InitPlayerDB()
 	if UnitLevel("player") < GetMaxPlayerLevel() then
 		playerdb.info2 = true
 		if class == "WARLOCK" then
-			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %W%Fcc66cc%w %Fffffff(%Z: %z)%f"
+			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fcc66cc%I[6265]%f %Fffffff(%Z: %z)%f"
 		else
 			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
 		end
@@ -194,7 +198,7 @@ function SavedClassic:InitPlayerDB()
 	else
 		playerdb.info2 = true
 		if class == "WARLOCK" then
-			playerdb.info1_1 = "%r%F00ff00■%f [%n] %W%Fcc66cc%w %Fffffff(%Z: %z)%f"
+			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fcc66cc%I{6265}%f %Fffffff(%Z: %z)%f"
 		else
 			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
 		end
@@ -380,11 +384,26 @@ function SavedClassic:SaveTSCooldowns()
 	end
 end
 
+function SavedClassic:ClearItemCount()
+	self.db.realm[player].itemCount = { }
+end
+
 function SavedClassic:BAG_UPDATE_DELAYED()
 	local db = self.db.realm[player]
-	for id, _ in pairs(self.items) do
-		db.itemCount[id] = GetItemCount(id) or 0
+	local infoStr = db.info1_1..db.info1_2..db.info2_1..db.info2_2
+	local itemList = string.gmatch(infoStr, "%%[Iia]%{[^}]+%}")
+
+	for itemLink in itemList do
+		local itemID = self:StripLink(itemLink)
+		db.itemCount[tonumber(itemID)] = GetItemCount(itemID) or 0
 	end
+	for id, _ in pairs(self.items) do
+		db.itemCount[tonumber(id)] = GetItemCount(id) or 0
+	end
+end
+
+function SavedClassic:StripLink(link)
+	return string.match(link, "(%d+):") or string.match(link, "(%d+)")
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
@@ -411,6 +430,7 @@ end
 function SavedClassic:ShowInstanceInfo(tooltip, character)
 	self:SaveZone()
 	self:SaveWorldBuff()
+	self:BAG_UPDATE_DELAYED()
 
 	local db = self.db.realm[character]
 	local currentTime = time()
@@ -456,17 +476,25 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	db.restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
 	db.restPercent = floor(db.restXP / db.expMax * 100)
 
-	if db["info1"] then
-		local line1_1 = string.gsub(db["info1_1"], "(%%w)", db.itemCount[6265] or 0)
+	local function getItemStr(opt, link)
+		local itemID = self:StripLink(link)
+		local t = { }
+		t.i = "|T"..GetItemIcon(itemID)..":14:14|t"
+		t.a = db.itemCount[tonumber(itemID)] or 0
+		t.I = t.i..t.a
+		return t[opt]
+	end
+	if db.info1 then
+		local line1_1 = string.gsub(db.info1_1, "%%([Iia])%{([^}]+)%}", getItemStr)
 		line1_1 = string.gsub(line1_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
-		local line1_2 = string.gsub(db["info1_2"], "(%%w)", db.itemCount[6265] or 0)
+		local line1_2 = string.gsub(db.info1_2, "%%([Iia])%{([^}]+)%}", getItemStr)
 		line1_2 = string.gsub(line1_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		tooltip:AddDoubleLine(line1_1, line1_2)
 	end
-	if db["info2"] then
-		local line2_1 = string.gsub(db["info2_1"], "(%%w)", db.itemCount[6265] or 0)
+	if db.info2 then
+		local line2_1 = string.gsub(db.info2_1, "%%([Iia])%{([^}]+)%}", getItemStr)
 		line2_1 = string.gsub(line2_1, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
-		local line2_2 = string.gsub(db["info2_2"], "(%%w)", db.itemCount[6265] or 0)
+		local line2_2 = string.gsub(db.info2_2, "%%([Iia])%{([^}]+)%}", getItemStr)
 		line2_2 = string.gsub(line2_2, "(%%[%w%%])", function(s) if pt[s] then return db[pt[s]] or pt[s] else return s end end)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
@@ -477,10 +505,10 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		local instance = db.instances[i]
 		local remain = SecondsToTime(instance.reset - time())
 		if remain and ( remain ~= "" ) then
-			if db["info3"] then
-				local line3_1 = string.gsub(db["info3_1"], "(!t)", remain)
+			if db.info3 then
+				local line3_1 = string.gsub(db.info3_1, "(!t)", remain)
 				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or pt[s] else return s end end)
-				local line3_2 = string.gsub(db["info3_2"], "(!t)", remain)
+				local line3_2 = string.gsub(db.info3_2, "(!t)", remain)
 				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or pt[s] else return s end end)
 				tooltip:AddDoubleLine(line3_1, line3_2)
 			end
