@@ -102,10 +102,12 @@ function SavedClassic:OnInitialize()
 		db.itemCount = db.itemCount or { }
 		db.itemCount[6265] = db.itemCount[6265] or db.soulshards or 0
 		db.soulshards = nil
-		db.info1_1 = string.gsub(string.gsub(db.info1_1, "%%W%%w", "%%I{6265}"), "%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{6265}" end)
-		db.info1_2 = string.gsub(string.gsub(db.info1_2, "%%W%%w", "%%I{6265}"), "%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{6265}" end)
-		db.info2_1 = string.gsub(string.gsub(db.info2_1, "%%W%%w", "%%I{6265}"), "%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{6265}" end)
-		db.info2_2 = string.gsub(string.gsub(db.info2_2, "%%W%%w", "%%I{6265}"), "%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{6265}" end)
+		local oldDefault, newDefault = "%%W%%Fcc66cc%%w","%%Fcc66cc%%I{6265}%%f"
+		local ss = "6265"
+		db.info1_1 = db.info1_1:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end)
+		db.info1_2 = db.info1_2:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end)
+		db.info2_1 = db.info2_1:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end)
+		db.info2_2 = db.info2_2:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end)
 	end
 
 	self.db.global.version = self.version
