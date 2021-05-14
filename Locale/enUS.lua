@@ -42,10 +42,13 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."|cffccaa00%r|r New line|n"
 	.."|cffccaa00%L|r Elapsed time after last update|n"
 	.."|cffccaa00%B|r World buffs and Elixir status|n"
-	.."|cffccaa00%w|r Soul shard count   |cffccaa00%W|r"..SOUL_SHARD_ICON.."|n"
+	.."|cffccaa00%i{|cffffffffItemlink or ID|cffccaa00}|r Item icon|n"
+	.."|cffccaa00%n{|cffffffffItemlink or ID|cffccaa00}|r Item amount|n"
+	.."|cffccaa00%i{|cffffffffItemlink or ID|cffccaa00}|r Icon + Amount|n"
+	.."|cffccaa00e.g. %I{|cffffffff[Soul Shard]|r} or %I{6265} => "..SOUL_SHARD_ICON.."25|r|n"
 	.."|cffccaa00%T|r Tradeskill cooldowns|n"
 	.."|cffccaa00%F######|r Color starts(RGB code)|n|cffccaa00%f|r Color ends|n"
-	.."|cffccaa00(ex) %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
+	.."|cffccaa00e.g. %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
 L["Desc_Char2"] = true
 L["Tooltip - Instance info"] = true
 L["Lines of instance info"] = true
@@ -63,3 +66,4 @@ L["Dupe settings to"] = true
 L["Dupe"] = true
 L["Dupe settings will overwirte character/instance info settings."] = true
 end
+
