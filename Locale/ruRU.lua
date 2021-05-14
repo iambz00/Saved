@@ -42,8 +42,11 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Использование - Инф�
 	.."|cffccaa00%r|r Новая линия|n"
 	.."|cffccaa00%L|r Прошедшее время после последнего обновления|n"
 	.."|cffccaa00%B|r Мировые баффы и статус Эликсира|n"
-	.."|cffccaa00%w|r Количество осколков души   |cffccaa00%W|r"..SOUL_SHARD_ICON.."|n"
-	.."|cffccaa00%T|r Перезарядка навыков профессии|n"
+	.."|cffccaa00%i{|cffffffffItemlink or ID|cffccaa00}|r Item icon|n"
+	.."|cffccaa00%n{|cffffffffItemlink or ID|cffccaa00}|r Item amount|n"
+	.."|cffccaa00%i{|cffffffffItemlink or ID|cffccaa00}|r Icon + Amount|n"
+	.."|cffccaa00e.g. %I{|cffffffff[осколков души]|r} or %I{6265} => "..SOUL_SHARD_ICON.."25|r|n"
+		.."|cffccaa00%T|r Перезарядка навыков профессии|n"
 	.."|cffccaa00%F######|r Цвет начала(RGB кодировка)|n|cffccaa00%f|r Цвет окончания|n"
 	.."|cffccaa00(ex) %FffffffБелый%f =>|r |cffffffffБелый|r|n   |cffccaa00%Fff0000Красный%f => |r|cffff0000Красный|r"
 L["Desc_Char2"] = true
