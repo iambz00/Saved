@@ -104,10 +104,10 @@ function SavedClassic:OnInitialize()
 		db.soulshards = nil
 		local oldDefault, newDefault = "%%W%%Fcc66cc%%w","%%Fcc66cc%%I{6265}%%f"
 		local ss = "6265"
-		db.info1_1 = db.info1_1:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end)
-		db.info1_2 = db.info1_2:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end)
-		db.info2_1 = db.info2_1:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end)
-		db.info2_2 = db.info2_2:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end)
+		if db.info1_1 then db.info1_1 = db.info1_1:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end) end
+		if db.info1_2 then db.info1_2 = db.info1_2:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end) end
+		if db.info2_1 then db.info2_1 = db.info2_1:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end) end
+		if db.info2_2 then db.info2_2 = db.info2_2:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end) end
 	end
 
 	self.db.global.version = self.version
