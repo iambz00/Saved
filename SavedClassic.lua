@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "1.3"
+SavedClassic.version = "2.0b2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -17,7 +17,11 @@ local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
-SavedClassic.wb = {	-- World buffs and Flasks
+SavedClassic.cd = {	-- for Chronoboon Displacer
+	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768,
+}
+SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
+-- for pre-patch start
 	[23768] = { },	-- DF damage 세이지 공격력
 	[23766] = { },	-- DF int 세이지 지능
 	[22817] = { },	-- DM1 펜구스의 흉포
@@ -31,17 +35,59 @@ SavedClassic.wb = {	-- World buffs and Flasks
 	[17626] = { },	-- Titan 티탄
 	[17627] = { },	-- Distilled Wisdom 순지
 	[17628] = { },	-- Supreme Power 강마
-}
-SavedClassic.cd = {	-- for Chronoboon Displacer
-	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768,
+-- for pre-patch end
+
+	[17626] = { inv = 13510, },	-- Flask of Titan
+	[17627] = { inv = 13511, },	-- Flask of Distilled Wisdom
+	[17628] = { inv = 13512, },	-- Flask of Supreme Power
+	[17629] = { inv = 13513, }, -- Flask of Chromatic Resistance
+	[28518] = { inv = 22851, },	-- Flask of Fortification - Health/Defense
+	[28519] = { inv = 22853, },	-- Flask of Mighty Restoration - Mana Regen
+	[28520] = { inv = 22854, },	-- Flask of Relentless Assault - AP
+	[28521] = { inv = 22861, },	-- Flask of Blinding Light - Arcane/Holy/Nature
+	[28540] = { inv = 22866, },	-- Flask of Pure Death - Shadow/Fire/Frost
+	[42735] = { inv = 33208, }, -- Flask of Chromatic Resistance
+	[46839] = { inv = 35717, }, -- Shattrath Flask of Blinding Light
+	[41608] = { inv = 32901, }, -- Shattrath Flask of Relentless Assault
+	[41609] = { inv = 32898, }, -- Shattrath Flask of Fortification
+	[41610] = { inv = 32899, }, -- Shattrath Flask of Mighty Restoration
+	[41611] = { inv = 32900, }, -- Shattrath Flask of Supreme Power
+	[46837] = { inv = 35716, }, -- Shattrath Flask of Pure Death
+	[11406] = { inv =  9224, }, -- [B] Elixir of Demonslaying
+	[17537] = { inv = 13453, }, -- [B] Elixir of Brute Force
+	[33720] = { inv = 28102, }, -- [B] Onslaught Elixir
+	[33721] = { inv = 28103, }, -- [B] Adept's Elixir
+	[28490] = { inv = 22824, }, -- [B] Elixir of Major Strength
+	[28491] = { inv = 22825, }, -- [B] Elixir of Major Healing Power
+	[28493] = { inv = 22827, }, -- [B] Elixir of Major Frost Power
+	[28497] = { inv = 22831, }, -- [B] Elixir of Major Agility
+	[28501] = { inv = 22833, }, -- [B] Elixir of Major Firepower
+	[28503] = { inv = 22835, }, -- [B] Elixir of Major Shadow Power
+	[28104] = { inv = 33726, }, -- [B] Elixir of Mastery / All stats
+	[28502] = { inv = 22834, }, -- [G] Major Armor
+	[28509] = { inv = 22840, }, -- [G] Elixir of Major Mageblood / Greater Mana Regeneration
+	[28514] = { inv = 22848, }, -- [G] Elixir of Empowerment / Target resist -30
+	[39625] = { inv = 32062, }, -- [G] Elixir of Major Fortitude
+	[39626] = { inv = 32063, }, -- [G] Earthen Elixir
+	[39627] = { inv = 32067, }, -- [G] Elixir of Draenic Wisdom
+	[39628] = { inv = 32068, }, -- [G] Elixir of Ironskin / Resilence
+	[38954] = { inv = 31679, }, -- [B] Fel Strength Elixir / AP
+	[45373] = { inv = 34537, }, -- [B] Bloodberry Elixir / All stats @ Sunwell
+	[28489] = { inv = 22823, }, -- Elixir of Camouflage / Cannot be tracked
+	[28496] = { inv = 22830, }, -- Elixir of the Searching Eye / Stealth detection
+
+	[17538] = { inv = 13452, }, -- [B] Elixir of the Mongoose
+	[11405] = { inv =  9206, }, -- [B] Elixir of Giants
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
-	[17187] = { altName = L["Transmute"], },	-- 연금 변환(아케이나이트)
-	[18560] = { },	-- 달빛 옷감 96
-	[19566] = { },	-- 소금 정제기 72
+	[29688] = { altName = L["Transmute"], },	-- Transmute: Primal Might
+	[26751] = { },	-- Primal Mooncloth
+	[31373] = { },	-- SpellCloth
+	[36686] = { },	-- Shadowcloth
 }
 SavedClassic.items = {	-- Items to count always
 	[6265] = { },	-- Soulshard
+	[29434] = { },	-- Badge of Justice
 	[184937] = { },	-- Chronoboon Displacer
 }
 local pt = {
@@ -52,7 +98,7 @@ local pt = {
 	["%s"] = "silver" ,	["%S"] = SILVER_ICON ,
 	["%c"] = "copper" ,	["%C"] = COPPER_ICON ,
 
-	["%B"] = "wbstr",	["%T"] = "tsstr",
+	["%B"] = "drugstr",	["%T"] = "tsstr",
 	["%L"] = "elapsedTime",
 
 	["%l"] = "level",
@@ -64,26 +110,37 @@ local pt = {
 
 	["!n"] = "name" ,	["!d"] = "difficultyName" ,
 	["!i"] = "id" ,	["!p"] = "progress" ,	["!P"] = "numBoss" ,
-	["!e"] = "" ,	-- classic doesn't support extened
+--	["!e"] = "" ,	-- classic doesn't support extened
 	["!!"] = "!" ,
 
 --	["!t"] = "" ,
+
+--	["%h"] = "honorPoint",
+--	["%H"] = "honorMax",
+--	["%j"] = "justice",	["%J"] = "|T"..GetItemIcon(29434)..":14:14|t",
+
+	["%d"] = "dqComplete",	["%D"] = "dqMax",	["%Q"] = "dqReset",
 }
 
 local dbDefault = {
 	realm = {
 		[player] = {
-			frameX = 100,
-			frameY = 25,
+			frameX = 100,	frameY = 25,
 			showInfoPer = "realm",
 			hideLevelUnder = 1,
 
 			default = true,
 			minimapIcon = { hide = false },
-			worldBuffs = { },
+
 			chrono = { },
 			tradeSkills = { },
 			itemCount = { },
+
+			expCurrent = -1, expMax = -1, expPercent = -1, ExpRest = -1,
+
+			honorPoint = -1, arenaPoint = -1,
+			dqComplete = -1, dqMax = -1, dqReset = -1,
+
 			lastUpdate = -1,
 		}
 	}
@@ -95,9 +152,8 @@ function SavedClassic:OnInitialize()
 
 	for ch, db in pairs(self.db.realm) do
 		-- Clear old world buff table before 1.21
-		if db.worldBuffs and db.worldBuffs[1] and type(db.worldBuffs[1]) ~= "table" then
-			db.worldBuffs = {}
-		end
+		db.worldBuffs = nil
+		db.wbstr = nil
 		-- Convert old soulshard count to new one
 		db.itemCount = db.itemCount or { }
 		db.itemCount[6265] = db.itemCount[6265] or db.soulshards or 0
@@ -130,13 +186,20 @@ function SavedClassic:OnInitialize()
 
 	self:RegisterEvent("ZONE_CHANGED", "SaveInfo")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "SaveInfo")
-	self:RegisterEvent("PLAYER_UPDATE_RESTING")
+--	self:RegisterEvent("PLAYER_UPDATE_RESTING")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "RequestRaidInfo")
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")	-- API RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
 
 	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
 
+
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
+	self:RegisterEvent("QUEST_TURNED_IN")
+--[[
+	HONOR_CURRENCY_UPDATE
+	TRADE_CURRENCY_CHANGED
+	PLAYER_TRADE_CURRENCY
+]]
 
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
@@ -145,8 +208,9 @@ function SavedClassic:OnInitialize()
 		end
 	end
 
-	self:PLAYER_UPDATE_RESTING()
 	self:ClearItemCount()
+--	self:PLAYER_UPDATE_RESTING()
+	self:QUEST_TURNED_IN()
 	self:BAG_UPDATE_DELAYED()
 end
 
@@ -188,7 +252,13 @@ function SavedClassic:InitPlayerDB()
 	self:PLAYER_XP_UPDATE()
 
 	playerdb.info1 = true
-	-- Hide exp info on max level
+	playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
+	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
+	playerdb.info2 = false
+	playerdb.info2_1 = "   %Fcccccc%T%f"	-- Tradeskill cooldowns
+	playerdb.info2_2 = ""
+
+	-- Show level and exp for characters under 70
 	if UnitLevel("player") < GetMaxPlayerLevel() then
 		playerdb.info2 = true
 		if class == "WARLOCK" then
@@ -206,15 +276,20 @@ function SavedClassic:InitPlayerDB()
 		end
 		playerdb.info2_1 = "   %Fcccccc%B%f"	-- For World buffs and Flasks
 	end
-	playerdb.info3 = true
 
-	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
-	playerdb.info2_2 = ""
+	playerdb.info3 = true
 	playerdb.info3_1 = "   !n (!d) %Fccccaa!p/!P%f"
 	playerdb.info3_2 = "!t "
-	playerdb.instances = { }
+	playerdb.info4 = true
+	playerdb.info4_1 = "   %Fcffff99!n (!d)%f %Fccccaa!p/!P%f"
+	playerdb.info4_2 = "!t "
+
+	playerdb.raids = { }
+	playerdb.heroics = { }
+
 	playerdb.zone = ""
 	playerdb.subzone = ""
+
 	playerdb.lastUpdate = currentTime
 	playerdb.frameShow = true
 end
@@ -245,51 +320,44 @@ end
 
 function SavedClassic:SaveInfo()
 	local db = self.db.realm[player]
-
 	local classColor = RAID_CLASS_COLORS[class]
 	db.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
 
-	local instances = {}
-
+	local raids, heroics = { }, { }
 	local currentTime = time()
 
 	-- instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName
 	--		= GetSavedInstanceInfo(index)
-	local numSaved = GetNumSavedInstances()
-	local numLocked = 0
-	for i = 1, numSaved do
+	for i = 1, GetNumSavedInstances() do
 		local instance = { }
-		local isLocked, extended, remain
-		instance.name, instance.id, remain, _, isLocked, extended, _, instance.isRaid, _, instance.difficultyName, instance.numBoss, instance.progress = GetSavedInstanceInfo(i)
-		if isLocked or instance.extended then	-- Save & count only locked or extended instances
-			numLocked = numLocked+1
+		local isLocked, extended, remain, isRaid
+		instance.name, instance.id, remain, _, isLocked, extended, _, isRaid, _, instance.difficultyName, instance.numBoss, instance.progress = GetSavedInstanceInfo(i)
+		if isLocked or extended then
 			instance.reset = remain + currentTime
 			if extended then
 				instance.extended = L["extended"]
 			else
 				instance.extended = ""
 			end
-			table.insert(instances, instance)
+			if isRaid then
+				table.insert(raids, instance)
+			else
+				table.insert(heroics, instance)
+			end
 		end
 	end
 
-	table.sort(instances,
-		function(a,b)
-			if a.isRaid and not b.isRaid then return true
-			elseif b.isRaid and not a.isRaid then return false
-			else return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName )
-			end
-		end
-	)
+	table.sort(raids, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end)
+	table.sort(heroics, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end)
 
-	db.instances = instances
+	db.raids = raids
+	db.heroics = heroics
 
 	self:PLAYER_MONEY()
 	self:PLAYER_XP_UPDATE()
 	self:SaveZone()	
-	self:SaveWorldBuff()
+	self:SaveDrugs()
 	self:SaveTSCooldowns()
---	db.lastUpdate = currentTime -- Moved into SaveZone()
 end
 
 function SavedClassic:PLAYER_MONEY()
@@ -301,35 +369,34 @@ function SavedClassic:PLAYER_MONEY()
 	db.copper = floor(money % 100)
 end
 
+function SavedClassic:QUEST_TURNED_IN()
+	local db = self.db.realm[player]
+	
+	db.dqComplete = GetDailyQuestsCompleted() or 0
+	db.dqMax = GetMaxDailyQuests() or 0
+	db.dqResetReal = time() + (GetQuestResetTime() or 0)	-- resolve game time to real time
+end
+
 function SavedClassic:PLAYER_XP_UPDATE()
 	local db = self.db.realm[player]
 	db.level = UnitLevel("player")
 	db.expCurrent = UnitXP("player")
-	db.expMax = UnitXPMax("player")
+	local expMax = UnitXPMax("player")
+	if expMax == 0 then expMax = db.expMax or 1 end
+	db.expMax = expMax
 	db.expPercent = floor(db.expCurrent / db.expMax * 100)
 	db.expRest = GetXPExhaustion() or 0
 
 	self:SetOrder()
 end
 
+--[[
 function SavedClassic:PLAYER_UPDATE_RESTING(...)
 	if IsResting() then
-		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	else
-		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	end
 end
-
-function SavedClassic:COMBAT_LOG_EVENT_UNFILTERED(...)
-	local playerGUID = UnitGUID("player")
-	local _, combatEvent, _, sourceGUID, _, _, _, destGUID, _, _, _, 
-		spellId = CombatLogGetCurrentEventInfo()
-	if combatEvent == "SPELL_AURA_APPLIED" and destGUID == playerGUID then
-		if self.wb[spellId] then
-			self:SaveWorldBuff()
-		end
-	end
-end
+]]
 
 function SavedClassic:SaveZone()
 	local db = self.db.realm[player]
@@ -341,20 +408,25 @@ function SavedClassic:SaveZone()
 	db.lastUpdate = time()
 end
 
-function SavedClassic:SaveWorldBuff()
+function SavedClassic:SaveDrugs()
 	local db = self.db.realm[player]
-	db.worldBuffs = {}
 	db.chrono = {}
-	for i=1,32 do
+	db.drugs = {}
+	for i=1,40 do
 		local name,icon,_,_,_,expire,_,_,_,id = UnitBuff("player", i)
-		if id and self.wb[id] then
-			table.insert(db.worldBuffs, { id = id, remain = floor((expire-GetTime())/60) })
+		if id and self.drugs[id] then
+			table.insert(db.drugs, { id = id, remain = floor((expire-GetTime())/60) })
 		end
 		if id == 349981 then
 			self:SaveChoronoBuff(i)
 		end
 	end
-	table.sort(db.worldBuffs, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
+	table.sort(db.drugs,
+		function(a,b)
+			ar = a.remain or 0
+			br = b.remain or 0
+			return ar > br
+		end)
 end
 
 function SavedClassic:SaveChoronoBuff(numBuff)
@@ -408,6 +480,13 @@ function SavedClassic:StripLink(link)
 	return string.match(link, "(%d+):") or string.match(link, "(%d+)")
 end
 
+function SavedClassic:FOR_CURRENCY_UPDATE(...)
+	-- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
+	-- For honor point
+--	local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
+--	local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
+end
+
 function SavedClassic:ShowInfoTooltip(tooltip)
 	local mode = ""
 	local db = self.db.realm[player]
@@ -431,22 +510,24 @@ end
 
 function SavedClassic:ShowInstanceInfo(tooltip, character)
 	self:SaveZone()
-	self:SaveWorldBuff()
+	self:SaveDrugs()
+	self:QUEST_TURNED_IN()
 	self:BAG_UPDATE_DELAYED()
 
 	local db = self.db.realm[character]
 	local currentTime = time()
 
-	local wbstr,tsstr = "",""
-	if db.worldBuffs then
-		for _,b in ipairs(db.worldBuffs) do
-			if b.id and b.remain then
-				local icon = GetSpellTexture(b.id) or ""
-				wbstr = wbstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
+	local drugstr = ""
+	if db.drugs then
+		for _, d in ipairs(db.drugs) do
+			if d.id and d.remain then
+				local drug = self.drugs[d.id]
+				local icon = drug.inv and GetItemIcon(drug.inv) or GetSpellTexture(d.id)
+				drugstr = drugstr .. "|T".. icon ..":14:14|t".. d.remain ..L["minites"].." "
 			end
 		end
 	end
-	wbstr = wbstr.."|T133881:14:14|t"..(db.itemCount[184937] or 0)
+	drugstr = drugstr.."|T133881:14:14|t"..(db.itemCount[184937] or 0)
 	if db.chrono then
 		local cdstr = ""
 		for i,b in ipairs(db.chrono) do
@@ -457,7 +538,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		end
 		if cdstr ~= "" then
 			cdstr = string.sub(cdstr,1,-2)	-- trim trailing space
-			wbstr = wbstr.."("..cdstr..")"
+			drugstr = drugstr.."("..cdstr..")"
 		end
 	end
 	if db.tradeSkills then
@@ -472,7 +553,12 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		end
 	end
 
-	db.wbstr = wbstr
+	if db.dqResetReal and currentTime > db.dqResetReal then
+		db.dqComplete = 0
+	end
+
+	db.dqReset = SecondsToTime(GetQuestResetTime() or 0)
+	db.drugstr = drugstr
 	db.tsstr = tsstr
 	db.elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
 	db.restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
@@ -501,11 +587,10 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
-	if not db.instances then return end
-	local nMax = table.getn(db.instances)
-	for i = 1, nMax do
-		local instance = db.instances[i]
-		local remain = SecondsToTime(instance.reset - time())
+	for i = 1, #db.raids do
+		local raidInstance = db.raids[i]
+		local remain = SecondsToTime(raidInstance.reset - time())
+
 		if remain and ( remain ~= "" ) then
 			if db.info3 then
 				local line3_1 = string.gsub(db.info3_1, "(!t)", remain)
@@ -517,10 +602,24 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		end
 	end
 
+	for i = 1, #db.heroics do
+		local heroicInstance = db.heroics[i]
+		local remain = SecondsToTime(heroicInstance.reset - time())
+		if remain and ( remain ~= "" ) then
+			if db["info4"] then
+				local line4_1 = string.gsub(db["info4_1"], "(!t)", remain)
+				line4_1 = string.gsub(line4_1, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or pt[s] else return s end end)
+				local line4_2 = string.gsub(db["info4_2"], "(!t)", remain)
+				line4_2 = string.gsub(line4_2, "([!%%][!%w])", function(s) if pt[s] then return heroicInstance[pt[s]] or pt[s] else return s end end)
+				tooltip:AddDoubleLine(line4_1, line4_2)
+			end
+		end
+	end
+
 end
 
 function SavedClassic:InitUI()
-	local db = self.db.realm[player]
+--[[	local db = self.db.realm[player]
 	local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent)
 	self.ui = ui
 	ui:EnableMouse(true)
@@ -579,7 +678,7 @@ function SavedClassic:InitUI()
 		self.ui:Show()
 	else
 		self.ui:Hide()
-	end
+	end]]
 end
 
 function SavedClassic:InitDBIcon()
@@ -602,9 +701,7 @@ function SavedClassic:BuildOptions()
 	local order = self.order
 	for i = 1, #order do
 		names[order[i].name] = rdb[order[i].name].coloredName
-		--names[i] = rdb[order[i].name].coloredName /run for k,v in pairs(SavedClassic.orderedList) do print(k,v) end
 	end
---	self.orderedList = names
 
 	local db = self.db.realm[player]
 	self.optionsTable = {
@@ -622,12 +719,12 @@ function SavedClassic:BuildOptions()
 				get = function(info) return db[info[#info]] end,
 				set = function(info, value) db[info[#info]] = value end,
 				args = {
-					frameShow = {
+--[[					frameShow = {
 						name = L["Show floating UI frame"],
 						type = "toggle",
 						order = 101,
 						set = function(info, value)
-							db[info[#info]] = value
+							db[info[#info] ] = value
 							if value then
 								self.ui:Show()
 							else
@@ -663,7 +760,7 @@ function SavedClassic:BuildOptions()
 						name = L["Desc - Frame"],
 						type = "description",
 						order = 104
-					},
+					},]]
 					showMinimapIcon = {
 						name = L["Show minimap icon"],
 						type = "toggle",
@@ -777,14 +874,14 @@ function SavedClassic:BuildOptions()
 				},
 			},
 
-			infoInst = {
-				name = L["Tooltip - Instance info"],
+			infoRaid = {
+				name = L["Tooltip - Raid instances"],
 				type = "group",
 				inline = true,
 				order = 41,
 				args = {
 					info3 = {
-						name = L["Lines of instance info"],
+						name = L["Lines of raid instances"],
 						type = "toggle",
 						order = 31
 					},
@@ -804,6 +901,35 @@ function SavedClassic:BuildOptions()
 					},
 				},
 			},
+
+			infoHeroic = {
+				name = L["Tooltip - Heroic instances"],
+				type = "group",
+				inline = true,
+				order = 51,
+				args = {
+					info4 = {
+						name = L["Lines of heroic instances"],
+						type = "toggle",
+						order = 31
+					},
+					info4_1 = {
+						name = L["Left"],
+						type = "input",
+						width = "full",
+						desc = L["Desc_Inst"],
+						order = 32
+					},
+					info4_2 = {
+						name = L["Right"],
+						type = "input",
+						width = "full",
+						desc = L["Desc_Inst"],
+						order = 33
+					},
+				},
+			},
+
 			dupeSettings = {
 				name = L["Dupe settings to"],
 				type = "select",
@@ -826,6 +952,9 @@ function SavedClassic:BuildOptions()
 					tdb.info3 = rdb[ch].info3
 					tdb.info3_1 = rdb[ch].info3_1
 					tdb.info3_2 = rdb[ch].info3_2
+					tdb.info4 = rdb[ch].info4
+					tdb.info4_1 = rdb[ch].info4_1
+					tdb.info4_2 = rdb[ch].info4_2
 				end,
 				confirm = function() return L["Dupe settings will overwirte character/instance info."] end,
 				order = 92

@@ -3,7 +3,6 @@ local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "enUS", true)
 local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
 local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
-local SOUL_SHARD_ICON = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t"
 
 if L then
 L["Transmute"] = true
@@ -41,15 +40,15 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."|cffccaa00%Z|r Currnet Zone   |cffccaa00%z|r Subzone치|n"
 	.."|cffccaa00%r|r New line|n"
 	.."|cffccaa00%L|r Elapsed time after last update|n"
-	.."|cffccaa00%B|r World buffs and Elixir status|n"
+	.."|cffccaa00%B|r Flasks and Elixirs|n"
 	.."|cffccaa00%i{|cffffffffItemlink or ID|cffccaa00}|r Item icon|n"
 	.."|cffccaa00%n{|cffffffffItemlink or ID|cffccaa00}|r Item amount|n"
 	.."|cffccaa00%i{|cffffffffItemlink or ID|cffccaa00}|r Icon + Amount|n"
-	.."|cffccaa00e.g. %I{|cffffffff[Soul Shard]|r} or %I{6265} => "..SOUL_SHARD_ICON.."25|r|n"
+	.."|cffccaa00e.g. %I{|cffffffff[Soul Shard]|r} or %I{6265} => |TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t25|r|n"
+	.."|cffccaa00e.g. %I{|cffffffff[Badge of Justice]|r} or %I{29434} => |TInterface/Icons/Spell_holy_championsbond:14:14|t25|r|n"
 	.."|cffccaa00%T|r Tradeskill cooldowns|n"
 	.."|cffccaa00%F######|r Color starts(RGB code)|n|cffccaa00%f|r Color ends|n"
-	.."|cffccaa00e.g. %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
-L["Desc_Char2"] = true
+	.."|cffccaa00(ex) %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
 L["Tooltip - Instance info"] = true
 L["Lines of instance info"] = true
 L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
@@ -59,11 +58,14 @@ L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
 	.."|cffccaa00!P|r Number of bosses|n"
 	.."|cffccaa00!t|r Time to reset|n"
 	.."|cffccaa00!i|r Instance ID|n"
+L["Tooltip - Heroic instances"] = true
+L["Lines of heroic instances"] = true
+
 L["Reset selected character"] = true
 L["Are you really want to reset?"] = true
 L["Reset all characters"] = true
 L["Dupe settings to"] = true
 L["Dupe"] = true
 L["Dupe settings will overwirte character/instance info settings."] = true
-end
 
+end
