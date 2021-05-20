@@ -1,9 +1,8 @@
-﻿local AddonName, Addon = ...
+local AddonName, Addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "ruRU")
 local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
 local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
-local SOUL_SHARD_ICON = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t"
 
 if L then
 L["Transmute"] = "Трансмутация"
@@ -50,8 +49,8 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Использование - Инф�
 	.."|cffccaa00%T|r Перезарядка навыков профессии|n"
 	.."|cffccaa00%F######|r Цвет начала(RGB кодировка)|n|cffccaa00%f|r Цвет окончания|n"
 	.."|cffccaa00(ex) %FffffffБелый%f =>|r |cffffffffБелый|r|n   |cffccaa00%Fff0000Красный%f => |r|cffff0000Красный|r"
-L["Tooltip - Instance info"] = "Подсказка - информация о подземелье" --"Информация о лидере"
-L["Lines of instance info"] = "Строки информации о подземелье"
+L["Tooltip - Raid instances"] = true
+L["Lines of raid instances"] = true
 L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Использование - Информация о подземелье|r|n"
 	.."|cffccaa00!n|r Название подземелья|n"
 	.."|cffccaa00!d|r Размер и сложность|n"
@@ -59,10 +58,14 @@ L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Использование - Инф�
 	.."|cffccaa00!P|r Количество боссов|n"
 	.."|cffccaa00!t|r Время сброса|n"
 	.."|cffccaa00!i|r ID подземелья|n"
+L["Tooltip - Heroic instances"] = true
+L["Lines of heroic instances"] = true
+
 L["Reset selected character"] = "Сбросить выбранного персонажа"
 L["Are you really want to reset?"] = "Вы действительно хотите сбросить настройки?"
 L["Reset all characters"] = "Сбросить всех персонажей"
 L["Dupe settings to"] = "Настройки копирования на"
 L["Dupe"] = "Копировать"
 L["Dupe settings will overwirte character/instance info."] = "Настройки копирования перезапишут информацию о персонаже/подземелье."
+
 end

@@ -1,4 +1,4 @@
-﻿local AddonName, Addon = ...
+local AddonName, Addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "enUS", true)
 local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
 local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
@@ -49,8 +49,8 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
 	.."|cffccaa00%T|r Tradeskill cooldowns|n"
 	.."|cffccaa00%F######|r Color starts(RGB code)|n|cffccaa00%f|r Color ends|n"
 	.."|cffccaa00(ex) %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
-L["Tooltip - Instance info"] = true
-L["Lines of instance info"] = true
+L["Tooltip - Raid instances"] = true
+L["Lines of raid instances"] = true
 L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
 	.."|cffccaa00!n|r Instance name|n"
 	.."|cffccaa00!d|r Size and Difficulty|n"
