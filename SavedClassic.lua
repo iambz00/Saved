@@ -135,6 +135,8 @@ local dbDefault = {
 			chrono = { },
 			tradeSkills = { },
 			itemCount = { },
+			raids = { },
+			heroics = { },
 
 			expCurrent = -1, expMax = -1, expPercent = -1, ExpRest = -1,
 
@@ -151,9 +153,12 @@ function SavedClassic:OnInitialize()
 	self.db.global.version = self.db.global.version or ""
 
 	for ch, db in pairs(self.db.realm) do
-		-- Clear old world buff table before 1.21
+		-- Clear old tables to new ones
 		db.worldBuffs = nil
 		db.wbstr = nil
+		db.raids = db.instances or { }
+		db.heroics = db.heroics or { }
+		db.instances = nil
 		-- Convert old soulshard count to new one
 		db.itemCount = db.itemCount or { }
 		db.itemCount[6265] = db.itemCount[6265] or db.soulshards or 0
@@ -517,7 +522,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 	local db = self.db.realm[character]
 	local currentTime = time()
 
-	local drugstr = ""
+	local drugstr, tsstr = "", ""
 	if db.drugs then
 		for _, d in ipairs(db.drugs) do
 			if d.id and d.remain then
@@ -552,6 +557,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 			end
 		end
 	end
+	db.tsstr = tsstr
 
 	if db.dqResetReal and currentTime > db.dqResetReal then
 		db.dqComplete = 0
@@ -559,7 +565,6 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 
 	db.dqReset = SecondsToTime(GetQuestResetTime() or 0)
 	db.drugstr = drugstr
-	db.tsstr = tsstr
 	db.elapsedTime = SecondsToTime(currentTime - db.lastUpdate)
 	db.restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
 	db.restPercent = floor(db.restXP / db.expMax * 100)
