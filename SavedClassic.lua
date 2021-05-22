@@ -599,9 +599,9 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		if remain and ( remain ~= "" ) then
 			if db.info3 then
 				local line3_1 = string.gsub(db.info3_1, "(!t)", remain)
-				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or pt[s] else return s end end)
+				line3_1 = string.gsub(line3_1, "([!%%][!%w])", function(s) if pt[s] then return raidInstance[pt[s]] or pt[s] else return s end end)
 				local line3_2 = string.gsub(db.info3_2, "(!t)", remain)
-				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return instance[pt[s]] or pt[s] else return s end end)
+				line3_2 = string.gsub(line3_2, "([!%%][!%w])", function(s) if pt[s] then return raidInstance[pt[s]] or pt[s] else return s end end)
 				tooltip:AddDoubleLine(line3_1, line3_2)
 			end
 		end
