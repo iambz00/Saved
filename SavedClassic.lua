@@ -624,8 +624,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 end
 
 function SavedClassic:InitUI()
---[[	local db = self.db.realm[player]
-	local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent)
+	local db = self.db.realm[player]
+	local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent, "BackdropTemplate")
 	self.ui = ui
 	ui:EnableMouse(true)
 	ui:SetWidth(db.frameX)
@@ -683,7 +683,7 @@ function SavedClassic:InitUI()
 		self.ui:Show()
 	else
 		self.ui:Hide()
-	end]]
+	end
 end
 
 function SavedClassic:InitDBIcon()
@@ -724,7 +724,7 @@ function SavedClassic:BuildOptions()
 				get = function(info) return db[info[#info]] end,
 				set = function(info, value) db[info[#info]] = value end,
 				args = {
---[[					frameShow = {
+					frameShow = {
 						name = L["Show floating UI frame"],
 						type = "toggle",
 						order = 101,
@@ -765,7 +765,7 @@ function SavedClassic:BuildOptions()
 						name = L["Desc - Frame"],
 						type = "description",
 						order = 104
-					},]]
+					},
 					showMinimapIcon = {
 						name = L["Show minimap icon"],
 						type = "toggle",
