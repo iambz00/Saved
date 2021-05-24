@@ -37,7 +37,8 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Использование - Инф�
 	.."|cffccaa00%l|r Текущий уровень   |cffccaa00%p|r Текущий опыт %|n"
 	.."|cffccaa00%e|r Текущий опыт   |cffccaa00%E|r Макс Опыт|n"
 	.."|cffccaa00%R|r Опыт отдыха   |cffccaa00%P|r Опыт отдыха %|n"
-	.."|cffccaa00%Z|r Текущая зона   |cffccaa00%z|r Подзона치|n"
+	.."|cffccaa00%Z|r Текущая зона   |cffccaa00%z|r Подзона|n"
+--	.."|cffccaa00%h|r Honor Points   |cffccaa00%a|r Arena Points|n"
 	.."|cffccaa00%r|r Новая линия|n"
 	.."|cffccaa00%L|r Прошедшее время после последнего обновления|n"
 	.."|cffccaa00%B|r Мировые баффы и статус Эликсира|n"
@@ -46,7 +47,8 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Использование - Инф�
 	.."|cffccaa00%i{|cffffffffСсылка на ID|cffccaa00}|r Значок + Количество|n"
 	.."|cffccaa00e.g. %I{|cffffffff[осколков души]|r} or %I{6265} => |TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t25|r|n"
 	.."|cffccaa00e.g. %I{|cffffffff[Badge of Justice]|r} or %I{29434} => |TInterface/Icons/Spell_holy_championsbond:14:14|t25|r|n"
-	.."|cffccaa00%T|r Перезарядка навыков профессии|n"
+	.."|cffccaa00%T|r Перезарядка навыков профессии   |cffccaa00%Q|r Time to DQ Reset|n"	--
+	.."|cffccaa00%d|r Completed Daily Quests   |cffccaa00%D|r Maximum Daily Quests|n"	--
 	.."|cffccaa00%F######|r Цвет начала(RGB кодировка)|n|cffccaa00%f|r Цвет окончания|n"
 	.."|cffccaa00(ex) %FffffffБелый%f =>|r |cffffffffБелый|r|n   |cffccaa00%Fff0000Красный%f => |r|cffff0000Красный|r"
 L["Tooltip - Raid instances"] = true

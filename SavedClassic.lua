@@ -110,14 +110,11 @@ local pt = {
 
 	["!n"] = "name" ,	["!d"] = "difficultyName" ,
 	["!i"] = "id" ,	["!p"] = "progress" ,	["!P"] = "numBoss" ,
---	["!e"] = "" ,	-- classic doesn't support extened
 	["!!"] = "!" ,
 
 --	["!t"] = "" ,
 
---	["%h"] = "honorPoint",
---	["%H"] = "honorMax",
---	["%j"] = "justice",	["%J"] = "|T"..GetItemIcon(29434)..":14:14|t",
+--	["%h"] = "honorPoint",	["%a"] = "arenaPoint",
 
 	["%d"] = "dqComplete",	["%D"] = "dqMax",	["%Q"] = "dqReset",
 }
