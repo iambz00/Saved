@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.0b2"
+SavedClassic.version = "2.0b8"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -698,7 +698,7 @@ end
 function SavedClassic:BuildOptions()
 	local rdb = self.db.realm
 	local ch = player
-	local dupeTo = ""
+	local copyTo = ""
 	local names = {}
 	local order = self.order
 	for i = 1, #order do
@@ -800,7 +800,7 @@ function SavedClassic:BuildOptions()
 				}
 			},
 			character = {
-				name = "캐릭터 선택",
+				name = L["Select character"],
 				type = "select",
 				values = names,
 				set = function(info, k) ch = k return k end,
@@ -932,19 +932,19 @@ function SavedClassic:BuildOptions()
 				},
 			},
 
-			dupeSettings = {
-				name = L["Dupe settings to"],
+			copySettings = {
+				name = L["Copy settings to"],
 				type = "select",
 				values = names,
-				set = function(info, k) dupeTo = k return k end,
-				get = function(info) return dupeTo end,
+				set = function(info, k) copyTo = k return k end,
+				get = function(info) return copyTo end,
 				order = 91
 			},
-			dupeButton = {
-				name = L["Dupe"],
+			copyButton = {
+				name = L["Copy"],
 				type = "execute",
 				func = function()
-					local tdb = self.db.realm[dupeTo]
+					local tdb = self.db.realm[copyTo]
 					tdb.info1 = rdb[ch].info1
 					tdb.info1_1 = rdb[ch].info1_1
 					tdb.info1_2 = rdb[ch].info1_2
@@ -958,7 +958,7 @@ function SavedClassic:BuildOptions()
 					tdb.info4_1 = rdb[ch].info4_1
 					tdb.info4_2 = rdb[ch].info4_2
 				end,
-				confirm = function() return L["Dupe settings will overwirte character/instance info."] end,
+				confirm = function() return L["Confirm copy"] end,
 				order = 92
 			},
 		},

@@ -63,11 +63,12 @@ L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
 L["Tooltip - Heroic instances"] = true
 L["Lines of heroic instances"] = true
 
+L["Select character"] = true
 L["Reset selected character"] = true
 L["Are you really want to reset?"] = true
 L["Reset all characters"] = true
-L["Dupe settings to"] = true
-L["Dupe"] = true
-L["Dupe settings will overwirte character/instance info settings."] = true
+L["Copy settings to"] = true
+L["Copy"] = true
+L["Confirm copy"] = "Overwrite settings to target character"
 
 end

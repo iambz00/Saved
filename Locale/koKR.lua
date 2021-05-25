@@ -63,11 +63,12 @@ L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00인스턴스 정보 사용법|r|n"
 L["Tooltip - Heroic instances"] = "툴팁 설정 - 영던 귀속 정보"
 L["Lines of heroic instances"] = "영던 귀속 정보 표시줄"
 
+L["Select character"] = "캐릭터 선택"
 L["Reset selected character"] = "초기화(선택된 캐릭터)"
 L["Are you really want to reset?"] = "정말로 초기화합니까?"
 L["Reset all characters"] = "초기화(전체 캐릭터)"
-L["Dupe settings to"] = "설정 복사하기"
-L["Dupe"] = "복사"
-L["Dupe settings will overwirte character/instance info."] = "설정을 복사하면 캐릭터/인스턴스 정보 설정을 덮어씁니다."
+L["Copy settings to"] = "설정 복사하기"
+L["Copy"] = "복사"
+L["Confirm copy"] = "현재 설정을 대상 캐릭터에 적용합니다."
 
 end
