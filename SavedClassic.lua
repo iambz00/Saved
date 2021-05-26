@@ -153,7 +153,7 @@ function SavedClassic:OnInitialize()
 		-- Clear old tables to new ones
 		db.worldBuffs = nil
 		db.wbstr = nil
-		db.raids = db.instances or { }
+		db.raids = db.instances or db.raids or { }
 		db.heroics = db.heroics or { }
 		db.instances = nil
 		-- Convert old soulshard count to new one
