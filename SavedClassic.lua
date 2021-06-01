@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.0b8"
+SavedClassic.version = "2.0b9"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -17,26 +17,12 @@ local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
-SavedClassic.cd = {	-- for Chronoboon Displacer
-	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768,
-}
 SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
--- for pre-patch start
-	[23768] = { },	-- DF damage 세이지 공격력
-	[23766] = { },	-- DF int 세이지 지능
-	[22817] = { },	-- DM1 펜구스의 흉포
-	[22818] = { },	-- DM2 몰다르의 투지
-	[22820] = { },	-- DM3 슬립킥의 손재주
-	[15366] = { },	-- SF 노래꽃의 세레나데
-	[22888] = { }, [355363] = { },	-- Ony, Nef 용사냥꾼 재집결의 외침
-	[24425] = { }, [355365] = { },	-- Zul'gurub 잔달라의 기백
-	[16609] = { }, [355366] = { },	-- BoW 대족장의 축복
-	[24382] = { }, 	-- Zanza 잔자의 기백
+-- Flasks from original
 	[17626] = { },	-- Titan 티탄
 	[17627] = { },	-- Distilled Wisdom 순지
 	[17628] = { },	-- Supreme Power 강마
--- for pre-patch end
-
+-- Flasks 
 	[17626] = { inv = 13510, },	-- Flask of Titan
 	[17627] = { inv = 13511, },	-- Flask of Distilled Wisdom
 	[17628] = { inv = 13512, },	-- Flask of Supreme Power
@@ -53,6 +39,7 @@ SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
 	[41610] = { inv = 32899, }, -- Shattrath Flask of Mighty Restoration
 	[41611] = { inv = 32900, }, -- Shattrath Flask of Supreme Power
 	[46837] = { inv = 35716, }, -- Shattrath Flask of Pure Death
+-- Elixirs
 	[11406] = { inv =  9224, }, -- [B] Elixir of Demonslaying
 	[17537] = { inv = 13453, }, -- [B] Elixir of Brute Force
 	[33720] = { inv = 28102, }, -- [B] Onslaught Elixir
@@ -75,9 +62,6 @@ SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
 	[45373] = { inv = 34537, }, -- [B] Bloodberry Elixir / All stats @ Sunwell
 	[28489] = { inv = 22823, }, -- Elixir of Camouflage / Cannot be tracked
 	[28496] = { inv = 22830, }, -- Elixir of the Searching Eye / Stealth detection
-
-	[17538] = { inv = 13452, }, -- [B] Elixir of the Mongoose
-	[11405] = { inv =  9206, }, -- [B] Elixir of Giants
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[29688] = { altName = L["Transmute"], },	-- Transmute: Primal Might
@@ -88,7 +72,6 @@ SavedClassic.ts = {	-- Tradeskills of long cooldowns
 SavedClassic.items = {	-- Items to count always
 	[6265] = { },	-- Soulshard
 	[29434] = { },	-- Badge of Justice
-	[184937] = { },	-- Chronoboon Displacer
 }
 local pt = {
 	["%n"] = "coloredName",	["%N"] = "name",
@@ -113,7 +96,6 @@ local pt = {
 	["!!"] = "!" ,
 
 --	["!t"] = "" ,
-
 --	["%h"] = "honorPoint",	["%a"] = "arenaPoint",
 
 	["%d"] = "dqComplete",	["%D"] = "dqMax",	["%Q"] = "dqReset",
@@ -129,7 +111,6 @@ local dbDefault = {
 			default = true,
 			minimapIcon = { hide = false },
 
-			chrono = { },
 			tradeSkills = { },
 			itemCount = { },
 			raids = { },
@@ -149,8 +130,10 @@ function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 	self.db.global.version = self.db.global.version or ""
 
+
 	for ch, db in pairs(self.db.realm) do
 		-- Clear old tables to new ones
+		db.chrono = nil
 		db.worldBuffs = nil
 		db.wbstr = nil
 		db.raids = db.instances or db.raids or { }
@@ -188,20 +171,13 @@ function SavedClassic:OnInitialize()
 
 	self:RegisterEvent("ZONE_CHANGED", "SaveInfo")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "SaveInfo")
---	self:RegisterEvent("PLAYER_UPDATE_RESTING")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "RequestRaidInfo")
 	self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")	-- API RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
 
 	self:RegisterEvent("TRADE_SKILL_UPDATE", "SaveTSCooldowns")
 
-
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
 	self:RegisterEvent("QUEST_TURNED_IN")
---[[
-	HONOR_CURRENCY_UPDATE
-	TRADE_CURRENCY_CHANGED
-	PLAYER_TRADE_CURRENCY
-]]
 
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
@@ -211,7 +187,6 @@ function SavedClassic:OnInitialize()
 	end
 
 	self:ClearItemCount()
---	self:PLAYER_UPDATE_RESTING()
 	self:QUEST_TURNED_IN()
 	self:BAG_UPDATE_DELAYED()
 end
@@ -286,6 +261,7 @@ function SavedClassic:InitPlayerDB()
 	playerdb.info4_1 = "   %Fcffff99!n (!d)%f %Fccccaa!p/!P%f"
 	playerdb.info4_2 = "!t "
 
+	playerdb.drugs = { }
 	playerdb.raids = { }
 	playerdb.heroics = { }
 
@@ -392,14 +368,6 @@ function SavedClassic:PLAYER_XP_UPDATE()
 	self:SetOrder()
 end
 
---[[
-function SavedClassic:PLAYER_UPDATE_RESTING(...)
-	if IsResting() then
-	else
-	end
-end
-]]
-
 function SavedClassic:SaveZone()
 	local db = self.db.realm[player]
 	local zone = GetZoneText()
@@ -412,15 +380,11 @@ end
 
 function SavedClassic:SaveDrugs()
 	local db = self.db.realm[player]
-	db.chrono = {}
-	db.drugs = {}
+	db.drugs = { }
 	for i=1,40 do
 		local name,icon,_,_,_,expire,_,_,_,id = UnitBuff("player", i)
 		if id and self.drugs[id] then
 			table.insert(db.drugs, { id = id, remain = floor((expire-GetTime())/60) })
-		end
-		if id == 349981 then
-			self:SaveChoronoBuff(i)
 		end
 	end
 	table.sort(db.drugs,
@@ -429,15 +393,6 @@ function SavedClassic:SaveDrugs()
 			br = b.remain or 0
 			return ar > br
 		end)
-end
-
-function SavedClassic:SaveChoronoBuff(numBuff)
-	local db = self.db.realm[player]
-	local displacer = { UnitBuff("player", numBuff) }
-	for i=1,#self.cd do
-		table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[i+15]/60) })
-	end
-	table.sort(db.chrono, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
 end
 
 function SavedClassic:SaveTSCooldowns()
@@ -524,12 +479,13 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		for _, d in ipairs(db.drugs) do
 			if d.id and d.remain then
 				local drug = self.drugs[d.id]
-				local icon = drug.inv and GetItemIcon(drug.inv) or GetSpellTexture(d.id)
-				drugstr = drugstr .. "|T".. icon ..":14:14|t".. d.remain ..L["minites"].." "
+				if drug then
+					local icon = drug.inv and GetItemIcon(drug.inv) or GetSpellTexture(d.id)
+					drugstr = drugstr .. "|T".. icon ..":14:14|t".. d.remain ..L["minites"].." "
+				end
 			end
 		end
 	end
-	drugstr = drugstr.."|T133881:14:14|t"..(db.itemCount[184937] or 0)
 	if db.chrono then
 		local cdstr = ""
 		for i,b in ipairs(db.chrono) do
