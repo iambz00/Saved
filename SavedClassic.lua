@@ -18,10 +18,6 @@ local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
 SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
--- Flasks from original
-	[17626] = { },	-- Titan 티탄
-	[17627] = { },	-- Distilled Wisdom 순지
-	[17628] = { },	-- Supreme Power 강마
 -- Flasks 
 	[17626] = { inv = 13510, },	-- Flask of Titan
 	[17627] = { inv = 13511, },	-- Flask of Distilled Wisdom
@@ -247,9 +243,9 @@ function SavedClassic:InitPlayerDB()
 	else
 		playerdb.info2 = true
 		if class == "WARLOCK" then
-			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fcc66cc%I{6265}%f %Fffffff(%Z: %z)%f"
+			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fcc66cc%I{6265}%f %Fffffff%I{29434}(%Z: %z)%f"
 		else
-			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
+			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff%I{29434}(%Z: %z)%f"
 		end
 		playerdb.info2_1 = "   %Fcccccc%B%f"	-- For World buffs and Flasks
 	end
@@ -258,7 +254,7 @@ function SavedClassic:InitPlayerDB()
 	playerdb.info3_1 = "   !n (!d) %Fccccaa!p/!P%f"
 	playerdb.info3_2 = "!t "
 	playerdb.info4 = true
-	playerdb.info4_1 = "   %Fcffff99!n (!d)%f %Fccccaa!p/!P%f"
+	playerdb.info4_1 = "   %Fffff99!n (!d)%f %Fccccaa!p/!P%f"
 	playerdb.info4_2 = "!t "
 
 	playerdb.drugs = { }
@@ -269,7 +265,7 @@ function SavedClassic:InitPlayerDB()
 	playerdb.subzone = ""
 
 	playerdb.lastUpdate = currentTime
-	playerdb.frameShow = true
+	playerdb.frameShow = false
 end
 
 function SavedClassic:ResetPlayerDB()
