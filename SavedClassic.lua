@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.0b9"
+SavedClassic.version = "2.0.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -227,13 +227,12 @@ function SavedClassic:InitPlayerDB()
 	playerdb.info1 = true
 	playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
 	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
-	playerdb.info2 = false
-	playerdb.info2_1 = "   %Fcccccc%T%f"	-- Tradeskill cooldowns
+	playerdb.info2 = true
+	playerdb.info2_1 = ""
 	playerdb.info2_2 = ""
 
 	-- Show level and exp for characters under 70
 	if UnitLevel("player") < GetMaxPlayerLevel() then
-		playerdb.info2 = true
 		if class == "WARLOCK" then
 			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fcc66cc%I[6265]%f %Fffffff(%Z: %z)%f"
 		else
@@ -241,7 +240,6 @@ function SavedClassic:InitPlayerDB()
 		end
 		playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"	-- for exp
 	else
-		playerdb.info2 = true
 		if class == "WARLOCK" then
 			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fcc66cc%I{6265}%f %Fffffff%I{29434}(%Z: %z)%f"
 		else
