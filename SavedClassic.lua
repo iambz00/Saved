@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.0.1"
+SavedClassic.version = "2.1.0"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -92,7 +92,8 @@ local pt = {
 	["!!"] = "!" ,
 
 --	["!t"] = "" ,
---	["%h"] = "honorPoint",	["%a"] = "arenaPoint",
+	["%h"] = "honorPoint",	["%H"] = "|T137000:14:14:0:0:14:14:0:8:0:8|t",
+	["%a"] = "arenaPoint",	["%A"] = "|T136729:14:14|t",
 
 	["%d"] = "dqComplete",	["%D"] = "dqMax",	["%Q"] = "dqReset",
 }
@@ -174,6 +175,8 @@ function SavedClassic:OnInitialize()
 
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
 	self:RegisterEvent("QUEST_TURNED_IN")
+
+	self:RegisterEvent("CHAT_MSG_COMBAT_HONOR_GAIN", "PVPCurrency")
 
 	self.totalMoney = 0	-- Total money except current character
 	for character, saved in pairs(self.db.realm) do
@@ -349,6 +352,13 @@ function SavedClassic:QUEST_TURNED_IN()
 	db.dqResetReal = time() + (GetQuestResetTime() or 0)	-- resolve game time to real time
 end
 
+function SavedClassic:PVPCurrency()
+	local db = self.db.realm[player]
+	db.honorPoint = PVPFrameHonorPoints:GetText()
+	db.arenaPoint = PVPFrameArenaPoints:GetText()
+end
+
+
 function SavedClassic:PLAYER_XP_UPDATE()
 	local db = self.db.realm[player]
 	db.level = UnitLevel("player")
@@ -414,6 +424,7 @@ function SavedClassic:ClearItemCount()
 end
 
 function SavedClassic:BAG_UPDATE_DELAYED()
+	self:PVPCurrency()
 	local db = self.db.realm[player]
 	local infoStr = db.info1_1..db.info1_2..db.info2_1..db.info2_2
 	local itemList = string.gmatch(infoStr, "%%[Iia]%{[^}]+%}")
