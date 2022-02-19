@@ -1,6 +1,6 @@
-## Interface: 20502
+## Interface: 20503
 ## Title: Saved! Classic
-## Version: 2.1.0
+## Version: 2.1.1
 
 ## Notes: List instances, money, exps and customizable
 ## Notes-koKR: 인스턴스 귀속 정보 및 골드, 경험치 한눈에 보기

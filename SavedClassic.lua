@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.1.0"
+SavedClassic.version = "2.1.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -346,8 +346,14 @@ end
 
 function SavedClassic:QUEST_TURNED_IN()
 	local db = self.db.realm[player]
-	
-	db.dqComplete = GetDailyQuestsCompleted() or 0
+	local completed = GetDailyQuestsCompleted() or 0
+	if (db.dqComplete or 0) == completed then
+		C_Timer.After(2, function()
+			db.dqComplete = GetDailyQuestsCompleted() or 0
+		end)
+	else
+		db.dqComplete = completed
+	end
 	db.dqMax = GetMaxDailyQuests() or 0
 	db.dqResetReal = time() + (GetQuestResetTime() or 0)	-- resolve game time to real time
 end
@@ -458,6 +464,11 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 	local totalGold = floor((self.totalMoney + db.money) / 10000)
 	tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold.. GOLD_ICON)
 
+	self:SaveZone()
+	self:SaveDrugs()
+	self:QUEST_TURNED_IN()
+	self:BAG_UPDATE_DELAYED()
+
 	if db.showInfoPer == "realm" then
 		for _, v in ipairs(self.order) do
 			if v.level < db.hideLevelUnder then
@@ -471,10 +482,6 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 end
 
 function SavedClassic:ShowInstanceInfo(tooltip, character)
-	self:SaveZone()
-	self:SaveDrugs()
-	self:QUEST_TURNED_IN()
-	self:BAG_UPDATE_DELAYED()
 
 	local db = self.db.realm[character]
 	local currentTime = time()
