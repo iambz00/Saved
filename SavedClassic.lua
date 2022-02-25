@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.1.1"
+SavedClassic.version = "2.1.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -19,15 +19,15 @@ local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
 SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
 -- Flasks 
-	[17626] = { inv = 13510, },	-- Flask of Titan
-	[17627] = { inv = 13511, },	-- Flask of Distilled Wisdom
-	[17628] = { inv = 13512, },	-- Flask of Supreme Power
+	[17626] = { inv = 13510, }, -- Flask of Titan
+	[17627] = { inv = 13511, }, -- Flask of Distilled Wisdom
+	[17628] = { inv = 13512, }, -- Flask of Supreme Power
 	[17629] = { inv = 13513, }, -- Flask of Chromatic Resistance
-	[28518] = { inv = 22851, },	-- Flask of Fortification - Health/Defense
-	[28519] = { inv = 22853, },	-- Flask of Mighty Restoration - Mana Regen
-	[28520] = { inv = 22854, },	-- Flask of Relentless Assault - AP
-	[28521] = { inv = 22861, },	-- Flask of Blinding Light - Arcane/Holy/Nature
-	[28540] = { inv = 22866, },	-- Flask of Pure Death - Shadow/Fire/Frost
+	[28518] = { inv = 22851, }, -- Flask of Fortification - Health/Defense
+	[28519] = { inv = 22853, }, -- Flask of Mighty Restoration - Mana Regen
+	[28520] = { inv = 22854, }, -- Flask of Relentless Assault - AP
+	[28521] = { inv = 22861, }, -- Flask of Blinding Light - Arcane/Holy/Nature
+	[28540] = { inv = 22866, }, -- Flask of Pure Death - Shadow/Fire/Frost
 	[42735] = { inv = 33208, }, -- Flask of Chromatic Resistance
 	[46839] = { inv = 35717, }, -- Shattrath Flask of Blinding Light
 	[41608] = { inv = 32901, }, -- Shattrath Flask of Relentless Assault
@@ -108,11 +108,6 @@ local dbDefault = {
 			default = true,
 			minimapIcon = { hide = false },
 
-			tradeSkills = { },
-			itemCount = { },
-			raids = { },
-			heroics = { },
-
 			expCurrent = -1, expMax = -1, expPercent = -1, ExpRest = -1,
 
 			honorPoint = -1, arenaPoint = -1,
@@ -125,27 +120,13 @@ local dbDefault = {
 
 function SavedClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
-	self.db.global.version = self.db.global.version or ""
 
-
-	for ch, db in pairs(self.db.realm) do
-		-- Clear old tables to new ones
-		db.chrono = nil
-		db.worldBuffs = nil
-		db.wbstr = nil
-		db.raids = db.instances or db.raids or { }
-		db.heroics = db.heroics or { }
-		db.instances = nil
-		-- Convert old soulshard count to new one
-		db.itemCount = db.itemCount or { }
-		db.itemCount[6265] = db.itemCount[6265] or db.soulshards or 0
-		db.soulshards = nil
-		local oldDefault, newDefault = "%%W%%Fcc66cc%%w","%%Fcc66cc%%I{6265}%%f"
-		local ss = "6265"
-		if db.info1_1 then db.info1_1 = db.info1_1:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end) end
-		if db.info1_2 then db.info1_2 = db.info1_2:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end) end
-		if db.info2_1 then db.info2_1 = db.info2_1:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end) end
-		if db.info2_2 then db.info2_2 = db.info2_2:gsub(oldDefault, newDefault):gsub("%%W%%w", "%%I{"..ss.."}"):gsub("%%([Ww])", function(s) return "%"..({["W"]="i",["w"]="a"})[s].."{"..ss.."}" end) end
+	-- Reset data from older versions
+	if not self.db.global.version then
+		self.db:ResetDB()
+	elseif self.db.global.version < "2" then
+		p(L["Reset due to update"](self.db.global.version, self.version))
+		self.db:ResetDB()
 	end
 
 	self.db.global.version = self.version
@@ -228,27 +209,26 @@ function SavedClassic:InitPlayerDB()
 	self:PLAYER_XP_UPDATE()
 
 	playerdb.info1 = true
-	playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
+	playerdb.info1_1 = ""
 	playerdb.info1_2 = "%r%Fffee99%g%G%f  "
 	playerdb.info2 = true
 	playerdb.info2_1 = ""
 	playerdb.info2_2 = ""
 
-	-- Show level and exp for characters under 70
 	if UnitLevel("player") < GetMaxPlayerLevel() then
 		if class == "WARLOCK" then
-			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fcc66cc%I[6265]%f %Fffffff(%Z: %z)%f"
+			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fcc66cc%I{6265}%f %Fffffff(%Z: %z)%f"
 		else
 			playerdb.info1_1 = "%r%F00ff00■%f [%Fffffff%l%f:%n] %Fffffff(%Z: %z)%f"
 		end
-		playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"	-- for exp
+		playerdb.info2_1 = "   %Fcc66ff%e/%E (%p%%)%f %F66ccff+%R (%P%%)%f"	-- Exp
 	else
 		if class == "WARLOCK" then
-			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fcc66cc%I{6265}%f %Fffffff%I{29434}(%Z: %z)%f"
+			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fcc66cc%I{6265}%f %Fffffff(%Z: %z)%f"
 		else
-			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff%I{29434}(%Z: %z)%f"
+			playerdb.info1_1 = "%r%F00ff00■%f [%n] %Fffffff(%Z: %z)%f"
 		end
-		playerdb.info2_1 = "   %Fcccccc%B%f"	-- For World buffs and Flasks
+		playerdb.info2_1 = "   %Fffffff%I{29434} %A%a %H%h%f %Fcccccc%B%f"	-- BoJ, Arena, Honor, Flask
 	end
 
 	playerdb.info3 = true
@@ -261,6 +241,8 @@ function SavedClassic:InitPlayerDB()
 	playerdb.drugs = { }
 	playerdb.raids = { }
 	playerdb.heroics = { }
+	playerdb.tradeSkills = { }
+	playerdb.itemCount = { }
 
 	playerdb.zone = ""
 	playerdb.subzone = ""
@@ -557,6 +539,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		tooltip:AddDoubleLine(line2_1, line2_2)
 	end
 
+	db.raids = db.raids or {}
 	for i = 1, #db.raids do
 		local raidInstance = db.raids[i]
 		local remain = SecondsToTime(raidInstance.reset - time())
@@ -572,6 +555,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 		end
 	end
 
+	db.heroics = db.heroics or {}
 	for i = 1, #db.heroics do
 		local heroicInstance = db.heroics[i]
 		local remain = SecondsToTime(heroicInstance.reset - time())
