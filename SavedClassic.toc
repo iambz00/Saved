@@ -3,6 +3,7 @@
 ## Version: 2.1.2
 
 ## Notes: List instances, money, exps and customizable
+## Notes-zhCN: 列出角色，副本，金币，经验和其他信息
 ## Notes-koKR: 인스턴스 귀속 정보 및 골드, 경험치 한눈에 보기
 ## SavedVariables: SavedClassicDB
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3
@@ -24,5 +25,6 @@ Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 Locale\enUS.lua
 Locale\koKR.lua
 Locale\ruRU.lua
+Locale\zhCN.lua
 
 SavedClassic.lua
