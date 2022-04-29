@@ -61,6 +61,7 @@ SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[29688] = { altName = L["Transmute"], },	-- Transmute: Primal Might
+	[28028] = { },	-- Void Sphere
 	[26751] = { },	-- Primal Mooncloth
 	[31373] = { },	-- SpellCloth
 	[36686] = { },	-- Shadowcloth
