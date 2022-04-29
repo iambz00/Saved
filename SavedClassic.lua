@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.1.2"
+SavedClassic.version = "2.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -421,10 +421,10 @@ function SavedClassic:BAG_UPDATE_DELAYED()
 
 	for itemLink in itemList do
 		local itemID = self:StripLink(itemLink)
-		db.itemCount[tonumber(itemID)] = GetItemCount(itemID) or 0
+		db.itemCount[tonumber(itemID)] = GetItemCount(itemID, true) or 0
 	end
 	for id, _ in pairs(self.items) do
-		db.itemCount[tonumber(id)] = GetItemCount(id) or 0
+		db.itemCount[tonumber(id)] = GetItemCount(id, true) or 0
 	end
 end
 
