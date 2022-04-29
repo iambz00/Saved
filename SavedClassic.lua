@@ -390,6 +390,7 @@ end
 function SavedClassic:SaveTSCooldowns()
 	local db = self.db.realm[player]
 	local currentTime = time()
+	db.tradeSkills = db.tradeSkills or {}
 
 	for id,alt in pairs(self.ts) do
 		local start, duration = GetSpellCooldown(id)
