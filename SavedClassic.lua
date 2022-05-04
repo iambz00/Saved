@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.1.2"
+SavedClassic.version = "2.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -61,6 +61,7 @@ SavedClassic.drugs = {	-- Flasks and Elixirs([B]attle, [G]uardian)
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[29688] = { altName = L["Transmute"], },	-- Transmute: Primal Might
+	[28028] = { },	-- Void Sphere
 	[26751] = { },	-- Primal Mooncloth
 	[31373] = { },	-- SpellCloth
 	[36686] = { },	-- Shadowcloth
@@ -390,6 +391,7 @@ end
 function SavedClassic:SaveTSCooldowns()
 	local db = self.db.realm[player]
 	local currentTime = time()
+	db.tradeSkills = db.tradeSkills or {}
 
 	for id,alt in pairs(self.ts) do
 		local start, duration = GetSpellCooldown(id)
@@ -419,10 +421,10 @@ function SavedClassic:BAG_UPDATE_DELAYED()
 
 	for itemLink in itemList do
 		local itemID = self:StripLink(itemLink)
-		db.itemCount[tonumber(itemID)] = GetItemCount(itemID) or 0
+		db.itemCount[tonumber(itemID)] = GetItemCount(itemID, true) or 0
 	end
 	for id, _ in pairs(self.items) do
-		db.itemCount[tonumber(id)] = GetItemCount(id) or 0
+		db.itemCount[tonumber(id)] = GetItemCount(id, true) or 0
 	end
 end
 
