@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "2.2"
+SavedClassic.version = "2.2.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -643,10 +643,20 @@ function SavedClassic:InitDBIcon()
 		type = "data source",
 		text = "Saved!",
 		icon = "135757",
-		OnClick = function() LibStub("AceConfigDialog-3.0"):Open(self.name) end,
+		OnClick = function() self:ToggleConfig() end,
 		OnTooltipShow = function(tooltip) self:ShowInfoTooltip(tooltip) end,
 	})
 	self.icon:Register(self.name, self.iconLDB, self.db.realm[player].minimapIcon)
+end
+
+function SavedClassic:ToggleConfig()
+	if self.configOpened then
+		LibStub("AceConfigDialog-3.0"):Close(self.name)
+		self.configOpened = nil
+	else
+		LibStub("AceConfigDialog-3.0"):Open(self.name)
+		self.configOpened = true
+	end
 end
 
 function SavedClassic:BuildOptions()
