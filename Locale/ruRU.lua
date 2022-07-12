@@ -1,13 +1,10 @@
 local AddonName, Addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "ruRU")
-local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
-local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
-local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
 if L then
 L["Transmute"] = "Трансмутация"
 
-L["Reset due to update"] = function(oldv, newv) return "Сброс некоторых или всех данных из-за обновления версии ("..oldv.." -> "..newv ")" end
+L["Reset due to update"] = function(oldv, newv) return "Сброс некоторых или всех данных из-за обновления версии ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(расширение)"
 
 L["minites"] = "м"
@@ -31,36 +28,28 @@ L["Line 2 of char info."] = "Вторая строка с информацией
 L["Left"] = "Лево"
 L["Right"] = "Право"
 L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r|n"
-	.."|cffccaa00%n|r Имя (цвет класса)|n|cffccaa00%N|r Имя (без цвета)|n"
-	.."|cffccaa00%g|r Золото   |cffccaa00%s|r Серебро   |cffccaa00%c|r Бронза|n"
-	.."|cffccaa00%G|r "..GOLD_ICON.."    |cffccaa00%S|r "..SILVER_ICON.."    |cffccaa00%C|r "..COPPER_ICON.."|n"
-	.."|cffccaa00%l|r Текущий уровень   |cffccaa00%p|r Текущий опыт %|n"
-	.."|cffccaa00%e|r Текущий опыт   |cffccaa00%E|r Макс Опыт|n"
-	.."|cffccaa00%R|r Опыт отдыха   |cffccaa00%P|r Опыт отдыха %|n"
-	.."|cffccaa00%Z|r Текущая зона   |cffccaa00%z|r Подзона|n"
-	.."|cffccaa00%H|r |T137000:14:14:0:0:14:14:0:8:0:8|t |cffccaa00%h|r Honor Points|n"
-	.."|cffccaa00%A|r |T136729:14:14|t |cffccaa00%a|r Arena Points|n"
-	.."|cffccaa00%r|r Новая линия|n"
-	.."|cffccaa00%L|r Прошедшее время после последнего обновления|n"
-	.."|cffccaa00%B|r Мировые баффы и статус Эликсира|n"
-	.."|cffccaa00%i{|cffffffffСсылка на ID|cffccaa00}|r Значок предмета|n"
-	.."|cffccaa00%n{|cffffffffСсылка на ID|cffccaa00}|r Количество предметов|n"
-	.."|cffccaa00%i{|cffffffffСсылка на ID|cffccaa00}|r Значок + Количество|n"
-	.."|cffccaa00e.g. %I{|cffffffff[осколков души]|r} or %I{6265} => |TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t25|r|n"
-	.."|cffccaa00e.g. %I{|cffffffff[Badge of Justice]|r} or %I{29434} => |TInterface/Icons/Spell_holy_championsbond:14:14|t25|r|n"
-	.."|cffccaa00%T|r Перезарядка навыков профессии   |cffccaa00%Q|r Time to DQ Reset|n"	--
-	.."|cffccaa00%d|r Completed Daily Quests   |cffccaa00%D|r Maximum Daily Quests|n"	--
-	.."|cffccaa00%F######|r Цвет начала(RGB кодировка)|n|cffccaa00%f|r Цвет окончания|n"
-	.."|cffccaa00(ex) %FffffffБелый%f =>|r |cffffffffБелый|r|n   |cffccaa00%Fff0000Красный%f => |r|cffff0000Красный|r"
+    .."|cffccaa00[name]|r Имя (цвет класса)|n"
+    .."|cffccaa00[name2]|r Имя (без цвета)|n"
+    .."|cffccaa00[level] [expCur] [expMax] [exp%]|r|n"
+    .."|cffccaa00[expRest] [expRest%] [zone] [subzone]|r|n"
+    .."|cffccaa00[elapsed]|r Прошедшее время после последнего обновления|n"
+    .."|cffccaa00[item:|cffffeeaaимя на ID|r]|r значок и количество|n"
+    .."|cffccaa00[currency:|cffffeeaaимя на ID|r]|r значок и количество|n"
+    .."|cffccaa00[cooldown]|r Перезарядка навыков профессии|n"
+    .."|cffccaa00[dqCom] [dqMax]|r|n"
+    .."|cffccaa00[dqReset]|r Time left until DQ Reset|n"
+    .."|cffccaa00[color/######]|r Цвет начала(RGB кодировка)|n|cffccaa00[color]|r Цвет окончания|n"
+    .."  Цвет, добавляя /###### в конец|n"
+    .."|cffffeeaa(ex) |r|cffccaa00[color/ffffff]Белый[color] =>|r |cffffffffБелый|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..GetItemIcon(6265)..":14:14|t12|r"
 L["Tooltip - Raid instances"] = true
 L["Lines of raid instances"] = true
 L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Использование - Информация о подземелье|r|n"
-	.."|cffccaa00!n|r Название подземелья|n"
-	.."|cffccaa00!d|r Размер и сложность|n"
-	.."|cffccaa00!p|r Количество убитых боссов|n"
-	.."|cffccaa00!P|r Количество боссов|n"
-	.."|cffccaa00!t|r Время сброса|n"
-	.."|cffccaa00!i|r ID подземелья|n"
+    .."|cffccaa00[instName]|r Название подземелья|n"
+    .."|cffccaa00[difficulty]|r Размер и сложность|n"
+    .."|cffccaa00[progress]|r Количество убитых боссов|n"
+    .."|cffccaa00[bosses]|r Количество боссов|n"
+    .."|cffccaa00[time]|r Время сброса|n"
+    .."|cffccaa00[instID]|r ID подземелья|n"
 L["Tooltip - Heroic instances"] = true
 L["Lines of heroic instances"] = true
 
@@ -71,5 +60,37 @@ L["Reset all characters"] = "Сбросить всех персонажей"
 L["Copy settings to"] = "Настройки копирования на"
 L["Copy"] = "Копировать"
 L["Confirm copy"] = "Настройки копирования перезапишут информацию о персонаже/подземелье."
+
+-- Localized Translation Table
+L["color"     ] = true
+L["item"      ] = true
+L["currency"  ] = true
+L["name"      ] = true
+L["name2"     ] = true
+L["zone"      ] = true
+L["subzone"   ] = true
+L["cooldown"  ] = true
+L["elapsed"   ] = true
+L["level"     ] = true
+L["expCur"    ] = true
+L["expMax"    ] = true
+L["exp%"      ] = true
+L["expRest"   ] = true
+L["expRest%"  ] = true
+L["dqCom"     ] = true
+L["dqMax"     ] = true
+L["dqReset"   ] = true
+L["instName"  ] = true
+L["instID"    ] = true
+L["difficulty"] = true
+L["progress"  ] = true
+L["bosses"    ] = true
+L["time"      ] = true
+-- Localized Currency Name
+L["gold"      ] = true
+L["silver"    ] = true
+L["copper"    ] = true
+L["honor"     ] = true
+L["arena"     ] = true
 
 end

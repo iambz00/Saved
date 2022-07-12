@@ -1,6 +1,7 @@
-## Interface: 20504
+## Interface: 30400
 ## Title: Saved! Classic
-## Version: 2.2.1
+## Version: 3.0.0
+## X-Curse-Project-ID: 357612
 
 ## Notes-koKR: 인스턴스 귀속 정보 및 골드, 경험치 한눈에 보기
 ## Notes: List instances, money, exps and customizable

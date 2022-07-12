@@ -1,13 +1,10 @@
 local AddonName, Addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "enUS", true)
-local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
-local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
-local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
 
 if L then
 L["Transmute"] = true
 
-L["Reset due to update"] = function(oldv, newv) return "Reset some or entire data due to version update ("..oldv.." -> "..newv ")" end
+L["Reset due to update"] = function(oldv, newv) return "Reset some or entire data due to version update ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(extended)"
 
 L["minites"] = "m"
@@ -30,37 +27,29 @@ L["Line 1 of char info."] = true
 L["Line 2 of char info."] = true
 L["Left"] = true
 L["Right"] = true
-L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Usage - Character info|r|n"
-	.."|cffccaa00%n|r Name(Class color)|n|cffccaa00%N|r Name(No color)|n"
-	.."|cffccaa00%g|r Gold   |cffccaa00%s|r Silver   |cffccaa00%c|r Copper|n"
-	.."|cffccaa00%G|r "..GOLD_ICON.."    |cffccaa00%S|r "..SILVER_ICON.."    |cffccaa00%C|r "..COPPER_ICON.."|n"
-	.."|cffccaa00%l|r Current Level   |cffccaa00%p|r Current Exp %|n"
-	.."|cffccaa00%e|r Current Exp   |cffccaa00%E|r Max Exp|n"
-	.."|cffccaa00%R|r Rest Exp   |cffccaa00%P|r Rest Exp %|n"
-	.."|cffccaa00%Z|r Currnet Zone   |cffccaa00%z|r Subzone|n"
-	.."|cffccaa00%H|r |T137000:14:14:0:0:14:14:0:8:0:8|t |cffccaa00%h|r Honor Points|n"
-	.."|cffccaa00%A|r |T136729:14:14|t |cffccaa00%a|r Arena Points|n"
-	.."|cffccaa00%r|r New line|n"
-	.."|cffccaa00%L|r Elapsed time after last update|n"
-	.."|cffccaa00%B|r Flasks and Elixirs|n"
-	.."|cffccaa00%i{|cffffffffItemlink or ID|cffccaa00}|r Item icon|n"
-	.."|cffccaa00%n{|cffffffffItemlink or ID|cffccaa00}|r Item amount|n"
-	.."|cffccaa00%i{|cffffffffItemlink or ID|cffccaa00}|r Icon + Amount|n"
-	.."|cffccaa00e.g. %I{|cffffffff[Soul Shard]|r} or %I{6265} => |TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t25|r|n"
-	.."|cffccaa00e.g. %I{|cffffffff[Badge of Justice]|r} or %I{29434} => |TInterface/Icons/Spell_holy_championsbond:14:14|t25|r|n"
-	.."|cffccaa00%T|r Tradeskill cooldowns   |cffccaa00%Q|r Time to DQ Reset|n"
-	.."|cffccaa00%d|r Completed Daily Quests   |cffccaa00%D|r Maximum Daily Quests|n"
-	.."|cffccaa00%F######|r Color starts(RGB code)|n|cffccaa00%f|r Color ends|n"
-	.."|cffccaa00(ex) %FffffffWhite%f =>|r |cffffffffWhite|r|n   |cffccaa00%Fff0000Red%f => |r|cffff0000Red|r"
+L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Keywords for Character info|r|n"
+    .."|cffccaa00[name]|r Name(Class color)|n"
+    .."|cffccaa00[name2]|r Name(No color)|n"
+    .."|cffccaa00[level] [expCur] [expMax] [exp%]|r|n"
+    .."|cffccaa00[expRest] [expRest%] [zone] [subzone]|r|n"
+    .."|cffccaa00[elapsed]|r Elapsed time after last update|n"
+    .."|cffccaa00[item:|cffffeeaaname or ID|r]|r Item Icon and Count|n"
+    .."|cffccaa00[currency:|cffffeeaaname or ID|r]|r Currency Icon and Count|n"
+    .."|cffccaa00[cooldown]|r Tradeskill cooldowns|n"
+    .."|cffccaa00[dqCom] [dqMax]|r|n"
+    .."|cffccaa00[dqReset]|r Time left until DQ reset|n"
+    .."|cffccaa00[color/######]|r Color starts(RGB code)|n|cffccaa00[color]|r Color ends|n"
+    .."  attach /###### to apply color|n"
+    .."|cffffeeaa(ex) |r|cffccaa00[color/ffffff]WHITE[color] =>|r |cffffffffWHITE|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..GetItemIcon(6265)..":14:14|t12|r"
 L["Tooltip - Raid instances"] = true
 L["Lines of raid instances"] = true
-L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Usage - Instance info|r|n"
-	.."|cffccaa00!n|r Instance name|n"
-	.."|cffccaa00!d|r Size and Difficulty|n"
-	.."|cffccaa00!p|r Number of bosses killed|n"
-	.."|cffccaa00!P|r Number of bosses|n"
-	.."|cffccaa00!t|r Time to reset|n"
-	.."|cffccaa00!i|r Instance ID|n"
+L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Keywords for Instance info|r|n"
+    .."|cffccaa00[instName]|r Instance name|n"
+    .."|cffccaa00[difficulty]|r Size and Difficulty|n"
+    .."|cffccaa00[progress]|r Number of bosses killed|n"
+    .."|cffccaa00[bosses]|r Number of bosses|n"
+    .."|cffccaa00[time]|r Time to reset|n"
+    .."|cffccaa00[instID]|r Instance ID|n"
 L["Tooltip - Heroic instances"] = true
 L["Lines of heroic instances"] = true
 
@@ -71,5 +60,37 @@ L["Reset all characters"] = true
 L["Copy settings to"] = true
 L["Copy"] = true
 L["Confirm copy"] = "Overwrite settings to target character"
+
+-- Localized Translation Table
+L["color"     ] = true
+L["item"      ] = true
+L["currency"  ] = true
+L["name"      ] = true
+L["name2"     ] = true
+L["zone"      ] = true
+L["subzone"   ] = true
+L["cooldown"  ] = true
+L["elapsed"   ] = true
+L["level"     ] = true
+L["expCur"    ] = true
+L["expMax"    ] = true
+L["exp%"      ] = true
+L["expRest"   ] = true
+L["expRest%"  ] = true
+L["dqCom"     ] = true
+L["dqMax"     ] = true
+L["dqReset"   ] = true
+L["instName"  ] = true
+L["instID"    ] = true
+L["difficulty"] = true
+L["progress"  ] = true
+L["bosses"    ] = true
+L["time"      ] = true
+-- Localized Currency Name
+L["gold"      ] = true
+L["silver"    ] = true
+L["copper"    ] = true
+L["honor"     ] = true
+L["arena"     ] = true
 
 end
