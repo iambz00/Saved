@@ -15,15 +15,10 @@ local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
 SavedClassic.ts = { -- Tradeskills of long cooldowns
-    [29688] = { altName = L["Transmute"], },    -- Transmute: Primal Might
-    [28028] = { },  -- Void Sphere
-    [26751] = { },  -- Primal Mooncloth
-    [31373] = { },  -- SpellCloth
-    [36686] = { },  -- Shadowcloth
+    [28568] = { altName = L["Transmute"], },    -- Transmute: Primal Might
 }
 SavedClassic.items = {  -- Items to count always
     [6265] = { },   -- Soulshard
-    [29434] = { },  -- Badge of Justice
 }
 
 local dbDefault = {
@@ -47,12 +42,11 @@ local dbDefault = {
 }
 
 SavedClassic.currencies = {
-    [1] = { icon = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t" },   -- Gold
-    [2] = { icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
-    [3] = { icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
-    [4] = { icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" },   -- Honor point
-    [5] = { icon = "|T136729:14:14|t" },   -- Arena point
---@do-not-package@
+    [1] = { name = L["gold"]  , icon = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"},   -- Gold
+    [2] = { name = L["silver"], icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
+    [3] = { name = L["copper"], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
+    [4] = { name = L["honor"] , icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" },   -- Honor point
+    [5] = { name = L["arena"] , icon = "|T136729:14:14|t" },   -- Arena point
     [42] = {},  -- Badge of Justice Miscellaneous   3.0.2
     [61] = {},  -- Dalaran Jewelcrafter's Token Wrath of the Lich King  3.0.2
     [81] = {},  -- Epicurean's Award    Miscellaneous   3.1.0
@@ -71,7 +65,6 @@ SavedClassic.currencies = {
     [301] = {}, -- Emblem of Triumph    Dungeon and Raid    3.3.5
     [321] = {}, -- Isle of Conquest Mark of Honor   Player vs. Player   3.3.5
     [341] = {}, -- Emblem of Frost  Dungeon and Raid    3.3.5
---@end-do-not-package@
     byName = {
         [L["gold"]   ] = 1,
         [L["silver"] ] = 2,
@@ -150,34 +143,6 @@ local _TranslationTable = {
     }
 }
 setmetatable(_TranslationTable, { __index = function(t,k) return t.byLocale[k] and t[t.byLocale[k] ] or k end })
-
-local _TranslationLocale = {
-    [L["color"     ] ] = "color",
-    [L["item"      ] ] = "item",
-    [L["currency"  ] ] = "currency",
-    [L["name"      ] ] = "name",
-    [L["name2"     ] ] = "name2",
-    [L["zone"      ] ] = "zone",
-    [L["subzone"   ] ] = "subzone",
-    [L["cooldown"  ] ] = "cooldown",
-    [L["elapsed"   ] ] = "elapsed",
-    [L["level"     ] ] = "level",
-    [L["expCur"    ] ] = "expCur",
-    [L["expMax"    ] ] = "expMax",
-    [L["exp%"      ] ] = "exp%",
-    [L["expRest"   ] ] = "expRest",
-    [L["expRest%"  ] ] = "expRest%",
-    [L["dqCom"     ] ] = "dqCom",
-    [L["dqMax"     ] ] = "dqMax",
-    [L["dqReset"   ] ] = "dqReset",
-    [L["instName"  ] ] = "instName",
-    [L["instID"    ] ] = "instID",
-    [L["difficulty"] ] = "difficulty",
-    [L["progress"  ] ] = "progress",
-    [L["bosses"    ] ] = "bosses",
-    [L["time"      ] ] = "time",
-}
-setmetatable(_TranslationTable, { __index = function(t,k) return _TranslationLocale[k] and t[_TranslationLocale[k] ] or k end })
 
 function SavedClassic:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
@@ -287,7 +252,7 @@ function SavedClassic:InitPlayerDB()
         else
             playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         end
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["item"]..":29434] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":102] ["..L["currency"]..":101] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
     end
 
     playerdb.info3 = true
@@ -720,11 +685,16 @@ function SavedClassic:BuildOptions()
     end
 	local currencyTooltipText = ""
 	-- icon into currency table and tooltip text
-	for id, currency in pairs(self.currencies) do
-		if tonumber(id) and id > 5 then
-			local name,_, icon = GetCurrencyInfo(id)
-			currency.icon = "|T"..icon..":14:14:0:0:14:14:0:8:0:8|t"
-			currencyTooltipText = currencyTooltipText..currency.icon..id..": "..name.."\n"
+	for id=1,341 do
+		local currency = self.currencies[id]
+		if currency then
+			if tonumber(id) and id > 5 then
+				local name,_, icon = GetCurrencyInfo(id)
+				currency.icon = "|T"..icon..":14:14|t"
+				currencyTooltipText = currencyTooltipText..currency.icon..id..": "..name.."\n"
+			else
+				currencyTooltipText = currencyTooltipText..currency.icon..id..": "..currency.name.."\n"
+			end
 		end
 	end
 

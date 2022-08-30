@@ -34,13 +34,13 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Использование - Инф�
     .."|cffccaa00[expRest] [expRest%] [zone] [subzone]|r|n"
     .."|cffccaa00[elapsed]|r Прошедшее время после последнего обновления|n"
     .."|cffccaa00[item:|cffffeeaaимя на ID|r]|r значок и количество|n"
-    .."|cffccaa00[currency:|cffffeeaaимя на ID|r]|r значок и количество|n"
     .."|cffccaa00[cooldown]|r Перезарядка навыков профессии|n"
     .."|cffccaa00[dqCom] [dqMax]|r|n"
     .."|cffccaa00[dqReset]|r Time left until DQ Reset|n"
     .."|cffccaa00[color/######]|r Цвет начала(RGB кодировка)|n|cffccaa00[color]|r Цвет окончания|n"
     .."  Цвет, добавляя /###### в конец|n"
-    .."|cffffeeaa(ex) |r|cffccaa00[color/ffffff]Белый[color] =>|r |cffffffffБелый|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..GetItemIcon(6265)..":14:14|t12|r"
+    .."|cffffeeaa(ex) |r|cffccaa00[color/ffffff]Белый[color] =>|r |cffffffffБелый|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..GetItemIcon(6265)..":14:14|t12|r|n"
+    .."|cffccaa00[currency:|cffffeeaaимя на ID|r]|r значок и количество|n"
 L["Tooltip - Raid instances"] = true
 L["Lines of raid instances"] = true
 L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Использование - Информация о подземелье|r|n"
