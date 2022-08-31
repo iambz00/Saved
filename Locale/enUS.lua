@@ -87,10 +87,28 @@ L["progress"  ] = true
 L["bosses"    ] = true
 L["time"      ] = true
 -- Localized Currency Name
-L["gold"      ] = true
-L["silver"    ] = true
-L["copper"    ] = true
-L["honor"     ] = true
-L["arena"     ] = true
+L["gold"    ] = true
+L["silver"  ] = true
+L["copper"  ] = true
+L["honor"   ] = true
+L["arena"   ] = true
+L["jewel"   ] = true
+L["cook"    ] = true
+L["heroism" ] = true
+L["valor"   ] = true
+L["conquest"] = true
+L["triumph" ] = true
+L["frost"   ] = true
+L["champion"] = true
+L["AV"      ] = true
+L["AB"      ] = true
+L["EotS"    ] = true
+L["SotA"    ] = true
+L["WSG"     ] = true
+L["WG"      ] = true
+L["IoC"     ] = true
+L["shard"   ] = true
+L["venture" ] = true
+L["justice" ] = true
 
 end

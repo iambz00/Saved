@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.0.0"
+SavedClassic.version = "3.0.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -13,13 +13,6 @@ local MSG_SUFFIX = " |cff00ff00■|r"
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
-
-SavedClassic.ts = { -- Tradeskills of long cooldowns
-    [28568] = { altName = L["Transmute"], },    -- Transmute: Primal Might
-}
-SavedClassic.items = {  -- Items to count always
-    [6265] = { },   -- Soulshard
-}
 
 local dbDefault = {
     realm = {
@@ -41,39 +34,55 @@ local dbDefault = {
     }
 }
 
+SavedClassic.ts = { -- Tradeskills of long cooldowns
+    [28568] = { altName = L["Transmute"], },    -- Transmute
+}
+SavedClassic.items = {  -- Items to count always
+    [6265] = { },   -- Soulshard
+}
 SavedClassic.currencies = {
-    [1] = { name = L["gold"]  , icon = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"},   -- Gold
-    [2] = { name = L["silver"], icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
-    [3] = { name = L["copper"], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
-    [4] = { name = L["honor"] , icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" },   -- Honor point
-    [5] = { name = L["arena"] , icon = "|T136729:14:14|t" },   -- Arena point
-    [42] = {},  -- Badge of Justice Miscellaneous   3.0.2
-    [61] = {},  -- Dalaran Jewelcrafter's Token Wrath of the Lich King  3.0.2
-    [81] = {},  -- Epicurean's Award    Miscellaneous   3.1.0
-    [101] = {}, -- Emblem of Heroism    Dungeon and Raid    3.1.0
-    [102] = {}, -- Emblem of Valor  Dungeon and Raid    3.1.0
-    [121] = {}, -- Alterac Valley Mark of Honor Player vs. Player   3.1.0
-    [122] = {}, -- Arathi Basin Mark of Honor   Player vs. Player   3.1.0
-    [123] = {}, -- Eye of the Storm Mark of Honor   Player vs. Player   3.1.0
-    [124] = {}, -- Strand of the Ancients Mark of Honor Player vs. Player   3.1.0
-    [125] = {}, -- Warsong Gulch Mark of Honor  Player vs. Player   3.1.0
-    [126] = {}, -- Wintergrasp Mark of Honor    Player vs. Player   3.1.0
-    [161] = {}, -- Stone Keeper's Shard Player vs. Player   3.1.0
-    [201] = {}, -- Venture Coin Player vs. Player   3.1.0
-    [221] = {}, -- Emblem of Conquest   Dungeon and Raid    3.1.0
-    [241] = {}, -- Champion's Seal  Wrath of the Lich King  3.1.0
-    [301] = {}, -- Emblem of Triumph    Dungeon and Raid    3.3.5
-    [321] = {}, -- Isle of Conquest Mark of Honor   Player vs. Player   3.3.5
-    [341] = {}, -- Emblem of Frost  Dungeon and Raid    3.3.5
-    byName = {
-        [L["gold"]   ] = 1,
-        [L["silver"] ] = 2,
-        [L["copper"] ] = 3,
-        [L["honor"]  ] = 4,
-        [L["arena"]  ] = 5,
+    [1]   = { altName = L["gold"    ], icon = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"},   -- Gold
+    [2]   = { altName = L["silver"  ], icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
+    [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
+    [4]   = { altName = L["honor"   ], icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" },   -- Honor point
+    [5]   = { altName = L["arena"   ], icon = "|T136729:14:14|t" },   -- Arena point
+    [61]  = { altName = L["jewel"   ] }, -- Dalaran Jewelcrafter's Token Wrath of the Lich King  3.0.2
+    [81]  = { altName = L["cook"    ] }, -- Epicurean's Award    Miscellaneous   3.1.0
+    [101] = { altName = L["heroism" ] }, -- Emblem of Heroism    Dungeon and Raid    3.1.0
+    [102] = { altName = L["valor"   ] }, -- Emblem of Valor  Dungeon and Raid    3.1.0
+    [221] = { altName = L["conquest"] }, -- Emblem of Conquest   Dungeon and Raid    3.1.0
+    [301] = { altName = L["triumph" ] }, -- Emblem of Triumph    Dungeon and Raid    3.3.5
+    [341] = { altName = L["frost"   ] }, -- Emblem of Frost  Dungeon and Raid    3.3.5
+    [241] = { altName = L["champion"] }, -- Champion's Seal  Wrath of the Lich King  3.1.0
+    [121] = { altName = L["AV"      ] }, -- Alterac Valley Mark of Honor Player vs. Player   3.1.0
+    [122] = { altName = L["AB"      ] }, -- Arathi Basin Mark of Honor   Player vs. Player   3.1.0
+    [123] = { altName = L["EotS"    ] }, -- Eye of the Storm Mark of Honor   Player vs. Player   3.1.0
+    [124] = { altName = L["SotA"    ] }, -- Strand of the Ancients Mark of Honor Player vs. Player   3.1.0
+    [125] = { altName = L["WSG"     ] }, -- Warsong Gulch Mark of Honor  Player vs. Player   3.1.0
+    [126] = { altName = L["WG"      ] }, -- Wintergrasp Mark of Honor    Player vs. Player   3.1.0
+    [321] = { altName = L["IoC"     ] }, -- Isle of Conquest Mark of Honor   Player vs. Player   3.3.5
+    [161] = { altName = L["shard"   ] }, -- Stone Keeper's Shard Player vs. Player   3.1.0
+    [201] = { altName = L["venture" ] }, -- Venture Coin Player vs. Player   3.1.0
+    [42]  = { altName = L["justice" ] }, -- Badge of Justice Miscellaneous   3.0.2
+    order = {
+        1,2,3,4,5,                  -- Money, Honor, Arena
+        61,81,                      -- Tradeskills
+        101,102,221,301,341,241,    -- Emblems
+        121,122,123,124,125,126,321, -- Mark of Honors
+        161,201,42                  -- PVP, etc
     }
 }
-setmetatable(SavedClassic.currencies, { __index = function(t,k) return t.byName[k] and t[t.byName[k]] end })
+setmetatable(SavedClassic.currencies, { __index = 
+        function(t,k)
+            for id, v in pairs(t) do
+                if v.altName and v.altName == k then
+                    v.id = id   -- Will be used in _TranslationTable
+                    return v
+                end
+            end
+            return nil
+        end }
+)
 
 local _TranslationTable = {
     ["color"    ] = function(_, option, color) return (color and color ~= "") and "|cff"..color or "|r" end,
@@ -84,11 +93,16 @@ local _TranslationTable = {
                         return result
                     end,
     ["currency" ] = function(db, option, color)
-                        local num = tonumber(option) or SavedClassic.currencies.byName[option]
-                        local currency = SavedClassic.currencies[num]
-                        local result = currency and (currency.icon)..(db.currencyCount[num] or "")
-                        if color and color ~= "" then result = "|cff"..color..result.."|r" end
-                        return result
+                        local id = tonumber(option)
+                        local currency = id and SavedClassic.currencies[id] or SavedClassic.currencies[option]
+                        if currency then
+                            id = id or currency.id
+                            local result = currency.icon..(db.currencyCount[id] or "")
+                            if color and color ~= "" then result = "|cff"..color..result.."|r" end
+                            return result
+                        else
+                            return ""
+                        end
                     end,
     ["name"     ] = "coloredName",
     ["name2"    ] = "name",
@@ -252,7 +266,7 @@ function SavedClassic:InitPlayerDB()
         else
             playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         end
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":102] ["..L["currency"]..":101] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["valor"].."] ["..L["currency"]..":"..L["heroism"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
     end
 
     playerdb.info3 = true
@@ -446,6 +460,7 @@ function SavedClassic:CurrencyUpdate()
         --local name, currentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(currencyID)
         --db.currencyCount[currencyID] = { currentAmount, earnedThisWeek, weeklyMax, totalMax }
     end
+    -- It doesn't matter that belows overwrite 1-5
 	self:PLAYER_MONEY()
 	self:PVPCurrency()
     -- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
@@ -685,19 +700,21 @@ function SavedClassic:BuildOptions()
     end
 	local currencyTooltipText = ""
 	-- icon into currency table and tooltip text
-	for id=1,341 do
-		local currency = self.currencies[id]
+    for _, id in pairs(self.currencies.order) do
+        local currency = self.currencies[id]
 		if currency then
-			if tonumber(id) and id > 5 then
-				local name,_, icon = GetCurrencyInfo(id)
-				currency.icon = "|T"..icon..":14:14|t"
-				currencyTooltipText = currencyTooltipText..currency.icon..id..": "..name.."\n"
+            if not currency.icon then
+                local name, _, icon = GetCurrencyInfo(id)
+                currency.name = name
+                currency.icon = "|T"..icon..":14:14|t"
+            end
+			if currency.name then
+				currencyTooltipText = currencyTooltipText.."\n"..currency.icon..currency.altName.."("..id.."): "..currency.name
 			else
-				currencyTooltipText = currencyTooltipText..currency.icon..id..": "..currency.name.."\n"
+				currencyTooltipText = currencyTooltipText..currency.icon..currency.altName
 			end
 		end
-	end
-
+    end
     local db = self.db.realm[player]
     self.optionsTable = {
         name = self.name .. " option",
