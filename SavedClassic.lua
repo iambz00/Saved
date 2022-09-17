@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.0.1"
+SavedClassic.version = "3.0.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -36,6 +36,7 @@ local dbDefault = {
 
 SavedClassic.ts = { -- Tradeskills of long cooldowns
     [28568] = { altName = L["Transmute"], },    -- Transmute
+    [61288] = {},
 }
 SavedClassic.items = {  -- Items to count always
     [6265] = { },   -- Soulshard
@@ -44,8 +45,8 @@ SavedClassic.currencies = {
     [1]   = { altName = L["gold"    ], icon = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"},   -- Gold
     [2]   = { altName = L["silver"  ], icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
     [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
-    [4]   = { altName = L["honor"   ], icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" },   -- Honor point
-    [5]   = { altName = L["arena"   ], icon = "|T136729:14:14|t" },   -- Arena point
+    [1901]   = { altName = L["honor"   ], icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" },   -- Honor point
+    [1900]   = { altName = L["arena"   ], icon = "|T136729:14:14|t" },   -- Arena point
     [61]  = { altName = L["jewel"   ] }, -- Dalaran Jewelcrafter's Token Wrath of the Lich King  3.0.2
     [81]  = { altName = L["cook"    ] }, -- Epicurean's Award    Miscellaneous   3.1.0
     [101] = { altName = L["heroism" ] }, -- Emblem of Heroism    Dungeon and Raid    3.1.0
@@ -65,7 +66,7 @@ SavedClassic.currencies = {
     [201] = { altName = L["venture" ] }, -- Venture Coin Player vs. Player   3.1.0
     [42]  = { altName = L["justice" ] }, -- Badge of Justice Miscellaneous   3.0.2
     order = {
-        1,2,3,4,5,                  -- Money, Honor, Arena
+        1,2,3,1901,1900,                  -- Money, Honor, Arena
         61,81,                      -- Tradeskills
         101,102,221,301,341,241,    -- Emblems
         121,122,123,124,125,126,321, -- Mark of Honors
@@ -446,12 +447,6 @@ function SavedClassic:PLAYER_MONEY()
     db.currencyCount[3] = floor(money % 100)
 end
 
-function SavedClassic:PVPCurrency()
-    local db = self.db.realm[player]
-    db.currencyCount[4] = tonumber(PVPFrameHonorPoints:GetText()) or 0
-    db.currencyCount[5] = tonumber(PVPFrameArenaPoints:GetText()) or 0
-end
-
 function SavedClassic:CurrencyUpdate()
     local db = self.db.realm[player]
     for currencyID, v in pairs(self.currencies) do
@@ -461,8 +456,7 @@ function SavedClassic:CurrencyUpdate()
         --db.currencyCount[currencyID] = { currentAmount, earnedThisWeek, weeklyMax, totalMax }
     end
     -- It doesn't matter that belows overwrite 1-5
-	self:PLAYER_MONEY()
-	self:PVPCurrency()
+    self:PLAYER_MONEY()
     -- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
     -- Achievement, Honor, Arena points
     -- Emblems of Heroism, Valor, Conquest, Triumph, Frost
@@ -482,7 +476,7 @@ function SavedClassic:ShowInfoTooltip(tooltip)
     self:SaveZone()
     self:QUEST_TURNED_IN()
     self:BAG_UPDATE_DELAYED()
-	self:CurrencyUpdate()
+    self:CurrencyUpdate()
 
     if db.showInfoPer == "realm" then
         for _, v in ipairs(self.order) do
@@ -698,22 +692,22 @@ function SavedClassic:BuildOptions()
     for i = 1, #order do
         names[order[i].name] = rdb[order[i].name].coloredName
     end
-	local currencyTooltipText = ""
-	-- icon into currency table and tooltip text
+    local currencyTooltipText = ""
+    -- icon into currency table and tooltip text
     for _, id in pairs(self.currencies.order) do
         local currency = self.currencies[id]
-		if currency then
+        if currency then
             if not currency.icon then
                 local name, _, icon = GetCurrencyInfo(id)
                 currency.name = name
                 currency.icon = "|T"..icon..":14:14|t"
             end
-			if currency.name then
-				currencyTooltipText = currencyTooltipText.."\n"..currency.icon..currency.altName.."("..id.."): "..currency.name
-			else
-				currencyTooltipText = currencyTooltipText..currency.icon..currency.altName
-			end
-		end
+            if currency.name then
+                currencyTooltipText = currencyTooltipText.."\n"..currency.icon..currency.altName.."("..id.."): "..currency.name
+            else
+                currencyTooltipText = currencyTooltipText..currency.icon..currency.altName
+            end
+        end
     end
     local db = self.db.realm[player]
     self.optionsTable = {
