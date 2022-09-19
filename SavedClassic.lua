@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.0.2"
+SavedClassic.version = "3.0.3"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -35,8 +35,21 @@ local dbDefault = {
 }
 
 SavedClassic.ts = { -- Tradeskills of long cooldowns
-    [28568] = { altName = L["Transmute"], },    -- Transmute
-    [61288] = {},
+    -- Alchemy
+    [53781] = { altName = L["Transmute"], },    -- Transmute
+    [60893] = { icon = "136240", },   -- Northrend Alchemy Research
+    -- Mining
+    [55208] = { icon = "237046", },   -- Smelt Titansteel
+    -- Tailoring
+    [56001] = { icon = "237025", },   -- Moonshroud
+    [56002] = { icon = "237022", },   -- Ebonweave
+    [56003] = { icon = "237026", },   -- Spellweave
+    [56005] = { icon = "133666", },   -- Glacial Bag
+    -- Inscription
+    [61177] = { icon = "237171", },   -- Northrend Inscription Research
+    [61288] = { icon = "237133", },   -- Minor Inscription Research
+    -- Jewelcrafting
+    [62242] = { icon = "134095", },   -- Icy Prism
 }
 SavedClassic.items = {  -- Items to count always
     [6265] = { },   -- Soulshard
@@ -45,8 +58,8 @@ SavedClassic.currencies = {
     [1]   = { altName = L["gold"    ], icon = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"},   -- Gold
     [2]   = { altName = L["silver"  ], icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
     [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
-    [1901]   = { altName = L["honor"   ], icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" },   -- Honor point
-    [1900]   = { altName = L["arena"   ], icon = "|T136729:14:14|t" },   -- Arena point
+    [1901]= { altName = L["honor"   ] },   -- Honor point
+    [1900]= { altName = L["arena"   ] },   -- Arena point
     [61]  = { altName = L["jewel"   ] }, -- Dalaran Jewelcrafter's Token Wrath of the Lich King  3.0.2
     [81]  = { altName = L["cook"    ] }, -- Epicurean's Award    Miscellaneous   3.1.0
     [101] = { altName = L["heroism" ] }, -- Emblem of Heroism    Dungeon and Raid    3.1.0
@@ -252,7 +265,7 @@ function SavedClassic:InitPlayerDB()
     playerdb.info1_2 = "\n["..L["currency"]..":"..L["gold"].."/ffee99]  "
     playerdb.info2 = true
     playerdb.info2_1 = ""
-    playerdb.info2_2 = ""
+    playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["justice"].."]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
 
     if UnitLevel("player") < GetMaxPlayerLevel() then
         if class == "WARLOCK" then
@@ -400,7 +413,7 @@ function SavedClassic:SaveTSCooldowns()
     local currentTime = time()
     db.tradeSkills = db.tradeSkills or {}
 
-    for id,alt in pairs(self.ts) do
+    for id, ts in pairs(self.ts) do
         local start, duration = GetSpellCooldown(id)
         if duration > 0 then
             local remain =  start + duration - GetTime()
@@ -408,7 +421,7 @@ function SavedClassic:SaveTSCooldowns()
                 local ends = currentTime + remain   -- resolve game time to real time
                 db.tradeSkills[id] = db.tradeSkills[id] or {}
                 db.tradeSkills[id].ends = ends
-                db.tradeSkills[id].name = alt.altName or GetSpellInfo(id)
+                db.tradeSkills[id].name = ts.altName or GetSpellInfo(id)
             end
         else
             db.tradeSkills[id] = nil
@@ -497,13 +510,18 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
 
     local tsstr = ""
     if db.tradeSkills then
-        for id,ts in pairs(db.tradeSkills) do
-            if ts and ts.ends then
-                ts.name = ts.name or GetSpellInfo(id)
-                local remain = ts.ends - currentTime
+        for id, cooldown in pairs(db.tradeSkills) do
+            local ts = self.ts[id]
+            if ts and cooldown and cooldown.ends then
+                local remain = cooldown.ends - currentTime
                 if remain > 0 then
-                    tsstr = tsstr..ts.name.."(|cffcccccc"..SecondsToTime(remain).."|r) "
+                    local _, _, icon = GetSpellInfo(id)
+                    tsstr = tsstr..(ts.altName or ("|T"..icon..":14:14|t"))..SecondsToTime(remain)
+                else
+                    db.tradeSkills[id] = nil
                 end
+            else
+                db.tradeSkills[id] = nil
             end
         end
     end
@@ -700,7 +718,11 @@ function SavedClassic:BuildOptions()
             if not currency.icon then
                 local name, _, icon = GetCurrencyInfo(id)
                 currency.name = name
-                currency.icon = "|T"..icon..":14:14|t"
+				if id == 1901 then
+					currency.icon = "|T"..icon..":14:14:::14:14:8:0:8:0|t"
+				else
+					currency.icon = "|T"..icon..":14:14|t"
+				end
             end
             if currency.name then
                 currencyTooltipText = currencyTooltipText.."\n"..currency.icon..currency.altName.."("..id.."): "..currency.name
