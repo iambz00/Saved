@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.0.3"
+SavedClassic.version = "3.0.4"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -265,7 +265,6 @@ function SavedClassic:InitPlayerDB()
     playerdb.info1_2 = "\n["..L["currency"]..":"..L["gold"].."/ffee99]  "
     playerdb.info2 = true
     playerdb.info2_1 = ""
-    playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["justice"].."]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
 
     if UnitLevel("player") < GetMaxPlayerLevel() then
         if class == "WARLOCK" then
@@ -274,6 +273,7 @@ function SavedClassic:InitPlayerDB()
             playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         end
         playerdb.info2_1 = "   ["..L["color"].."/cc66ff]["..L["expCur"].."]/["..L["expMax"].."] (["..L["exp%"].."]%)["..L["color"].."] ["..L["color"].."/66ccff]+["..L["expRest"].."] (["..L["expRest%"].."]%)["..L["color"].."]"
+		playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["justice"].."]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
     else
         if class == "WARLOCK" then
             playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]] ["..L["item"]..":6265/cc66cc] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
@@ -281,6 +281,7 @@ function SavedClassic:InitPlayerDB()
             playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         end
         playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["valor"].."] ["..L["currency"]..":"..L["heroism"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+		playerdb.info2_2 = ""
     end
 
     playerdb.info3 = true

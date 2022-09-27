@@ -100,6 +100,15 @@ L["conquest"] = true
 L["triumph" ] = true
 L["frost"   ] = true
 L["champion"] = true
+L["AV"      ] = true
+L["AB"      ] = true
+L["EotS"    ] = true
+L["SotA"    ] = true
+L["WSG"     ] = true
+L["WG"      ] = true
+L["IoC"     ] = true
 L["shard"   ] = true
 L["venture" ] = true
+L["justice" ] = true
+
 end
