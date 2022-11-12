@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.0.4"
+SavedClassic.version = "3.0.5"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -516,8 +516,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             if ts and cooldown and cooldown.ends then
                 local remain = cooldown.ends - currentTime
                 if remain > 0 then
-                    local _, _, icon = GetSpellInfo(id)
-                    tsstr = tsstr..(ts.altName or ("|T"..icon..":14:14|t"))..SecondsToTime(remain)
+                    tsstr = tsstr..(ts.altName or ("|T"..ts.icon..":14:14|t"))..string.format("%02d:%02d", floor(remain / 3600), floor(remain % 3600 / 60))
                 else
                     db.tradeSkills[id] = nil
                 end
