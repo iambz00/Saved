@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.0.6"
+SavedClassic.version = "3.0.7"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -573,8 +573,11 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             local raidList = {}
             for i = 1, #db.raids do
                 local instance = db.raids[i]
-                raidList[instance.name] = raidList[instance.name] or {}
-                table.insert(raidList[instance.name], instance.difficultyName)
+                local remain = SecondsToTime(instance.reset - time())
+                if remain and ( remain ~= "" ) then
+                    raidList[instance.name] = raidList[instance.name] or {}
+                    table.insert(raidList[instance.name], instance.difficultyName)
+                end
             end
             local oneline
             for k,v in pairs(raidList) do
