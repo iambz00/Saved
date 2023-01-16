@@ -87,7 +87,7 @@ L["difficulty"] = "난이도"
 L["progress"  ] = "진행도"
 L["bosses"    ] = "전체보스"
 L["time"      ] = "리셋시간"
--- Localized Currency Name
+-- 화폐명
 L["gold"    ] = "골드"
 L["silver"  ] = "실버"
 L["copper"  ] = "코퍼"
@@ -111,7 +111,7 @@ L["IoC"     ] = "정섬"
 L["shard"   ] = "바위"
 L["venture" ] = "투자"
 L["justice" ] = "정의"
--- Heroic dungeon names, abbrs
+-- 영웅 던전 약자
 L["TOK"] = "안카"
 L[ "AN"] = "아졸"
 L["DTK"] = "드락"
@@ -128,4 +128,13 @@ L["ToC"] = "시험"
 L["HoR"] = "투영"
 L["PoS"] = "사론"
 L["FoS"] = "제련"
+-- 레이드 던전 약자
+L["Naxx"] = "낙스"
+L["OS"]   = "흑요"
+L["EoE"]  = "영눈"
+L["ULD"]  = "울두"
+L["ToC"]  = "십자"
+L["ICC"]  = "얼왕"
+L["RS"]   = "루비"
+L["VoA"]  = "아카본"
 end
