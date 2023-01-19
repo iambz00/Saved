@@ -21,6 +21,7 @@ L["Show info"] = true
 L["per Character"] = true
 L["per Realm"] = true
 L["Hide info from level under"] = true
+L["Show current chracter first"] = true
 
 L["Tooltip - Character info."] = true
 L["Line 1 of char info."] = true

@@ -21,6 +21,7 @@ L["Show info"] = "Информационное окно"
 L["per Character"] = "По персонажу"
 L["per Realm"] = "По серверу"
 L["Hide info from level under"] = "Скрыть информацию с уровня ниже"
+L["Show current chracter first"] = true
 
 L["Tooltip - Character info."] = "Информация, относящаяся к параметру всплывающей подсказки" --"Информация для персонажа"
 L["Line 1 of char info."] = "Первая строка с информацией по специализации персонажа"

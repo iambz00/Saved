@@ -21,6 +21,7 @@ L["Show info"] = "정보표시"
 L["per Character"] = "캐릭터별"
 L["per Realm"] = "서버별"
 L["Hide info from level under"] = "다음 레벨 미만 감추기"
+L["Show current chracter first"] = "현재 캐릭터 가장 위에 표시"
 
 L["Tooltip - Character info."] = "툴팁 설정 - 캐릭터별 정보" --"캐릭터별 정보"
 L["Line 1 of char info."] = "캐릭터별 정보 첫번째 줄"

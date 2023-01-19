@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.0.8"
+SavedClassic.version = "3.0.9"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -265,13 +265,17 @@ function SavedClassic:OnDisable()
 end
 
 function SavedClassic:SetOrder()
-    -- db for ordered list
+    local db = self.db.realm[player]
     self.order = { }
     for k, v in pairs(self.db.realm) do
         table.insert(self.order, { name = v.name, level = v.level })
     end
     table.sort(self.order,
         function(a,b)
+            if db.currentFirst then
+                if a.name == player then return true end
+                if b.name == player then return false end
+            end
             local al = a.level or 0
             local bl = b.level or 0
             if al == bl then
@@ -310,7 +314,7 @@ function SavedClassic:InitPlayerDB()
         else
             playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         end
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["valor"].."] ["..L["currency"]..":"..L["heroism"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["conquest"].."] ["..L["currency"]..":"..L["valor"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
         playerdb.info2_2 = ""
     end
 
@@ -595,6 +599,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                 oneline = oneline.." "..name.."("..v[1]..(v[2] and "/"..v[2] or "")..")"
             end
             if oneline ~= "" then
+                oneline = oneline:gsub("^ ","") -- trim leading space
                 tooltip:AddLine("   "..oneline)
             end
         else
@@ -887,6 +892,15 @@ function SavedClassic:BuildOptions()
                         max = GetMaxPlayerLevel(),
                         step = 1,
                         order = 131
+                    },
+                    currentFirst = {
+                        name = L["Show current chracter first"],
+                        type = "toggle",
+                        set = function(info, value)
+                            db[info[#info]] = value
+                            self:SetOrder()
+                        end,
+                        order = 141
                     },
                 }
             },
