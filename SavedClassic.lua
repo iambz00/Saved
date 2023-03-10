@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.1.1"
+SavedClassic.version = "3.1.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -263,6 +263,7 @@ function SavedClassic:OnInitialize()
     self:ClearItemCount()
     self:QUEST_TURNED_IN()
     self:BAG_UPDATE_DELAYED()
+    LibGearScore:PLAYER_ENTERING_WORLD()
 end
 
 function SavedClassic:OnEnable()
