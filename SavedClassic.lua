@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.1.2"
+SavedClassic.version = "3.2.0"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -64,28 +64,29 @@ SavedClassic.currencies = {
     [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
     [1901]= { altName = L["honor"   ] }, -- Honor point
     [1900]= { altName = L["arena"   ] }, -- Arena point
-    [61]  = { altName = L["jewel"   ] }, -- Dalaran Jewelcrafter's Token Wrath of the Lich King  3.0.2
-    [81]  = { altName = L["cook"    ] }, -- Epicurean's Award    Miscellaneous   3.1.0
-    [101] = { altName = L["heroism" ] }, -- Emblem of Heroism    Dungeon and Raid    3.1.0
-    [102] = { altName = L["valor"   ] }, -- Emblem of Valor  Dungeon and Raid    3.1.0
-    [221] = { altName = L["conquest"] }, -- Emblem of Conquest   Dungeon and Raid    3.1.0
-    [301] = { altName = L["triumph" ] }, -- Emblem of Triumph    Dungeon and Raid    3.3.5
-    [341] = { altName = L["frost"   ] }, -- Emblem of Frost  Dungeon and Raid    3.3.5
-    [241] = { altName = L["champion"] }, -- Champion's Seal  Wrath of the Lich King  3.1.0
-    [121] = { altName = L["AV"      ] }, -- Alterac Valley Mark of Honor Player vs. Player   3.1.0
-    [122] = { altName = L["AB"      ] }, -- Arathi Basin Mark of Honor   Player vs. Player   3.1.0
-    [123] = { altName = L["EotS"    ] }, -- Eye of the Storm Mark of Honor   Player vs. Player   3.1.0
-    [124] = { altName = L["SotA"    ] }, -- Strand of the Ancients Mark of Honor Player vs. Player   3.1.0
-    [125] = { altName = L["WSG"     ] }, -- Warsong Gulch Mark of Honor  Player vs. Player   3.1.0
-    [126] = { altName = L["WG"      ] }, -- Wintergrasp Mark of Honor    Player vs. Player   3.1.0
-    [321] = { altName = L["IoC"     ] }, -- Isle of Conquest Mark of Honor   Player vs. Player   3.3.5
-    [161] = { altName = L["shard"   ] }, -- Stone Keeper's Shard Player vs. Player   3.1.0
-    [201] = { altName = L["venture" ] }, -- Venture Coin Player vs. Player   3.1.0
-    [42]  = { altName = L["justice" ] }, -- Badge of Justice Miscellaneous   3.0.2
+    [61]  = { altName = L["jewel"   ] }, -- 3.0.2 Dalaran Jewelcrafter's Token
+    [81]  = { altName = L["cook"    ] }, -- 3.1.0 Epicurean's Award
+    [101] = { altName = L["heroism" ] }, -- 3.1.0 Emblem of Heroism
+    [102] = { altName = L["valor"   ] }, -- 3.1.0 Emblem of Valor
+    [221] = { altName = L["conquest"] }, -- 3.1.0 Emblem of Conquest
+    [301] = { altName = L["triumph" ] }, -- 3.3.5 Emblem of Triumph
+    [341] = { altName = L["frost"   ] }, -- 3.3.5 Emblem of Frost
+    [241] = { altName = L["champion"] }, -- 3.1.0 Champion's Seal
+    [121] = { altName = L["AV"      ] }, -- 3.1.0 Alterac Valley Mark of Honor
+    [122] = { altName = L["AB"      ] }, -- 3.1.0 Arathi Basin Mark of Honor
+    [123] = { altName = L["EotS"    ] }, -- 3.1.0 Eye of the Storm Mark of Honor
+    [124] = { altName = L["SotA"    ] }, -- 3.1.0 Strand of the Ancients Mark of Honor
+    [125] = { altName = L["WSG"     ] }, -- 3.1.0 Warsong Gulch Mark of Honor
+    [126] = { altName = L["WG"      ] }, -- 3.1.0 Wintergrasp Mark of Honor
+    [321] = { altName = L["IoC"     ] }, -- 3.3.5 Isle of Conquest Mark of Honor
+    [161] = { altName = L["shard"   ] }, -- 3.1.0 Stone Keeper's Shard
+    [201] = { altName = L["venture" ] }, -- 3.1.0 Venture Coin
+    [42]  = { altName = L["justice" ] }, -- 3.0.2 Badge of Justice
+    [2589]= { altName = L["sidereal"] }, -- 3.4.2 Sidereal Essence
     order = {
         1,2,3,1901,1900,                  -- Money, Honor, Arena
         61,81,                      -- Tradeskills
-        101,102,221,301,341,241,    -- Emblems
+        101,102,221,301,341,241,2589,  -- Emblems
         121,122,123,124,125,126,321, -- Mark of Honors
         161,201,42                  -- PVP, etc
     }
@@ -116,7 +117,7 @@ SavedClassic.abbr.heroic = {
     [C_Map.GetAreaInfo(4415)] = L[ "VH"],
     [C_Map.GetAreaInfo(206 )] = L[ "UK"],
     [C_Map.GetAreaInfo(1196)] = L[ "UP"],
-    [C_Map.GetAreaInfo(4723)] = L["ToC"],
+    [C_Map.GetAreaInfo(4723)] = L["ToCh"],
     [C_Map.GetAreaInfo(4820)] = L["HoR"],
     [C_Map.GetAreaInfo(4813)] = L["PoS"],
     [C_Map.GetAreaInfo(4809)] = L["FoS"],

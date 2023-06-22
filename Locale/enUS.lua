@@ -116,6 +116,7 @@ L["IoC"     ] = true
 L["shard"   ] = true
 L["venture" ] = true
 L["justice" ] = true
+L["sidereal"] = true
 -- Heroic dungeon names, abbrs
 L["TOK"] = true
 L[ "AN"] = true
@@ -129,7 +130,7 @@ L["Ocu"] = true
 L[ "VH"] = true
 L[ "UK"] = true
 L[ "UP"] = true
-L["ToC"] = true
+L["ToCh"] = "ToC"
 L["HoR"] = true
 L["PoS"] = true
 L["FoS"] = true
