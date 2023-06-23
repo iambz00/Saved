@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.2.0"
+SavedClassic.version = "3.2.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -136,10 +136,15 @@ SavedClassic.abbr.raid = {
 local _TranslationTable = {
     ["color"    ] = function(_, option, color) return (color and color ~= "") and "|cff"..color or "|r" end,
     ["item"     ] = function(db, option, color)
-                        local id = SavedClassic:StripLink(option)
-                        local result = "|T"..GetItemIcon(id)..":14:14|t"..(db.itemCount[id] or "-")
-                        if color and color ~= "" then result = "|cff"..color..result.."|r" end
-                        return result
+                        local _, itemLink = GetItemInfo(option)
+                        if itemLink then
+                            local id = SavedClassic:StripLink(itemLink)
+                            local result = "|T"..GetItemIcon(id)..":14:14|t"..(db.itemCount[id] or "-")
+                            if color and color ~= "" then result = "|cff"..color..result.."|r" end
+                            return result
+                        else
+                            return ""
+                        end
                     end,
     ["currency" ] = function(db, option, color)
                         local id = tonumber(option)
@@ -325,7 +330,7 @@ function SavedClassic:InitPlayerDB()
         else
             playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         end
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["conquest"].."] ["..L["currency"]..":"..L["valor"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["triumph"].."] ["..L["currency"]..":"..L["conquest"].."] ["..L["currency"]..":"..L["valor"].."] ["..L["currency"]..":"..L["heroism"].."] ["..L["currency"]..":"..L["sidereal"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
         playerdb.info2_2 = ""
     end
 
@@ -482,11 +487,14 @@ end
 function SavedClassic:BAG_UPDATE_DELAYED()
     local db = self.db.realm[player]
     local infoStr = db.info1_1..db.info1_2..db.info2_1..db.info2_2
-    local itemList = string.gmatch(infoStr, "%%[Iia]%{[^}]+%}")
+    local itemList = string.gmatch(infoStr, "%["..L["item"]..":([^]]+)%]")
 
-    for itemLink in itemList do
-        local itemID = self:StripLink(itemLink)
-        db.itemCount[itemID] = GetItemCount(itemID, true) or 0
+    for itemLink in itemList do -- item link or ID or name
+        local _, itemLink = GetItemInfo(itemLink)
+        if itemLink then
+            local itemID = self:StripLink(itemLink)
+            db.itemCount[itemID] = GetItemCount(itemLink, true) or 0
+        end
     end
     for id, _ in pairs(self.items) do
         db.itemCount[id] = GetItemCount(id, true) or 0
@@ -494,7 +502,7 @@ function SavedClassic:BAG_UPDATE_DELAYED()
 end
 
 function SavedClassic:StripLink(link)
-    return tonumber(string.match(link, "(%d+):") or string.match(link, "(%d+)"))
+    return tonumber(string.match(link, "(%d+):") or string.match(link, "(%d+)")) or ""
 end
 
 function SavedClassic:PLAYER_MONEY()
@@ -670,7 +678,7 @@ end
 
 function SavedClassic:TranslateCharacter(line, db)
     -- [keyword] [keyword:option] [keyword/color] [keyword:option/color]
-    return line:gsub("(%[([^]^[^/^:]*):?([^]^[^/]*)/?([^]^[]*)%])", function(...) return self:TranslateCharacterWord(db, ...) end )
+    return line:gsub("%]?|h%[?", "|h"):gsub("(%[([^]^[^/^:]*):?([^]^[^/]*)/?([^]^[]*)%])", function(...) return self:TranslateCharacterWord(db, ...) end )
 end
 
 function SavedClassic:TranslateCharacterWord(db, strBefore, keyword, option, color)
