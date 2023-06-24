@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.2.1"
+SavedClassic.version = "3.2.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -127,6 +127,7 @@ SavedClassic.abbr.raid = {
     [C_Map.GetAreaInfo(4493)] = L["OS"],
     [C_Map.GetAreaInfo(4500)] = L["EoE"],
     [C_Map.GetAreaInfo(4273)] = L["ULD"],
+    [C_Map.GetAreaInfo(2159)] = L["Ony"],
     [C_Map.GetAreaInfo(4722)] = L["ToC"],
     [C_Map.GetAreaInfo(4812)] = L["ICC"],
     [C_Map.GetAreaInfo(4987)] = L["RS"],

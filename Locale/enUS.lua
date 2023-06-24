@@ -139,6 +139,7 @@ L["Naxx"] = true
 L["OS"]   = true
 L["EoE"]  = true
 L["ULD"]  = true
+L["Ony"]  = true
 L["ToC"]  = true
 L["ICC"]  = true
 L["RS"]   = true
