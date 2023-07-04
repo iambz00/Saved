@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.2.2"
+SavedClassic.version = "3.2.3"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -123,15 +123,15 @@ SavedClassic.abbr.heroic = {
     [C_Map.GetAreaInfo(4809)] = L["FoS"],
 }
 SavedClassic.abbr.raid = {
-    [C_Map.GetAreaInfo(3456)] = L["Naxx"],
-    [C_Map.GetAreaInfo(4493)] = L["OS"],
-    [C_Map.GetAreaInfo(4500)] = L["EoE"],
-    [C_Map.GetAreaInfo(4273)] = L["ULD"],
-    [C_Map.GetAreaInfo(2159)] = L["Ony"],
-    [C_Map.GetAreaInfo(4722)] = L["ToC"],
-    [C_Map.GetAreaInfo(4812)] = L["ICC"],
-    [C_Map.GetAreaInfo(4987)] = L["RS"],
-    [C_Map.GetAreaInfo(4603)] = L["VoA"],
+    [C_Map.GetAreaInfo(4812)] = { order = 101, name = L["ICC"]  },
+    [C_Map.GetAreaInfo(4722)] = { order = 102, name = L["ToC"]  },
+    [C_Map.GetAreaInfo(4273)] = { order = 103, name = L["ULD"]  },
+    [C_Map.GetAreaInfo(3456)] = { order = 104, name = L["Naxx"] },
+    [C_Map.GetAreaInfo(4987)] = { order = 105, name = L["RS"]   },
+    [C_Map.GetAreaInfo(2159)] = { order = 106, name = L["Ony"]  },
+    [C_Map.GetAreaInfo(4500)] = { order = 107, name = L["EoE"]  },
+    [C_Map.GetAreaInfo(4493)] = { order = 108, name = L["OS"]   },
+    [C_Map.GetAreaInfo(4603)] = { order = 109, name = L["VoA"]  },
 }
 
 local _TranslationTable = {
@@ -411,8 +411,15 @@ function SavedClassic:SaveInfo()
         end
     end
 
-    table.sort(raids, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end)
-    table.sort(heroics, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName ) end)
+    table.sort(raids, function(a,b)
+		local aa, bb = self.abbr.raid[a.name], self.abbr.raid[b.name]
+		if aa and aa.order and bb and bb.order and (aa.order < bb.order) then
+            return true
+		else
+			return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName )
+		end
+	end)
+    table.sort(heroics, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName > b.difficultyName ) end)
 
     db.raids = raids
     db.heroics = heroics
@@ -617,21 +624,28 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     db.raids = db.raids or {}
     if db.info3 then
         if db.info3oneline then
-            local raidList = {}
+            local lastName = ""
+            local oneline
             for i = 1, #db.raids do
                 local instance = db.raids[i]
                 local remain = SecondsToTime(instance.reset - time())
-                local name = self.abbr.raid[instance.name] or instance.name
+                local name = self.abbr.raid[instance.name] and self.abbr.raid[instance.name].name or instance.name
                 if remain and ( remain ~= "" ) then
-                    raidList[name] = raidList[name] or {}
-                    table.insert(raidList[name], ""..instance.difficultyName:gsub("[^0-9]*",""))
+                    if name ~= lastName then
+                        if oneline then
+                            oneline = oneline..") "
+                        else
+                            oneline = ""
+                        end
+                        oneline = oneline..name.."("..instance.difficultyName:gsub("[^0-9]*","")
+                    else
+                        oneline = oneline.."/"..instance.difficultyName:gsub("[^0-9]*","")
+                    end
+                    lastName = name
                 end
             end
-            local oneline = ""
-            for name, v in pairs(raidList) do
-                oneline = oneline.." "..name.."("..v[1]..(v[2] and "/"..v[2] or "")..")"
-            end
-            if oneline ~= "" then
+            if oneline and oneline ~= "" then
+                oneline = oneline .. ")"
                 oneline = oneline:gsub("^ ","") -- trim leading space
                 tooltip:AddLine("   "..oneline)
             end
