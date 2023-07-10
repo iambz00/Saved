@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.2.3"
+SavedClassic.version = "3.2.4"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -413,8 +413,8 @@ function SavedClassic:SaveInfo()
 
     table.sort(raids, function(a,b)
 		local aa, bb = self.abbr.raid[a.name], self.abbr.raid[b.name]
-		if aa and aa.order and bb and bb.order and (aa.order < bb.order) then
-            return true
+		if aa and aa.order and bb and bb.order then
+            return aa.order < bb.order
 		else
 			return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName )
 		end
