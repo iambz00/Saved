@@ -134,7 +134,7 @@ L["ToCh"] = "ToC"
 L["HoR"] = true
 L["PoS"] = true
 L["FoS"] = true
--- Raid abbrs
+-- Raid abbr. WotLK
 L["Naxx"] = true
 L["OS"]   = true
 L["EoE"]  = true
@@ -144,4 +144,20 @@ L["ToC"]  = true
 L["ICC"]  = true
 L["RS"]   = true
 L["VoA"]  = true
+-- Raid abbr. TBC
+L["SP"] = true
+L["ZA"] = true
+L["BT"] = true
+L["MH"] = true
+L["SC"] = true
+L["TK"] = true
+L["KZ"] = true
+L["GL"] = true
+L["ML"] = true
+-- Raid abbr. Vanilla
+L["AQ"] = true
+L["RA"] = true
+L["ZG"] = true
+L["BW"] = true
+L["MC"] = true
 end

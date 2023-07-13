@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.2.4"
+SavedClassic.version = "3.2.5"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -123,15 +123,32 @@ SavedClassic.abbr.heroic = {
     [C_Map.GetAreaInfo(4809)] = L["FoS"],
 }
 SavedClassic.abbr.raid = {
-    [C_Map.GetAreaInfo(4812)] = { order = 101, name = L["ICC"]  },
-    [C_Map.GetAreaInfo(4722)] = { order = 102, name = L["ToC"]  },
-    [C_Map.GetAreaInfo(4273)] = { order = 103, name = L["ULD"]  },
-    [C_Map.GetAreaInfo(3456)] = { order = 104, name = L["Naxx"] },
-    [C_Map.GetAreaInfo(4987)] = { order = 105, name = L["RS"]   },
-    [C_Map.GetAreaInfo(2159)] = { order = 106, name = L["Ony"]  },
-    [C_Map.GetAreaInfo(4500)] = { order = 107, name = L["EoE"]  },
-    [C_Map.GetAreaInfo(4493)] = { order = 108, name = L["OS"]   },
-    [C_Map.GetAreaInfo(4603)] = { order = 109, name = L["VoA"]  },
+	-- WotLK Raid
+    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["ICC"]  },
+    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["ToC"]  },
+    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["ULD"]  },
+    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["Naxx"] },
+    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["RS"]   },
+    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["Ony"]  },
+    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["EoE"]  },
+    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["OS"]   },
+    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["VoA"]  },
+	-- TBC Raid
+    [C_Map.GetAreaInfo(4075)] = { order = -209, name = L["SP"]  },
+    [C_Map.GetAreaInfo(3805)] = { order = -208, name = L["ZA"]  },
+    [C_Map.GetAreaInfo(3959)] = { order = -207, name = L["BT"]  },
+    [C_Map.GetAreaInfo(3606)] = { order = -206, name = L["MH"]  },
+    [C_Map.GetAreaInfo(3607)] = { order = -205, name = L["SC"]  },
+    [C_Map.GetAreaInfo(3845)] = { order = -204, name = L["TK"]  },
+    [C_Map.GetAreaInfo(3457)] = { order = -203, name = L["KZ"]  },
+    [C_Map.GetAreaInfo(3923)] = { order = -202, name = L["GL"]  },
+    [C_Map.GetAreaInfo(3836)] = { order = -201, name = L["ML"]  },
+	-- Vanilla Raid
+    [C_Map.GetAreaInfo(3428)] = { order = -105, name = L["AQ"]  },
+    [C_Map.GetAreaInfo(3429)] = { order = -104, name = L["RA"]  },
+    [C_Map.GetAreaInfo(1977)] = { order = -103, name = L["ZG"]  },
+    [C_Map.GetAreaInfo(2677)] = { order = -102, name = L["BW"]  },
+    [C_Map.GetAreaInfo(2717)] = { order = -101, name = L["MC"]  },
 }
 
 local _TranslationTable = {
@@ -175,7 +192,7 @@ local _TranslationTable = {
     ["dqMax"    ] = "dqMax",
     ["dqReset"  ] = "dqReset",
     ["gearScore"] = "gearScore",
-    ["ilvl"]      = "gearAvgLevel",
+    ["ilvl"     ] = "gearAvgLevel",
     ["instName" ] = "name",
     ["instID"   ] = "id",
     ["difficulty"]= "difficultyName",
