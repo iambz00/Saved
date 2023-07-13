@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "1.3"
+SavedClassic.version = "1.4.3"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -521,7 +521,7 @@ end
 
 function SavedClassic:InitUI()
 	local db = self.db.realm[player]
-	local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent)
+	local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent, "BackdropTemplate")
 	self.ui = ui
 	ui:EnableMouse(true)
 	ui:SetWidth(db.frameX)
