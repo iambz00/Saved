@@ -431,7 +431,7 @@ function SavedClassic:SaveInfo()
     table.sort(raids, function(a,b)
 		local aa, bb = self.abbr.raid[a.name], self.abbr.raid[b.name]
 		if aa and aa.order and bb and bb.order then
-            return aa.order < bb.order
+            return ( aa.order < bb.order ) or ( aa.order == bb.order and a.difficultyName < b.difficultyName )
 		else
 			return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName )
 		end
