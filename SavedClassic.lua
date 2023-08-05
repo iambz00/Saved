@@ -40,7 +40,7 @@ local dbDefault = {
 
 SavedClassic.ts = { -- Tradeskills of long cooldowns
     -- Alchemy
-    [53781] = { altName = L["Transmute"], },    -- Transmute
+    [53781] = { icon = "237220", },   -- Transmute with Cardinal Ruby icon
     [60893] = { icon = "136240", },   -- Northrend Alchemy Research
     -- Mining
     [55208] = { icon = "237046", },   -- Smelt Titansteel
