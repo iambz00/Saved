@@ -117,6 +117,7 @@ L["shard"   ] = true
 L["venture" ] = true
 L["justice" ] = true
 L["sidereal"] = true
+L["defilers"] = true
 -- Heroic dungeon names, abbrs
 L["TOK"] = true
 L[ "AN"] = true

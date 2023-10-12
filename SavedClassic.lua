@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.2.5"
+SavedClassic.version = "3.2.6"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -83,10 +83,12 @@ SavedClassic.currencies = {
     [201] = { altName = L["venture" ] }, -- 3.1.0 Venture Coin
     [42]  = { altName = L["justice" ] }, -- 3.0.2 Badge of Justice
     [2589]= { altName = L["sidereal"] }, -- 3.4.2 Sidereal Essence
+    [2711]= { altName = L["defilers"] }, -- 3.4.3 Defiler's Scourgestone
     order = {
-        1,2,3,1901,1900,                  -- Money, Honor, Arena
+        1,2,3,1901,1900,            -- Money, Honor, Arena
         61,81,                      -- Tradeskills
-        101,102,221,301,341,241,2589,  -- Emblems
+        101,102,221,301,341,241,    -- Emblems
+        2589,2711,                  -- Titan
         121,122,123,124,125,126,321, -- Mark of Honors
         161,201,42                  -- PVP, etc
     }
@@ -123,7 +125,7 @@ SavedClassic.abbr.heroic = {
     [C_Map.GetAreaInfo(4809)] = L["FoS"],
 }
 SavedClassic.abbr.raid = {
-	-- WotLK Raid
+    -- WotLK Raid
     [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["ICC"]  },
     [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["ToC"]  },
     [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["ULD"]  },
@@ -133,7 +135,7 @@ SavedClassic.abbr.raid = {
     [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["EoE"]  },
     [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["OS"]   },
     [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["VoA"]  },
-	-- TBC Raid
+    -- TBC Raid
     [C_Map.GetAreaInfo(4075)] = { order = -209, name = L["SP"]  },
     [C_Map.GetAreaInfo(3805)] = { order = -208, name = L["ZA"]  },
     [C_Map.GetAreaInfo(3959)] = { order = -207, name = L["BT"]  },
@@ -143,7 +145,7 @@ SavedClassic.abbr.raid = {
     [C_Map.GetAreaInfo(3457)] = { order = -203, name = L["KZ"]  },
     [C_Map.GetAreaInfo(3923)] = { order = -202, name = L["GL"]  },
     [C_Map.GetAreaInfo(3836)] = { order = -201, name = L["ML"]  },
-	-- Vanilla Raid
+    -- Vanilla Raid
     [C_Map.GetAreaInfo(3428)] = { order = -105, name = L["AQ"]  },
     [C_Map.GetAreaInfo(3429)] = { order = -104, name = L["RA"]  },
     [C_Map.GetAreaInfo(1977)] = { order = -103, name = L["ZG"]  },
@@ -334,21 +336,15 @@ function SavedClassic:InitPlayerDB()
     playerdb.info2 = true
     playerdb.info2_1 = ""
 
+    local soulshards = (class == "WARLOCK") and "["..L["item"]..":6265/cc66cc] " or ""
+
     if UnitLevel("player") < GetMaxPlayerLevel() then
-        if class == "WARLOCK" then
-            playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] ["..L["item"]..":6265/cc66cc] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        else
-            playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        end
+        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] "..soulshards.."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         playerdb.info2_1 = "   ["..L["color"].."/cc66ff]["..L["expCur"].."]/["..L["expMax"].."] (["..L["exp%"].."]%)["..L["color"].."] ["..L["color"].."/66ccff]+["..L["expRest"].."] (["..L["expRest%"].."]%)["..L["color"].."]"
-        playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["justice"].."]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
     else
-        if class == "WARLOCK" then
-            playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] ["..L["item"]..":6265/cc66cc] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        else
-            playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        end
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["triumph"].."] ["..L["currency"]..":"..L["conquest"].."] ["..L["currency"]..":"..L["valor"].."] ["..L["currency"]..":"..L["heroism"].."] ["..L["currency"]..":"..L["sidereal"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] "..soulshards.."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
+        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["frost"].."] ["..L["currency"]..":"..L["triumph"].."] ["..L["currency"]..":"..L["conquest"].."] ["..L["currency"]..":"..L["valor"].."] ["..L["currency"]..":"..L["heroism"].."] ["..L["currency"]..":"..L["defilers"].."] ["..L["currency"]..":"..L["sidereal"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
         playerdb.info2_2 = ""
     end
 
@@ -429,13 +425,13 @@ function SavedClassic:SaveInfo()
     end
 
     table.sort(raids, function(a,b)
-		local aa, bb = self.abbr.raid[a.name], self.abbr.raid[b.name]
-		if aa and aa.order and bb and bb.order then
+        local aa, bb = self.abbr.raid[a.name], self.abbr.raid[b.name]
+        if aa and aa.order and bb and bb.order then
             return ( aa.order < bb.order ) or ( aa.order == bb.order and a.difficultyName < b.difficultyName )
-		else
-			return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName )
-		end
-	end)
+        else
+            return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName < b.difficultyName )
+        end
+    end)
     table.sort(heroics, function(a,b) return ( a.name < b.name ) or ( a.name == b.name and a.difficultyName > b.difficultyName ) end)
 
     db.raids = raids

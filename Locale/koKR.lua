@@ -117,7 +117,7 @@ L["shard"   ] = "바위"
 L["venture" ] = "투자"
 L["justice" ] = "정의"
 L["sidereal"] = "항성"
--- 영웅 던전 약자
+L["defilers"] = "모독"
 L["TOK"] = "안카"
 L[ "AN"] = "아졸"
 L["DTK"] = "드락"
