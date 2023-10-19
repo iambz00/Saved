@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.2.6"
+SavedClassic.version = "3.3.0"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -255,6 +255,7 @@ function SavedClassic:OnInitialize()
 
     self:InitUI()
     self:InitDBIcon()
+    self:InitInstanceTable()
 
     self:BuildOptions() -- Build some tables and self.optionsTable
     LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, self.optionsTable)
@@ -787,7 +788,11 @@ function SavedClassic:InitUI()
     end)
     ui:SetScript("OnLeave", function() GameTooltip:Hide() end)
     ui:SetScript("OnClick", function(s, btn)
-        if (btn == "LeftButton" and not IsShiftKeyDown()) then
+        if btn == "LeftButton" then
+            if not IsShiftKeyDown() then
+                self:ToggleInstanceTable()
+            end
+        else
             LibStub("AceConfigDialog-3.0"):Open(self.name)
         end
     end)
@@ -815,7 +820,13 @@ function SavedClassic:InitDBIcon()
         type = "data source",
         text = "Saved!",
         icon = "135757",
-        OnClick = function() self:ToggleConfig() end,
+        OnClick = function(_, btn)
+            if btn == "LeftButton" then
+                self:ToggleInstanceTable()
+            else
+                self:ToggleConfig()
+            end
+        end,
         OnTooltipShow = function(tooltip) self:ShowInfoTooltip(tooltip) end,
     })
     self.icon:Register(self.name, self.iconLDB, self.db.realm[player].minimapIcon)
@@ -828,6 +839,156 @@ function SavedClassic:ToggleConfig()
     else
         LibStub("AceConfigDialog-3.0"):Open(self.name)
         self.configOpened = true
+    end
+end
+
+function SavedClassic:InitInstanceTable()
+    local instanceTable =  CreateFrame("Frame", "SavedClassicILT", UIParent, "BasicFrameTemplateWithInset")
+    instanceTable:SetMovable(true)
+    instanceTable:SetUserPlaced(true)
+    instanceTable:SetPoint("CENTER")
+    instanceTable:SetClampedToScreen(true)
+    instanceTable:Hide()
+    
+    instanceTable:SetScript("OnMouseDown", instanceTable.StartMoving)
+    instanceTable:SetScript("OnMouseUp", instanceTable.StopMovingOrSizing)
+    self.instanceTable = instanceTable
+end
+function dmp(t, l, n)
+    l = l or 0
+    if l > 5 then
+        print(i.."...")
+        return
+    end
+    local i = (" "):rep(l*4)
+    n = n or ""
+    if type(t) == 'table' then
+        print(i..n.." = {")
+        for k, s in pairs(t) do
+            dmp(s, l+1, k)
+        end
+        print(i.."}")
+    else
+        print(i..n.." = "..tostring(t))
+    end
+end
+function SavedClassic:ToggleInstanceTable()
+    if self.instanceTable:IsShown() then
+        self.instanceTable:Hide()
+    else
+        local rdb = self.db.realm
+        local instanceTable = self.instanceTable
+        local maxLv = GetMaxPlayerLevel()
+        local ilt = {}  -- Instance Lock Table(Ordered)
+
+        for _, v in ipairs(self.order) do
+            local name, level = v.name, v.level
+            local db = rdb[name]
+
+            if level < maxLv then
+            else
+                local locked = {}
+                for i = 1, #db.raids do
+                    local instance = db.raids[i]
+                    local remain = SecondsToTime(instance.reset - time())
+                    if remain and ( remain ~= "" ) then
+                        local size = instance.difficultyName:gsub("[^0-9]*","")
+                        locked[instance.name] = locked[instance.name] and (locked[instance.name].."/"..size) or size
+                    end
+                end
+                table.insert(ilt, { name = name, locked = locked })
+            end
+        end
+
+        local lit = {}  -- Locked Instance Table(Exclude Not-locked)
+        for _, info in ipairs(ilt) do
+            local locked = info and info.locked
+            if locked then
+                for instancename, size in pairs(locked) do
+                    if instancename then 
+                        lit[instancename] = 1
+                    end
+                end
+            end
+        end
+        local olit = {} -- Ordered LIT
+        for k, _ in pairs(lit) do
+            table.insert(olit, k)
+        end
+        table.sort(olit, function(a,b)
+            return self.abbr.raid[a].order < self.abbr.raid[b].order
+        end)
+
+        local CELL_WIDTH, CELL_HEIGHT = 80, 24
+        local BORDER_LEFT = 12
+        local BORDER_RIGHT = 24
+        local BORDER_TOP = 0
+        local BORDER_BOTTOM = 12
+        local instanceTable = self.instanceTable
+        instanceTable:SetSize((#olit + 1) * CELL_WIDTH + BORDER_LEFT + BORDER_RIGHT, (#ilt + 1) * CELL_HEIGHT + BORDER_TOP + BORDER_BOTTOM)
+
+        instanceTable.rows = instanceTable.rows or {}
+        if not instanceTable.rows[1] then
+            local row = CreateFrame("Button", nil, instanceTable)
+            row:SetSize(CELL_WIDTH, CELL_HEIGHT)
+            row:SetPoint("TOPLEFT", BORDER_LEFT, 0)
+            instanceTable.rows[1] = row
+        end
+        instanceTable.rows[1].cols = instanceTable.rows[1].cols or {}
+        if not instanceTable.rows[1].cols[1] then
+            local col = instanceTable.rows[1]:CreateFontString(nil,"ARTWORK","GameFontNormal")
+            col:SetPoint("LEFT")
+            col:SetSize(CELL_WIDTH, CELL_HEIGHT)
+            col:Show()
+            instanceTable.rows[1].cols[1] = col
+        end
+        instanceTable.rows[1].cols[1]:SetText(MSG_PREFIX)
+        instanceTable.rows[1].cols[1]:SetJustifyH("Left")
+        for c = 1, #olit do
+            if not instanceTable.rows[1].cols[c+1] then
+                local col = instanceTable.rows[1]:CreateFontString(nil,"ARTWORK","GameFontNormal")
+                col:SetPoint("LEFT", c * CELL_WIDTH, 0)
+                col:SetSize(CELL_WIDTH, CELL_HEIGHT)
+                col:Show()
+                instanceTable.rows[1].cols[c+1] = col
+            end
+            instanceTable.rows[1].cols[c+1]:SetText(olit[c])
+        end
+        local currentrow = 2
+        for _, info in ipairs(ilt) do
+            local name = info.name
+            local locked = info.locked
+            if not instanceTable.rows[currentrow] then
+                local row = CreateFrame("Button", nil, instanceTable)
+                row:SetSize(CELL_WIDTH, CELL_HEIGHT)
+                row:SetPoint("TOPLEFT", BORDER_LEFT, - (currentrow - 1) * CELL_HEIGHT)
+                instanceTable.rows[currentrow] = row
+            end
+            instanceTable.rows[currentrow].cols = instanceTable.rows[currentrow].cols or {}
+            if not instanceTable.rows[currentrow].cols[1] then
+                local col = instanceTable.rows[currentrow]:CreateFontString(nil,"ARTWORK","GameFontNormal")
+                col:SetPoint("LEFT")
+                col:SetSize(CELL_WIDTH, CELL_HEIGHT)
+                col:Show()
+                instanceTable.rows[currentrow].cols[1] = col
+            end
+            local coloredName = (rdb[name] and rdb[name].coloredName) or name
+            instanceTable.rows[currentrow].cols[1]:SetText(coloredName)
+            for c = 1, #olit do
+                if not instanceTable.rows[currentrow].cols[c+1] then
+                    local col = instanceTable.rows[currentrow]:CreateFontString(nil,"ARTWORK","GameFontNormal")
+                    col:SetPoint("LEFT", c * CELL_WIDTH, 0)
+                    col:SetSize(CELL_WIDTH, CELL_HEIGHT)
+                    col:SetTextColor(0.8, 0.8, 0.8)
+                    col:Show()
+                    instanceTable.rows[currentrow].cols[c+1] = col
+                end
+                instanceTable.rows[currentrow].cols[c+1]:SetText(locked[olit[c]] or "-")
+            end
+            currentrow = currentrow + 1
+        end
+
+        self.instanceTable:Show()
     end
 end
 
