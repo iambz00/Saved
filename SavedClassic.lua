@@ -854,24 +854,7 @@ function SavedClassic:InitInstanceTable()
     instanceTable:SetScript("OnMouseUp", instanceTable.StopMovingOrSizing)
     self.instanceTable = instanceTable
 end
-function dmp(t, l, n)
-    l = l or 0
-    if l > 5 then
-        print(i.."...")
-        return
-    end
-    local i = (" "):rep(l*4)
-    n = n or ""
-    if type(t) == 'table' then
-        print(i..n.." = {")
-        for k, s in pairs(t) do
-            dmp(s, l+1, k)
-        end
-        print(i.."}")
-    else
-        print(i..n.." = "..tostring(t))
-    end
-end
+
 function SavedClassic:ToggleInstanceTable()
     if self.instanceTable:IsShown() then
         self.instanceTable:Hide()
