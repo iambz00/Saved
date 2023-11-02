@@ -11,7 +11,9 @@ L["minites"] = "分鐘"
 L["Enabled"] = "啟用"
 L["Disabled"] = "禁用"
 
+L["Raid Table Notice"] = "L-Click to open Raid table, R-Click to open Options"
 L["Display settings"] = "顯示設置"
+L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Every options are saved [per chracter]|r"
 L["Show floating UI frame"] = "顯示懸浮窗"
 L["Floating UI width"] = "懸浮窗寬度"
 L["Floating UI height"] = "懸浮窗高度"
@@ -23,7 +25,10 @@ L["per Realm"] = "單服務器"
 L["Show total gold"] = "顯示總金"
 L["Hide info from level under"] = "低於等級隱藏信息"
 L["Show current chracter first"] = "優先顯示當前角色"
-
+L["Sort Order"] = true
+L["Sort Option"] = true
+L["Descending"] = true
+L["Asscending"] = true
 L["Tooltip - Character info."] = "提示 - 角色信息"
 L["Line 1 of char info."] = "角色信息第一行"
 L["Line 2 of char info."] = "角色信息第二行"

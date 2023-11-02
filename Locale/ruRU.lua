@@ -11,7 +11,9 @@ L["minites"] = "м"
 L["Enabled"] = "Включено"
 L["Disabled"] = "Отключено"
 
+L["Raid Table Notice"] = "L-Click to open Raid table, R-Click to open Options"
 L["Display settings"] = "Настройки отображения"
+L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Every options are saved [per chracter]|r"
 L["Show floating UI frame"] = "Показать всплывающее окно"
 L["Floating UI width"] = "Ширина окна"
 L["Floating UI height"] = "Высота окна"
@@ -23,7 +25,10 @@ L["per Realm"] = "По серверу"
 L["Show total gold"] = "показать общее золото"
 L["Hide info from level under"] = "Скрыть информацию с уровня ниже"
 L["Show current chracter first"] = true
-
+L["Sort Order"] = true
+L["Sort Option"] = true
+L["Descending"] = true
+L["Asscending"] = true
 L["Tooltip - Character info."] = "Информация, относящаяся к параметру всплывающей подсказки" --"Информация для персонажа"
 L["Line 1 of char info."] = "Первая строка с информацией по специализации персонажа"
 L["Line 2 of char info."] = "Вторая строка с информацией по специализации персонажа"

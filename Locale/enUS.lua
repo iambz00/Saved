@@ -11,7 +11,9 @@ L["minites"] = "m"
 L["Enabled"] = true
 L["Disabled"] = true
 
+L["Raid Table Notice"] = "L-Click to open Raid table, R-Click to open Options"
 L["Display settings"] = true
+L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Every options are saved [per chracter]|r"
 L["Show floating UI frame"] = true
 L["Floating UI width"] = true
 L["Floating UI height"] = true
@@ -23,7 +25,10 @@ L["per Realm"] = true
 L["Show total gold"] = true
 L["Hide info from level under"] = true
 L["Show current chracter first"] = true
-
+L["Sort Order"] = true
+L["Sort Option"] = true
+L["Descending"] = true
+L["Asscending"] = true
 L["Tooltip - Character info."] = true
 L["Line 1 of char info."] = true
 L["Line 2 of char info."] = true

@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.3.0"
+SavedClassic.version = "3.4.0"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -22,6 +22,8 @@ local dbDefault = {
             showInfoPer = "realm",
             showTotalGold = true,
             hideLevelUnder = 1,
+            sortOrder = "level",
+            sortOption = 0,
 
             default = true,
             minimapIcon = { hide = false },
@@ -304,23 +306,38 @@ end
 function SavedClassic:SetOrder()
     local db = self.db.realm[player]
     self.order = { }
-    for k, v in pairs(self.db.realm) do
-        table.insert(self.order, { name = v.name, level = v.level })
+
+    for ch, chdb in pairs(self.db.realm) do
+        table.insert(self.order, chdb)
     end
     table.sort(self.order,
-        function(a,b)
+        function(a, b)
             if db.currentFirst then
                 if a.name == player then return true end
                 if b.name == player then return false end
             end
-            local al = a.level or 0
-            local bl = b.level or 0
-            if al == bl then
+            local aa = a[db.sortOrder] or 0
+            local bb = b[db.sortOrder] or 0
+
+            if db.sortOrder == "gold" then
+                aa = a.currencyCount[0] or 0
+                bb = b.currencyCount[0] or 0
+            elseif db.sortOrder == "gearScore" then -- Strip gearscore color
+                aa = tonumber(string.match(aa, "|c........(%d+)|r")) or 0
+                bb = tonumber(string.match(bb, "|c........(%d+)|r")) or 0
+            end
+
+            if aa == bb then
                 return a.name < b.name
             else
-                return al > bl
+                if db.sortOption == 1 then
+                    return aa < bb
+                else
+                    return aa > bb
+                end
             end
-        end)
+        end
+    )
 end
 
 function SavedClassic:InitPlayerDB()
@@ -568,6 +585,11 @@ function SavedClassic:ShowInfoTooltip(tooltip)
     local db = self.db.realm[player]
     local realm = ""
     if db.showInfoPer == "realm" then realm = " - " .. GetRealmName() end
+
+    if not self.ui.noticed then
+        p(L["Raid Table Notice"])
+        self.ui.noticed = true
+    end
 
     local totalGold = ""
     if db.showTotalGold then
@@ -922,6 +944,7 @@ function SavedClassic:ToggleInstanceTable()
             local col = instanceTable.rows[1]:CreateFontString(nil,"ARTWORK","GameFontNormal")
             col:SetPoint("LEFT")
             col:SetSize(CELL_WIDTH, CELL_HEIGHT)
+            col:EnableMouse(false)
             col:Show()
             instanceTable.rows[1].cols[1] = col
         end
@@ -1110,6 +1133,34 @@ function SavedClassic:BuildOptions()
                             self:SetOrder()
                         end,
                         order = 141
+                    },
+                    sortOrder = {
+                        name = L["Sort Order"],
+                        type = "select",
+                        values = {
+                            name    = L["name"],
+                            level   = L["level"],
+                            gold    = L["gold"],
+                            gearScore    = L["gs"],
+                            gearAvgLevel = L["ilvl"],
+                            zone    = L["zone"],
+                            elapsed = L["elapsed"],
+                        },
+                        set = function(info, value)
+                            db[info[#info]] = value
+                            self:SetOrder()
+                        end,
+                        order = 151,
+                    },
+                    sortOption = {
+                        name = L["Sort Option"],
+                        type = "select",
+                        values = {
+                            [0] = L["Descending"],
+                            [1] = L["Asscending"],
+                        },
+                        style = "radio",
+                        order = 152,
                     },
                 }
             },
