@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.4.0"
+SavedClassic.version = "3.4.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -14,6 +14,13 @@ local MSG_SUFFIX = " |cff00ff00■|r"
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
+
+-- Raid Table 
+local CELL_WIDTH, CELL_HEIGHT = 80, 24
+local BORDER_LEFT = 12
+local BORDER_RIGHT = 24
+local BORDER_TOP = 4
+local BORDER_BOTTOM = 8
 
 local dbDefault = {
     realm = {
@@ -128,15 +135,15 @@ SavedClassic.abbr.heroic = {
 }
 SavedClassic.abbr.raid = {
     -- WotLK Raid
-    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["ICC"]  },
-    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["ToC"]  },
-    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["ULD"]  },
-    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["Naxx"] },
-    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["RS"]   },
-    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["Ony"]  },
-    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["EoE"]  },
-    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["OS"]   },
-    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["VoA"]  },
+    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["ICC"] , color = "a8daf9" },
+    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["ToC"] , color = "2a9df4" },
+    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["ULD"] , color = "2a9df4" },
+    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["Naxx"], color = "187bcd" },
+    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["RS"]  , color = "a8daf9" },
+    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["Ony"] , color = "2a9df4" },
+    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["EoE"] , color = "187bcd" },
+    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["OS"]  , color = "187bcd" },
+    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["VoA"] , color = "1167b1" },
     -- TBC Raid
     [C_Map.GetAreaInfo(4075)] = { order = -209, name = L["SP"]  },
     [C_Map.GetAreaInfo(3805)] = { order = -208, name = L["ZA"]  },
@@ -257,7 +264,7 @@ function SavedClassic:OnInitialize()
 
     self:InitUI()
     self:InitDBIcon()
-    self:InitInstanceTable()
+    self:InitRaidTable()
 
     self:BuildOptions() -- Build some tables and self.optionsTable
     LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, self.optionsTable)
@@ -812,7 +819,7 @@ function SavedClassic:InitUI()
     ui:SetScript("OnClick", function(s, btn)
         if btn == "LeftButton" then
             if not IsShiftKeyDown() then
-                self:ToggleInstanceTable()
+                self:ToggleRaidTable()
             end
         else
             LibStub("AceConfigDialog-3.0"):Open(self.name)
@@ -844,7 +851,7 @@ function SavedClassic:InitDBIcon()
         icon = "135757",
         OnClick = function(_, btn)
             if btn == "LeftButton" then
-                self:ToggleInstanceTable()
+                self:ToggleRaidTable()
             else
                 self:ToggleConfig()
             end
@@ -864,138 +871,124 @@ function SavedClassic:ToggleConfig()
     end
 end
 
-function SavedClassic:InitInstanceTable()
-    local instanceTable =  CreateFrame("Frame", "SavedClassicILT", UIParent, "BasicFrameTemplateWithInset")
-    instanceTable:SetMovable(true)
-    instanceTable:SetUserPlaced(true)
-    instanceTable:SetPoint("CENTER")
-    instanceTable:SetClampedToScreen(true)
-    instanceTable:Hide()
+function SavedClassic:InitRaidTable()
+    local raidTable =  CreateFrame("Frame", "SavedClassicRaidTable", UIParent, "TooltipBorderedFrameTemplate")
+    raidTable:SetMovable(true)
+    raidTable:SetUserPlaced(true)
+    raidTable:SetPoint("CENTER")
+    raidTable:SetClampedToScreen(true)
+    raidTable:Hide()
+
+    tinsert(UISpecialFrames,"SavedClassicRaidTable")    -- Set Esc-Closable
     
-    instanceTable:SetScript("OnMouseDown", instanceTable.StartMoving)
-    instanceTable:SetScript("OnMouseUp", instanceTable.StopMovingOrSizing)
-    self.instanceTable = instanceTable
+    raidTable:SetScript("OnMouseDown", raidTable.StartMoving)
+    raidTable:SetScript("OnMouseUp", raidTable.StopMovingOrSizing)
+    self.raidTable = raidTable
 end
 
-function SavedClassic:ToggleInstanceTable()
-    if self.instanceTable:IsShown() then
-        self.instanceTable:Hide()
-    else
-        local rdb = self.db.realm
-        local instanceTable = self.instanceTable
-        local maxLv = GetMaxPlayerLevel()
-        local ilt = {}  -- Instance Lock Table(Ordered)
-
-        for _, v in ipairs(self.order) do
-            local name, level = v.name, v.level
-            local db = rdb[name]
-
-            if level < maxLv then
-            else
-                local locked = {}
-                for i = 1, #db.raids do
-                    local instance = db.raids[i]
-                    local remain = SecondsToTime(instance.reset - time())
-                    if remain and ( remain ~= "" ) then
-                        local size = instance.difficultyName:gsub("[^0-9]*","")
-                        locked[instance.name] = locked[instance.name] and (locked[instance.name].."/"..size) or size
-                    end
-                end
-                table.insert(ilt, { name = name, locked = locked })
-            end
-        end
-
-        local lit = {}  -- Locked Instance Table(Exclude Not-locked)
-        for _, info in ipairs(ilt) do
-            local locked = info and info.locked
-            if locked then
-                for instancename, size in pairs(locked) do
-                    if instancename then 
-                        lit[instancename] = 1
-                    end
-                end
-            end
-        end
-        local olit = {} -- Ordered LIT
-        for k, _ in pairs(lit) do
-            table.insert(olit, k)
-        end
-        table.sort(olit, function(a,b)
-            return self.abbr.raid[a].order < self.abbr.raid[b].order
-        end)
-
-        local CELL_WIDTH, CELL_HEIGHT = 80, 24
-        local BORDER_LEFT = 12
-        local BORDER_RIGHT = 24
-        local BORDER_TOP = 0
-        local BORDER_BOTTOM = 12
-        local instanceTable = self.instanceTable
-        instanceTable:SetSize((#olit + 1) * CELL_WIDTH + BORDER_LEFT + BORDER_RIGHT, (#ilt + 1) * CELL_HEIGHT + BORDER_TOP + BORDER_BOTTOM)
-
-        instanceTable.rows = instanceTable.rows or {}
-        if not instanceTable.rows[1] then
-            local row = CreateFrame("Button", nil, instanceTable)
-            row:SetSize(CELL_WIDTH, CELL_HEIGHT)
-            row:SetPoint("TOPLEFT", BORDER_LEFT, 0)
-            instanceTable.rows[1] = row
-        end
-        instanceTable.rows[1].cols = instanceTable.rows[1].cols or {}
-        if not instanceTable.rows[1].cols[1] then
-            local col = instanceTable.rows[1]:CreateFontString(nil,"ARTWORK","GameFontNormal")
-            col:SetPoint("LEFT")
-            col:SetSize(CELL_WIDTH, CELL_HEIGHT)
-            col:EnableMouse(false)
-            col:Show()
-            instanceTable.rows[1].cols[1] = col
-        end
-        instanceTable.rows[1].cols[1]:SetText(MSG_PREFIX)
-        instanceTable.rows[1].cols[1]:SetJustifyH("Left")
-        for c = 1, #olit do
-            if not instanceTable.rows[1].cols[c+1] then
-                local col = instanceTable.rows[1]:CreateFontString(nil,"ARTWORK","GameFontNormal")
-                col:SetPoint("LEFT", c * CELL_WIDTH, 0)
-                col:SetSize(CELL_WIDTH, CELL_HEIGHT)
-                col:Show()
-                instanceTable.rows[1].cols[c+1] = col
-            end
-            instanceTable.rows[1].cols[c+1]:SetText(olit[c])
-        end
-        local currentrow = 2
-        for _, info in ipairs(ilt) do
-            local name = info.name
-            local locked = info.locked
-            if not instanceTable.rows[currentrow] then
-                local row = CreateFrame("Button", nil, instanceTable)
-                row:SetSize(CELL_WIDTH, CELL_HEIGHT)
-                row:SetPoint("TOPLEFT", BORDER_LEFT, - (currentrow - 1) * CELL_HEIGHT)
-                instanceTable.rows[currentrow] = row
-            end
-            instanceTable.rows[currentrow].cols = instanceTable.rows[currentrow].cols or {}
-            if not instanceTable.rows[currentrow].cols[1] then
-                local col = instanceTable.rows[currentrow]:CreateFontString(nil,"ARTWORK","GameFontNormal")
-                col:SetPoint("LEFT")
-                col:SetSize(CELL_WIDTH, CELL_HEIGHT)
-                col:Show()
-                instanceTable.rows[currentrow].cols[1] = col
-            end
-            local coloredName = (rdb[name] and rdb[name].coloredName) or name
-            instanceTable.rows[currentrow].cols[1]:SetText(coloredName)
-            for c = 1, #olit do
-                if not instanceTable.rows[currentrow].cols[c+1] then
-                    local col = instanceTable.rows[currentrow]:CreateFontString(nil,"ARTWORK","GameFontNormal")
-                    col:SetPoint("LEFT", c * CELL_WIDTH, 0)
-                    col:SetSize(CELL_WIDTH, CELL_HEIGHT)
-                    col:SetTextColor(0.8, 0.8, 0.8)
-                    col:Show()
-                    instanceTable.rows[currentrow].cols[c+1] = col
-                end
-                instanceTable.rows[currentrow].cols[c+1]:SetText(locked[olit[c]] or "-")
-            end
-            currentrow = currentrow + 1
-        end
-
-        self.instanceTable:Show()
+function SavedClassic:ToggleRaidTable()
+    if self.raidTable:IsShown() then
+        self.raidTable:Hide()
+        return
     end
+
+    local rdb = self.db.realm
+    local raidTable = self.raidTable
+    local maxLv = GetMaxPlayerLevel()
+    local ilt = {}  -- Instance Lock Table(Ordered)
+
+    for _, v in ipairs(self.order) do
+        local name, level = v.name, v.level
+        local db = rdb[name]
+
+        if level < maxLv then
+        else
+            local locked = {}
+            for i = 1, #db.raids do
+                local instance = db.raids[i]
+                local remain = SecondsToTime(instance.reset - time())
+                if remain and ( remain ~= "" ) then
+                    local size = instance.difficultyName:gsub("[^0-9]*","")
+                    locked[instance.name] = locked[instance.name] and (locked[instance.name].."/"..size) or size
+                end
+            end
+            table.insert(ilt, { name = name, locked = locked })
+        end
+    end
+
+    local lit = {}  -- Locked raids only(Exclude not-locked)
+    for _, info in ipairs(ilt) do
+        local locked = info and info.locked
+        if locked then
+            for instancename, size in pairs(locked) do
+                if instancename then 
+                    lit[instancename] = 1
+                end
+            end
+        end
+    end
+    local olit = {} -- Ordered lit
+    for k, _ in pairs(lit) do
+        table.insert(olit, k)
+    end
+    table.sort(olit, function(a,b)
+        return self.abbr.raid[a].order < self.abbr.raid[b].order
+    end)
+
+    local data = {}
+    -- 1st Row(Title, Headers)
+    local row1 = { MSG_PREFIX }
+    for _, v in ipairs(olit) do
+        local color = self.abbr.raid[v].color
+        if color then
+            table.insert(row1, "|cff"..color..v.."|r")
+        else
+            table.insert(row1, v)
+        end
+    end
+    table.insert(data, row1)
+    -- Rows
+    for _, info in ipairs(ilt) do
+        local name, locked = info.name, info.locked
+        local coloredName = (rdb[name] and rdb[name].coloredName) or name
+        local row = { coloredName }
+        for _, raidname in ipairs(olit) do table.insert(row, locked[raidname] or "-") end
+        table.insert(data, row)
+    end
+
+--[[ Table [data] should be like
+■ Saved     Raid1       Raid2       Raids3      ...
+Character1  10/25       -           10/25       ...
+Character2  -           10          -           ...
+Character3  25          -           -           ...
+...
+]]
+
+    local raidTable = self.raidTable
+    raidTable:SetSize((#olit + 1) * CELL_WIDTH + BORDER_LEFT + BORDER_RIGHT, (#ilt + 1) * CELL_HEIGHT + BORDER_TOP + BORDER_BOTTOM)
+
+    raidTable.rows = raidTable.rows or {}
+    for r, rowdata in ipairs(data) do
+        if not raidTable.rows[r] then
+            local row = CreateFrame("Button", nil, raidTable)
+            row:SetSize(1, CELL_HEIGHT)
+            row:SetPoint("TOPLEFT", BORDER_LEFT, - BORDER_TOP - (r - 1) * CELL_HEIGHT)
+            raidTable.rows[r] = row
+        end
+        raidTable.rows[r].cols = raidTable.rows[r].cols or {}
+        for c, coldata in ipairs(rowdata) do
+            if not raidTable.rows[r].cols[c] then
+                local col = raidTable.rows[r]:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+                col:SetPoint("LEFT", (c - 1) * CELL_WIDTH, 0)
+                col:SetSize(CELL_WIDTH, CELL_HEIGHT)
+                col:SetTextColor(0.8, 0.8, 0.8)
+                raidTable.rows[r].cols[c] = col
+            end
+            raidTable.rows[r].cols[c]:SetText(coldata)
+        end
+    end
+
+    self.raidTable:Show()
 end
 
 function SavedClassic:BuildOptions()
