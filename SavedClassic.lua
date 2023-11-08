@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.4.1"
+SavedClassic.version = "3.4.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -872,14 +872,14 @@ function SavedClassic:ToggleConfig()
 end
 
 function SavedClassic:InitRaidTable()
-    local raidTable =  CreateFrame("Frame", "SavedClassicRaidTable", UIParent, "TooltipBorderedFrameTemplate")
+    local raidTable =  CreateFrame("Frame", self.name.."RaidTable", UIParent, "TooltipBorderedFrameTemplate")
     raidTable:SetMovable(true)
     raidTable:SetUserPlaced(true)
     raidTable:SetPoint("CENTER")
     raidTable:SetClampedToScreen(true)
     raidTable:Hide()
 
-    tinsert(UISpecialFrames,"SavedClassicRaidTable")    -- Set Esc-Closable
+    table.insert(UISpecialFrames, raidTable:GetName())    -- Set Esc-Closable
     
     raidTable:SetScript("OnMouseDown", raidTable.StartMoving)
     raidTable:SetScript("OnMouseUp", raidTable.StopMovingOrSizing)
@@ -970,7 +970,7 @@ Character3  25          -           -           ...
     raidTable.rows = raidTable.rows or {}
     for r, rowdata in ipairs(data) do
         if not raidTable.rows[r] then
-            local row = CreateFrame("Button", nil, raidTable)
+            local row = CreateFrame("Button", raidTable:GetName().."Row"..tostring(r), raidTable)
             row:SetSize(1, CELL_HEIGHT)
             row:SetPoint("TOPLEFT", BORDER_LEFT, - BORDER_TOP - (r - 1) * CELL_HEIGHT)
             raidTable.rows[r] = row
@@ -978,7 +978,7 @@ Character3  25          -           -           ...
         raidTable.rows[r].cols = raidTable.rows[r].cols or {}
         for c, coldata in ipairs(rowdata) do
             if not raidTable.rows[r].cols[c] then
-                local col = raidTable.rows[r]:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+                local col = raidTable.rows[r]:CreateFontString(raidTable.rows[r]:GetName().."Col"..tostring(c), "ARTWORK", "GameFontNormal")
                 col:SetPoint("LEFT", (c - 1) * CELL_WIDTH, 0)
                 col:SetSize(CELL_WIDTH, CELL_HEIGHT)
                 col:SetTextColor(0.8, 0.8, 0.8)
