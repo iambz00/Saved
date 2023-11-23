@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "1.4.3"
+SavedClassic.version = "1.4.4"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -361,7 +361,7 @@ function SavedClassic:SaveChoronoBuff(numBuff)
 	local db = self.db.realm[player]
 	local displacer = { UnitBuff("player", numBuff) }
 	for i=1,#self.cd do
-		table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[i+15]/60) })
+		table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[i+16]/60) })
 	end
 	table.sort(db.chrono, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
 end
