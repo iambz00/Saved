@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.4.2"
+SavedClassic.version = "3.4.3"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -43,6 +43,7 @@ local dbDefault = {
             lastUpdate = -1,
             gearScore = -1,
             gearAvgLevel = -1,
+            exclude = "",
         }
     }
 }
@@ -312,10 +313,17 @@ end
 
 function SavedClassic:SetOrder()
     local db = self.db.realm[player]
+    local exclude = { }
     self.order = { }
 
+    for ch in string.gmatch(db.exclude, "[^%s,;]*") do
+        exclude[ch] = true
+    end
+
     for ch, chdb in pairs(self.db.realm) do
-        table.insert(self.order, chdb)
+        if not exclude[ch] then
+            table.insert(self.order, chdb)
+        end
     end
     table.sort(self.order,
         function(a, b)
@@ -1154,6 +1162,15 @@ function SavedClassic:BuildOptions()
                         },
                         style = "radio",
                         order = 152,
+                    },
+                    exclude = {
+                        name = L["Exclude Characters"];
+                        type = "input",
+                        order = 161,
+                        set = function(info, value)
+                                db[info[#info]] = value
+                                self:SetOrder()
+                            end,
                     },
                 }
             },

@@ -27,6 +27,7 @@ L["Hide info from level under"] = "低於等級隱藏信息"
 L["Show current chracter first"] = "優先顯示當前角色"
 L["Sort Order"] = true
 L["Sort Option"] = true
+L["Exclude Characters"] = "Exclude Characters(Separate by , or space)"
 L["Descending"] = true
 L["Asscending"] = true
 L["Tooltip - Character info."] = "提示 - 角色信息"

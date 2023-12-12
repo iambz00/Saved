@@ -27,6 +27,7 @@ L["Hide info from level under"] = true
 L["Show current chracter first"] = true
 L["Sort Order"] = true
 L["Sort Option"] = true
+L["Exclude Characters"] = "Exclude Characters(Separate by , or space)"
 L["Descending"] = true
 L["Asscending"] = true
 L["Tooltip - Character info."] = true
