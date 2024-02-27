@@ -940,7 +940,7 @@ function SavedClassic:ToggleRaidTable()
         table.insert(olit, k)
     end
     table.sort(olit, function(a,b)
-        return self.abbr.raid[a].order < self.abbr.raid[b].order
+        return (self.abbr.raid[a].order or -300) < (self.abbr.raid[b].order or -300)
     end)
 
     local data = {}
@@ -1166,6 +1166,7 @@ function SavedClassic:BuildOptions()
                     exclude = {
                         name = L["Exclude Characters"];
                         type = "input",
+                        width = "full",
                         order = 161,
                         set = function(info, value)
                                 db[info[#info]] = value
