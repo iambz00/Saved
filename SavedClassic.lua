@@ -74,60 +74,44 @@ SavedClassic.currencies = {
     [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
     [1901]= { altName = L["honor"   ] }, -- Honor point
     [1900]= { altName = L["arena"   ] }, -- Arena point
-    [61]  = { altName = L["jewel"   ] }, -- 3.0.2 Dalaran Jewelcrafter's Token
-    [81]  = { altName = L["cook"    ] }, -- 3.1.0 Epicurean's Award
-    [101] = { altName = L["heroism" ] }, -- 3.1.0 Emblem of Heroism
-    [102] = { altName = L["valor"   ] }, -- 3.1.0 Emblem of Valor
-    [221] = { altName = L["conquest"] }, -- 3.1.0 Emblem of Conquest
-    [301] = { altName = L["triumph" ] }, -- 3.3.5 Emblem of Triumph
-    [341] = { altName = L["frost"   ] }, -- 3.3.5 Emblem of Frost
-    [241] = { altName = L["champion"] }, -- 3.1.0 Champion's Seal
-    [121] = { altName = L["AV"      ] }, -- 3.1.0 Alterac Valley Mark of Honor
-    [122] = { altName = L["AB"      ] }, -- 3.1.0 Arathi Basin Mark of Honor
-    [123] = { altName = L["EotS"    ] }, -- 3.1.0 Eye of the Storm Mark of Honor
-    [124] = { altName = L["SotA"    ] }, -- 3.1.0 Strand of the Ancients Mark of Honor
-    [125] = { altName = L["WSG"     ] }, -- 3.1.0 Warsong Gulch Mark of Honor
-    [126] = { altName = L["WG"      ] }, -- 3.1.0 Wintergrasp Mark of Honor
-    [321] = { altName = L["IoC"     ] }, -- 3.3.5 Isle of Conquest Mark of Honor
-    [161] = { altName = L["shard"   ] }, -- 3.1.0 Stone Keeper's Shard
-    [201] = { altName = L["venture" ] }, -- 3.1.0 Venture Coin
-    [42]  = { altName = L["justice" ] }, -- 3.0.2 Badge of Justice
-    [2589]= { altName = L["sidereal"] }, -- 3.4.2 Sidereal Essence
-    [2711]= { altName = L["defilers"] }, -- 3.4.3 Defiler's Scourgestone
-
     -- Cataclysm
     -- [Currency:Name]   : Icon and Total amount
     -- [Currency:Name-1] : earnedThisWeek/weeklyMax
     -- [Currency:Name-2] : earnedThisWeek
     -- [Currency:Name-3] : weeklyMax
-    [395] = { altName = L[""]         }, -- 4.0.1 Hidden      Justice Points
-    [396] = { altName = L[""]         }, -- 4.0.1 Hidden      Valor Points
-    [361] = { altName = L[""]         }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
-    [391] = { altName = L[""]         }, -- 4.0.1 PvP         Tol Barad Commendation
-    [384] = { altName = L[""]         }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
-    [385] = { altName = L[""]         }, -- 4.0.1 Archaeology Troll Archaeology Fragment
-    [393] = { altName = L[""]         }, -- 4.0.1 Archaeology Fossil Archaeology Fragment
-    [394] = { altName = L[""]         }, -- 4.0.1 Archaeology Night Elf Archaeology Fragment
-    [397] = { altName = L[""]         }, -- 4.3.4 Archaeology Orc Archaeology Fragment
-    [398] = { altName = L[""]         }, -- 4.3.4 Archaeology Draenei Archaeology Fragment
-    [399] = { altName = L[""]         }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
-    [400] = { altName = L[""]         }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
-    [401] = { altName = L[""]         }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
-    [402] = { altName = L[""]         }, -- 4.3.4 Misc.       Ironpaw Token
-    [416] = { altName = L[""]         }, -- 4.3.4 Cataclysm   Mark of the World Tree
-    [483] = { altName = L[""]         }, -- 4.3.4 Meta        Conquest Arena Meta
-    [484] = { altName = L[""]         }, -- 4.3.4 Meta        Conquest Rated BG Meta
-    [515] = { altName = L[""]         }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
-    [614] = { altName = L[""]         }, -- 4.3.4 Cataclysm   Mote of Darkness
-    [615] = { altName = L[""]         }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
+    [395] = { altName = L["JP" ] }, -- 4.0.1 Hidden      Justice Points
+    [396] = { altName = L["VP" ] }, -- 4.0.1 Hidden      Valor Points
+    [361] = { altName = L["jewel" ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
+    [391] = { altName = L["Tol"] }, -- 4.0.1 PvP         Tol Barad Commendation
+    [384] = { altName = L["ADw"] }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
+    [385] = { altName = L["ATr"] }, -- 4.0.1 Archaeology Troll Archaeology Fragment
+    [393] = { altName = L["AFo"] }, -- 4.0.1 Archaeology Fossil Archaeology Fragment
+    [394] = { altName = L["ANi"] }, -- 4.0.1 Archaeology Night Elf Archaeology Fragment
+    [397] = { altName = L["AOr"] }, -- 4.3.4 Archaeology Orc Archaeology Fragment
+    [398] = { altName = L["ADr"] }, -- 4.3.4 Archaeology Draenei Archaeology Fragment
+    [399] = { altName = L["AVr"] }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
+    [400] = { altName = L["ANe"] }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
+    [401] = { altName = L["ATo"] }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
+    [402] = { altName = L["IPT"] }, -- 4.3.4 Misc.       Ironpaw Token
+    [416] = { altName = L["MoW"] }, -- 4.3.4 Cataclysm   Mark of the World Tree
+    [483] = { altName = L["CAM"] }, -- 4.3.4 Meta        Conquest Arena Meta
+    [484] = { altName = L["CRB"] }, -- 4.3.4 Meta        Conquest Rated BG Meta
+    [515] = { altName = L["DMT"] }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
+    [614] = { altName = L["MoD"] }, -- 4.3.4 Cataclysm   Mote of Darkness
+    [615] = { altName = L["EoC"] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
 
     order = {
-        1,2,3,1901,1900,            -- Money, Honor, Arena
-        61,81,                      -- Tradeskills
-        101,102,221,301,341,241,    -- Emblems
-        2589,2711,                  -- Titan
-        121,122,123,124,125,126,321, -- Mark of Honors
-        161,201,42                  -- PVP, etc
+        1,2,3,1901,1900,395,396     -- Money, Honor, Arena, Justice, Valor
+        361,                        -- Jewelcraft
+        391,
+        384,385,393,394,397,398,399,400,401,    -- Archaeology
+        402,
+        416,
+        483,
+        484,
+        515,
+        614,
+        615,
     }
 }
 setmetatable(SavedClassic.currencies, { __index = 
@@ -297,7 +281,7 @@ function SavedClassic:OnInitialize()
     -- Reset old db
     if not self.db.global.version then
         self.db:ResetDB()
-    elseif self.db.global.version < "3.0.0" then
+    elseif self.db.global.version < "4.4.0" then
         p(L["Reset due to update"](self.db.global.version, self.version))
         self.db:ResetDB()
     end
@@ -1074,11 +1058,14 @@ function SavedClassic:BuildOptions()
                     currency.icon = "|T"..icon..":14:14|t"
                 end
             end
+            currencyTooltipText = currencyTooltipText.."\n"..currency.icon.."("..id.."): "..currency.name
+--[[
             if currency.name then
                 currencyTooltipText = currencyTooltipText.."\n"..currency.icon..currency.altName.."("..id.."): "..currency.name
             else
                 currencyTooltipText = currencyTooltipText..currency.icon..currency.altName
             end
+]]--
         end
     end
     local db = self.db.realm[player]
