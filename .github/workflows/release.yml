@@ -29,4 +29,4 @@ jobs:
       - name: Package and release for WotLK
         uses: BigWigsMods/packager@v2
         with:
-          args: -g wrath -p 357612 -n "{package-name}-{project-version}"
+          args: -g cata -p 357612 -n "{package-name}-{project-version}"
