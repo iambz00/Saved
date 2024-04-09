@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "3.4.3"
+SavedClassic.version = "4.4.0.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -94,6 +94,33 @@ SavedClassic.currencies = {
     [42]  = { altName = L["justice" ] }, -- 3.0.2 Badge of Justice
     [2589]= { altName = L["sidereal"] }, -- 3.4.2 Sidereal Essence
     [2711]= { altName = L["defilers"] }, -- 3.4.3 Defiler's Scourgestone
+
+    -- Cataclysm
+    -- [Currency:Name]   : Icon and Total amount
+    -- [Currency:Name-1] : earnedThisWeek/weeklyMax
+    -- [Currency:Name-2] : earnedThisWeek
+    -- [Currency:Name-3] : weeklyMax
+    [395] = { altName = L[""]         }, -- 4.0.1 Hidden      Justice Points
+    [396] = { altName = L[""]         }, -- 4.0.1 Hidden      Valor Points
+    [361] = { altName = L[""]         }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
+    [391] = { altName = L[""]         }, -- 4.0.1 PvP         Tol Barad Commendation
+    [384] = { altName = L[""]         }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
+    [385] = { altName = L[""]         }, -- 4.0.1 Archaeology Troll Archaeology Fragment
+    [393] = { altName = L[""]         }, -- 4.0.1 Archaeology Fossil Archaeology Fragment
+    [394] = { altName = L[""]         }, -- 4.0.1 Archaeology Night Elf Archaeology Fragment
+    [397] = { altName = L[""]         }, -- 4.3.4 Archaeology Orc Archaeology Fragment
+    [398] = { altName = L[""]         }, -- 4.3.4 Archaeology Draenei Archaeology Fragment
+    [399] = { altName = L[""]         }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
+    [400] = { altName = L[""]         }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
+    [401] = { altName = L[""]         }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
+    [402] = { altName = L[""]         }, -- 4.3.4 Misc.       Ironpaw Token
+    [416] = { altName = L[""]         }, -- 4.3.4 Cataclysm   Mark of the World Tree
+    [483] = { altName = L[""]         }, -- 4.3.4 Meta        Conquest Arena Meta
+    [484] = { altName = L[""]         }, -- 4.3.4 Meta        Conquest Rated BG Meta
+    [515] = { altName = L[""]         }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
+    [614] = { altName = L[""]         }, -- 4.3.4 Cataclysm   Mote of Darkness
+    [615] = { altName = L[""]         }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
+
     order = {
         1,2,3,1901,1900,            -- Money, Honor, Arena
         61,81,                      -- Tradeskills
@@ -177,11 +204,26 @@ local _TranslationTable = {
                         end
                     end,
     ["currency" ] = function(db, option, color)
+                        local more_option
+                        option:gsub("([^-]*)-(.*)", function(a, b) -- Dash-Deparated option
+                            option = a
+                            more_option = b
+                        end)
                         local id = tonumber(option)
                         local currency = id and SavedClassic.currencies[id] or SavedClassic.currencies[option]
                         if currency then
-                            id = id or currency.id
-                            local result = currency.icon..(db.currencyCount[id] or "")
+                            local result = ""
+                            id = currency.id
+                            saved_currency = db.currencyCount[id] or { }
+                            if more_option == "1" then      -- earnedThisWeek/weeklyMax
+                                result = (saved_currency.week or 0)..(currency.weeklyMax and "/"..currency.weeklyMax)
+                            elseif more_option == "2" then  -- earnedThisWeek
+                                result = saved_currency.week or 0
+                            elseif more_option == "3" then  -- weeklyMax
+                                result = currency.weeklyMax or 0
+                            else                            -- currentAmount
+                                result = currency.icon..(saved_currency.total or "")
+                            end
                             if color and color ~= "" then result = "|cff"..color..result.."|r" end
                             return result
                         else
@@ -293,7 +335,7 @@ function SavedClassic:OnInitialize()
     self.totalMoney = 0 -- Total money except current character
     for character, saved in pairs(self.db.realm) do
         if character and (character ~= player) and saved.currencyCount and saved.currencyCount[0] then
-            self.totalMoney = self.totalMoney + saved.currencyCount[0]
+            self.totalMoney = self.totalMoney + (saved.currencyCount[0].total or 0)
         end
     end
 
@@ -335,8 +377,8 @@ function SavedClassic:SetOrder()
             local bb = b[db.sortOrder] or 0
 
             if db.sortOrder == "gold" then
-                aa = a.currencyCount[0] or 0
-                bb = b.currencyCount[0] or 0
+                aa = a.currencyCount[0] and a.currencyCount[0].total or 0
+                bb = b.currencyCount[0] and b.currencyCount[0].total or 0
             elseif db.sortOrder == "gearScore" then -- Strip gearscore color
                 aa = tonumber(string.match(aa, "|c........(%d+)|r")) or 0
                 bb = tonumber(string.match(bb, "|c........(%d+)|r")) or 0
@@ -562,17 +604,20 @@ end
 function SavedClassic:PLAYER_MONEY()
     local money = abs(GetMoney())
     local db = self.db.realm[player]
-    db.currencyCount[0] = money
-    db.currencyCount[1] = floor(money / 10000)
-    db.currencyCount[2] = floor(money % 10000 / 100)
-    db.currencyCount[3] = floor(money % 100)
+    db.currencyCount[0] = { total = money }
+    db.currencyCount[1] = { total = floor(money / 10000) }
+    db.currencyCount[2] = { total = floor(money % 10000 / 100) }
+    db.currencyCount[3] = { total = floor(money % 100) }
 end
 
 function SavedClassic:CurrencyUpdate()
     local db = self.db.realm[player]
     for currencyID, v in pairs(self.currencies) do
-        local _, currentAmount, _ = GetCurrencyInfo(currencyID)
-        db.currencyCount[currencyID] = currentAmount
+        local _, currentAmount, _, earnedThisWeek = GetCurrencyInfo(currencyID)
+        db.currencyCount[currencyID] = {
+            total = currentAmount,
+            week = earnedThisWeek
+        }
         --local name, currentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(currencyID)
         --db.currencyCount[currencyID] = { currentAmount, earnedThisWeek, weeklyMax, totalMax }
     end
@@ -608,7 +653,7 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 
     local totalGold = ""
     if db.showTotalGold then
-        totalGold = floor((self.totalMoney + db.currencyCount[0]) / 10000).. self.currencies[1].icon
+        totalGold = floor((self.totalMoney + db.currencyCount[0].total) / 10000).. self.currencies[1].icon
     end
     tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold)
 
@@ -1014,8 +1059,12 @@ function SavedClassic:BuildOptions()
         local currency = self.currencies[id]
         if currency then
             if not currency.icon then
-                local name, _, icon = GetCurrencyInfo(id)
+                local name, _, icon, _, weeklyMax = GetCurrencyInfo(id)
                 currency.name = name
+                if weeklyMax and weeklyMax ~= 0 then
+                    currency.weeklyMax = weeklyMax
+                end
+                currency.totalMax = totalMax
                 if id == 1901 then
                     currency.icon = "|T"..icon..":14:14:::14:14:8:0:8:0|t"
                 else
