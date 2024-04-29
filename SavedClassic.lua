@@ -107,10 +107,10 @@ SavedClassic.currencies = {
     order = {
         1,2,3,1901,390,1900,-- Money, PvP
         395,396,            -- Justice, Valor
+        416,615,614,        -- Raid Rewards
         361,402,            -- Jewelcraft, Cooking
         391,                -- Tol Barad
         384,385,393,394,397,398,399,400,401,    -- Archaeology Fragments
-        416,614,615,        -- Raid Rewards
         --483,484,            -- (Maybe)PvP
         515,                -- Darkmoon
     }
@@ -129,53 +129,53 @@ setmetatable(SavedClassic.currencies, { __index =
 
 SavedClassic.abbr = {}
 SavedClassic.abbr.heroic = {
-    [C_Map.GetAreaInfo(4926)] = L["BRC"],
-    [C_Map.GetAreaInfo(5004)] = L["ToT"],
-    [C_Map.GetAreaInfo(5035)] = L["VP" ],
-    [C_Map.GetAreaInfo(5088)] = L["SC" ],
-    [C_Map.GetAreaInfo(5396)] = L["LCT"],
-    [C_Map.GetAreaInfo(4945)] = L["HoO"],
-    [C_Map.GetAreaInfo(4950)] = L["GB" ],
-    [C_Map.GetAreaInfo(5789)] = L["ET" ],
-    [C_Map.GetAreaInfo(5788)] = L["WoE"],
-    [C_Map.GetAreaInfo(5844)] = L["HoT"],
-    [C_Map.GetAreaInfo(1581)] = L["DM" ],
-    [C_Map.GetAreaInfo( 209)] = L["SFK"],
-    [C_Map.GetAreaInfo(1977)] = L["ZG" ],
-    [C_Map.GetAreaInfo(3805)] = L["ZA" ],
+    [C_Map.GetAreaInfo(4926)] = L["H4_BRC"],
+    [C_Map.GetAreaInfo(5004)] = L["H4_ToT"],
+    [C_Map.GetAreaInfo(5035)] = L["H4_VP" ],
+    [C_Map.GetAreaInfo(5088)] = L["H4_SC" ],
+    [C_Map.GetAreaInfo(5396)] = L["H4_LCT"],
+    [C_Map.GetAreaInfo(4945)] = L["H4_HoO"],
+    [C_Map.GetAreaInfo(4950)] = L["H4_GB" ],
+    [C_Map.GetAreaInfo(5789)] = L["H4_ET" ],
+    [C_Map.GetAreaInfo(5788)] = L["H4_WoE"],
+    [C_Map.GetAreaInfo(5844)] = L["H4_HoT"],
+    [C_Map.GetAreaInfo(1581)] = L["H4_DM" ],
+    [C_Map.GetAreaInfo( 209)] = L["H4_SFK"],
+    [C_Map.GetAreaInfo(1977)] = L["H4_ZG" ],
+    [C_Map.GetAreaInfo(3805)] = L["H4_ZA" ],
 }
 SavedClassic.abbr.raid = {
     -- Cataclysm Raid
-    [C_Map.GetAreaInfo(5094)] = { order = -406, name = L["BWD"], color = nil },
-    [C_Map.GetAreaInfo(5334)] = { order = -405, name = L["BoT"], color = nil },
-    [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["TFW"], color = nil },
-    [C_Map.GetAreaInfo(5723)] = { order = -403, name = L["FL" ], color = nil },
-    [C_Map.GetAreaInfo(5892)] = { order = -402, name = L["DS" ], color = nil },
-    [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["BH" ], color = nil },
+    [C_Map.GetAreaInfo(5094)] = { order = -406, name = L["R4_BWD"], color = nil },
+    [C_Map.GetAreaInfo(5334)] = { order = -405, name = L["R4_BoT"], color = nil },
+    [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["R4_TFW"], color = nil },
+    [C_Map.GetAreaInfo(5723)] = { order = -403, name = L["R4_FL" ], color = nil },
+    [C_Map.GetAreaInfo(5892)] = { order = -402, name = L["R4_DS" ], color = nil },
+    [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["R4_BH" ], color = nil },
     -- WotLK Raid 
-    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["ICC" ], color = "a8daf9" },
-    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["ToC" ], color = "2a9df4" },
-    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["ULD" ], color = "2a9df4" },
-    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["Naxx"], color = "187bcd" },
-    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["RS"  ], color = "a8daf9" },
-    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["Ony" ], color = "2a9df4" },
-    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["EoE" ], color = "187bcd" },
-    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["OS"  ], color = "187bcd" },
-    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["VoA" ], color = "1167b1" },
+    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["R3_ICC" ], color = "a8daf9" },
+    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["R3_ToC" ], color = "2a9df4" },
+    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["R3_ULD" ], color = "2a9df4" },
+    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["R3_Naxx"], color = "187bcd" },
+    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["R3_RS"  ], color = "a8daf9" },
+    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["R3_Ony" ], color = "2a9df4" },
+    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["R3_EoE" ], color = "187bcd" },
+    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["R3_OS"  ], color = "187bcd" },
+    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["R3_VoA" ], color = "1167b1" },
     -- TBC Raid
-    [C_Map.GetAreaInfo(4075)] = { order = -209, name = L["SP"] },
-    [C_Map.GetAreaInfo(3959)] = { order = -207, name = L["BT"] },
-    [C_Map.GetAreaInfo(3606)] = { order = -206, name = L["MH"] },
-    [C_Map.GetAreaInfo(3607)] = { order = -205, name = L["SC"] },
-    [C_Map.GetAreaInfo(3845)] = { order = -204, name = L["TK"] },
-    [C_Map.GetAreaInfo(3457)] = { order = -203, name = L["KZ"] },
-    [C_Map.GetAreaInfo(3923)] = { order = -202, name = L["GL"] },
-    [C_Map.GetAreaInfo(3836)] = { order = -201, name = L["ML"] },
+    [C_Map.GetAreaInfo(4075)] = { order = -209, name = L["R2_SP"] },
+    [C_Map.GetAreaInfo(3959)] = { order = -207, name = L["R2_BT"] },
+    [C_Map.GetAreaInfo(3606)] = { order = -206, name = L["R2_MH"] },
+    [C_Map.GetAreaInfo(3607)] = { order = -205, name = L["R2_SC"] },
+    [C_Map.GetAreaInfo(3845)] = { order = -204, name = L["R2_TK"] },
+    [C_Map.GetAreaInfo(3457)] = { order = -203, name = L["R2_KZ"] },
+    [C_Map.GetAreaInfo(3923)] = { order = -202, name = L["R2_GL"] },
+    [C_Map.GetAreaInfo(3836)] = { order = -201, name = L["R2_ML"] },
     -- Vanilla Raid
-    [C_Map.GetAreaInfo(3428)] = { order = -105, name = L["AQ"] },
-    [C_Map.GetAreaInfo(3429)] = { order = -104, name = L["RA"] },
-    [C_Map.GetAreaInfo(2677)] = { order = -102, name = L["BW"] },
-    [C_Map.GetAreaInfo(2717)] = { order = -101, name = L["MC"] },
+    [C_Map.GetAreaInfo(3428)] = { order = -105, name = L["R1_AQ"] },
+    [C_Map.GetAreaInfo(3429)] = { order = -104, name = L["R1_RA"] },
+    [C_Map.GetAreaInfo(2677)] = { order = -102, name = L["R1_BW"] },
+    [C_Map.GetAreaInfo(2717)] = { order = -101, name = L["R1_MC"] },
 }
 
 local _TranslationTable = {
@@ -204,8 +204,8 @@ local _TranslationTable = {
                             id = currency.id
                             saved_currency = db.currencyCount[id] or { }
                             local is_weeklyMax = (currency.weeklyMax or 0) > 0
-                            if currency_type == "" then       -- weekly max goes Type-1 else Type-0
-                                currency_type == is_weeklyMax and "1" or "0"
+                            if not currency_type or currency_type == "" then       -- weekly max goes Type-1 else Type-0
+                                currency_type = is_weeklyMax and "1" or "0"
                             end
                             if currency_type == "0" then      -- Type-0: [Icon][Total amount]
                                 result = currency.icon..(saved_currency.total or "")
@@ -415,7 +415,7 @@ function SavedClassic:InitPlayerDB()
         playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
     else
         playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] "..soulshards.."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["frost"].."] ["..L["currency"]..":"..L["triumph"].."] ["..L["currency"]..":"..L["conquest"].."] ["..L["currency"]..":"..L["valor"].."] ["..L["currency"]..":"..L["heroism"].."] ["..L["currency"]..":"..L["defilers"].."] ["..L["currency"]..":"..L["sidereal"].."] [".. L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["VP"].."] ["..L["currency"]..":"..L["JP"].."] ["..L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["conquest"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
         playerdb.info2_2 = ""
     end
 
@@ -1052,22 +1052,24 @@ function SavedClassic:BuildOptions()
     local currencyTooltipText = ""
     -- icon into currency table and tooltip text
     for _, id in pairs(self.currencies.order) do
-        local currency = self.currencies[id]
-        if currency then
-            if not currency.icon then
-                local name, _, icon, _, weeklyMax = GetCurrencyInfo(id)
-                currency.name = name
-                if weeklyMax and weeklyMax ~= 0 then
-                    currency.weeklyMax = weeklyMax
+        if id > 3 then
+            local currency = self.currencies[id]
+            if currency then
+                if not currency.icon then
+                    local name, _, icon, _, weeklyMax, totalMax = GetCurrencyInfo(id)
+                    currency.name = name
+                    if weeklyMax and weeklyMax ~= 0 then
+                        currency.weeklyMax = weeklyMax
+                    end
+                    currency.totalMax = totalMax
+                    if id == 1901 then
+                        currency.icon = "|T"..icon..":14:14:::14:14:8:0:8:0|t"
+                    else
+                        currency.icon = "|T"..icon..":14:14|t"
+                    end
                 end
-                currency.totalMax = totalMax
-                if id == 1901 then
-                    currency.icon = "|T"..icon..":14:14:::14:14:8:0:8:0|t"
-                else
-                    currency.icon = "|T"..icon..":14:14|t"
-                end
+                currencyTooltipText = currencyTooltipText.."\n"..currency.icon.."("..id.."): "..currency.name
             end
-            currencyTooltipText = currencyTooltipText.."\n"..currency.icon.."("..id.."): "..currency.name
 --[[
             if currency.name then
                 currencyTooltipText = currencyTooltipText.."\n"..currency.icon..currency.altName.."("..id.."): "..currency.name
