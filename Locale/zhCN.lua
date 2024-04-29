@@ -125,22 +125,27 @@ L["justice" ] = true
 L["sidereal"] = true
 L["defilers"] = true
 -- Heroic dungeon names, abbrs
-L["TOK"] = true
-L[ "AN"] = true
-L["DTK"] = true
-L["Gun"] = true
-L["HoL"] = true
-L["HoS"] = true
-L["CoS"] = true
-L["Nex"] = true
-L["Ocu"] = true
-L[ "VH"] = true
-L[ "UK"] = true
-L[ "UP"] = true
-L["ToCh"] = "ToC"
-L["HoR"] = true
-L["PoS"] = true
-L["FoS"] = true
+L["BRC"] = true
+L["ToT"] = true
+L["VP" ] = true
+L["SC" ] = true
+L["LCT"] = true
+L["HoO"] = true
+L["GB" ] = true
+L["ET" ] = true
+L["WoE"] = true
+L["HoT"] = true
+L["DM" ] = true
+L["SFK"] = true
+L["ZG" ] = true
+L["ZA" ] = true
+-- Raid abbr. Cataclysm
+L["BWD"] = true
+L["BoT"] = true
+L["TFW"] = true
+L["FL" ] = true
+L["DS" ] = true
+L["BH" ] = true
 -- Raid abbr. WotLK
 L["Naxx"] = true
 L["OS"]   = true
@@ -153,7 +158,6 @@ L["RS"]   = true
 L["VoA"]  = true
 -- Raid abbr. TBC
 L["SP"] = true
-L["ZA"] = true
 L["BT"] = true
 L["MH"] = true
 L["SC"] = true
@@ -164,7 +168,6 @@ L["ML"] = true
 -- Raid abbr. Vanilla
 L["AQ"] = true
 L["RA"] = true
-L["ZG"] = true
 L["BW"] = true
 L["MC"] = true
 end
