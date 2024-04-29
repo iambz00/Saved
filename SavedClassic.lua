@@ -75,30 +75,33 @@ SavedClassic.currencies = {
     [1901]= { altName = L["honor"   ] }, -- Honor point
     [1900]= { altName = L["arena"   ] }, -- Arena point
     -- Cataclysm
-    -- [Currency:Name]   : Icon and Total amount
-    -- [Currency:Name-1] : earnedThisWeek/weeklyMax
-    -- [Currency:Name-2] : earnedThisWeek
-    -- [Currency:Name-3] : weeklyMax
+    -- [Currency:Name]   : Adaptive output between Type-0 and Type-1(Depeding on weeklyMax)
+    -- [Currency:Name-0] : [Icon][Total amount]
+    -- [Currency:Name-1] : [Icon][Total amount]([earnedThisWeek])
+    -- [Currency:Name-2] : [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
+    -- [Currency:Name-3] : [earnedThisWeek]
+    -- [Currency:Name-4] : [weeklyMax]
+    -- [Currency:Name-5] : [totalMax]
     [395] = { altName = L["JP" ] }, -- 4.0.1 Hidden      Justice Points
     [396] = { altName = L["VP" ] }, -- 4.0.1 Hidden      Valor Points
-    [361] = { altName = L["jewel" ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
-    [391] = { altName = L["Tol"] }, -- 4.0.1 PvP         Tol Barad Commendation
-    [384] = { altName = L["ADw"] }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
-    [385] = { altName = L["ATr"] }, -- 4.0.1 Archaeology Troll Archaeology Fragment
-    [393] = { altName = L["AFo"] }, -- 4.0.1 Archaeology Fossil Archaeology Fragment
-    [394] = { altName = L["ANi"] }, -- 4.0.1 Archaeology Night Elf Archaeology Fragment
-    [397] = { altName = L["AOr"] }, -- 4.3.4 Archaeology Orc Archaeology Fragment
-    [398] = { altName = L["ADr"] }, -- 4.3.4 Archaeology Draenei Archaeology Fragment
-    [399] = { altName = L["AVr"] }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
-    [400] = { altName = L["ANe"] }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
-    [401] = { altName = L["ATo"] }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
-    [402] = { altName = L["IPT"] }, -- 4.3.4 Misc.       Ironpaw Token
-    [416] = { altName = L["MoW"] }, -- 4.3.4 Cataclysm   Mark of the World Tree
+    [361] = { altName = L["JT" ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
+    [391] = { altName = L["TBC"] }, -- 4.0.1 PvP         Tol Barad Commendation
+    [384] = { altName = L["AF1"] }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
+    [385] = { altName = L["AF2"] }, -- 4.0.1 Archaeology Troll Archaeology Fragment
+    [393] = { altName = L["AF3"] }, -- 4.0.1 Archaeology Fossil Archaeology Fragment
+    [394] = { altName = L["AF4"] }, -- 4.0.1 Archaeology Night Elf Archaeology Fragment
+    [397] = { altName = L["AF5"] }, -- 4.3.4 Archaeology Orc Archaeology Fragment
+    [398] = { altName = L["AF6"] }, -- 4.3.4 Archaeology Draenei Archaeology Fragment
+    [399] = { altName = L["AF7"] }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
+    [400] = { altName = L["AF8"] }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
+    [401] = { altName = L["AF9"] }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
+    [402] = { altName = L["IPT"] }, -- 4.3.4 Misc.       Chef's Award
+    [416] = { altName = L["MARK"] }, -- 4.3.4 Cataclysm   Mark of the World Tree
     [483] = { altName = L["CAM"] }, -- 4.3.4 Meta        Conquest Arena Meta
     [484] = { altName = L["CRB"] }, -- 4.3.4 Meta        Conquest Rated BG Meta
     [515] = { altName = L["DMT"] }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
-    [614] = { altName = L["MoD"] }, -- 4.3.4 Cataclysm   Mote of Darkness
-    [615] = { altName = L["EoC"] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
+    [614] = { altName = L["MOD"] }, -- 4.3.4 Cataclysm   Mote of Darkness
+    [615] = { altName = L["EOC"] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
 
     order = {
         1,2,3,1901,1900,395,396     -- Money, Honor, Arena, Justice, Valor
@@ -191,10 +194,10 @@ local _TranslationTable = {
                         end
                     end,
     ["currency" ] = function(db, option, color)
-                        local more_option
+                        local currency_type
                         option:gsub("([^-]*)-(.*)", function(a, b) -- Dash-Deparated option
                             option = a
-                            more_option = b
+                            currency_type = b
                         end)
                         local id = tonumber(option)
                         local currency = id and SavedClassic.currencies[id] or SavedClassic.currencies[option]
@@ -202,14 +205,22 @@ local _TranslationTable = {
                             local result = ""
                             id = currency.id
                             saved_currency = db.currencyCount[id] or { }
-                            if more_option == "1" then      -- earnedThisWeek/weeklyMax
-                                result = (saved_currency.week or 0)..(currency.weeklyMax and "/"..currency.weeklyMax)
-                            elseif more_option == "2" then  -- earnedThisWeek
-                                result = saved_currency.week or 0
-                            elseif more_option == "3" then  -- weeklyMax
-                                result = currency.weeklyMax or 0
-                            else                            -- currentAmount
+                            local is_weeklyMax = (currency.weeklyMax or 0) > 0
+                            if currency_type == "" then       -- weekly max goes Type-1 else Type-0
+                                currency_type == is_weeklyMax and "1" or "0"
+                            end
+                            if currency_type == "0" then      -- Type-0: [Icon][Total amount]
                                 result = currency.icon..(saved_currency.total or "")
+                            elseif currency_type == "1" then  -- Type-1: [Icon][Total amount]([earnedThisWeek])
+                                result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..")"
+                            elseif currency_type == "2" then  -- Type-2: [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
+                                result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..(currency.weeklyMax and "/"..currency.weeklyMax)")"
+                            elseif currency_type == "3" then  -- Type-3: [earnedThisWeek]
+                                result = saved_currency.week or 0
+                            elseif currency_type == "4" then  -- Type-4: [weeklyMax]
+                                result = currency.weeklyMax or ""
+                            elseif currency_type == "5" then  -- Type-5: [totalMax]
+                                result = currency.totalMax or ""
                             end
                             if color and color ~= "" then result = "|cff"..color..result.."|r" end
                             return result
