@@ -75,46 +75,44 @@ SavedClassic.currencies = {
     [1901]= { altName = L["honor"   ] }, -- Honor point
     [1900]= { altName = L["arena"   ] }, -- Arena point
     -- Cataclysm
-    -- [Currency:Name]   : Adaptive output between Type-0 and Type-1(Depeding on weeklyMax)
-    -- [Currency:Name-0] : [Icon][Total amount]
-    -- [Currency:Name-1] : [Icon][Total amount]([earnedThisWeek])
-    -- [Currency:Name-2] : [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
-    -- [Currency:Name-3] : [earnedThisWeek]
-    -- [Currency:Name-4] : [weeklyMax]
-    -- [Currency:Name-5] : [totalMax]
-    [395] = { altName = L["JP" ] }, -- 4.0.1 Hidden      Justice Points
-    [396] = { altName = L["VP" ] }, -- 4.0.1 Hidden      Valor Points
-    [361] = { altName = L["JT" ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
-    [391] = { altName = L["TBC"] }, -- 4.0.1 PvP         Tol Barad Commendation
-    [384] = { altName = L["AF1"] }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
-    [385] = { altName = L["AF2"] }, -- 4.0.1 Archaeology Troll Archaeology Fragment
-    [393] = { altName = L["AF3"] }, -- 4.0.1 Archaeology Fossil Archaeology Fragment
-    [394] = { altName = L["AF4"] }, -- 4.0.1 Archaeology Night Elf Archaeology Fragment
-    [397] = { altName = L["AF5"] }, -- 4.3.4 Archaeology Orc Archaeology Fragment
-    [398] = { altName = L["AF6"] }, -- 4.3.4 Archaeology Draenei Archaeology Fragment
-    [399] = { altName = L["AF7"] }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
-    [400] = { altName = L["AF8"] }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
-    [401] = { altName = L["AF9"] }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
-    [402] = { altName = L["IPT"] }, -- 4.3.4 Misc.       Chef's Award
-    [416] = { altName = L["MARK"] }, -- 4.3.4 Cataclysm   Mark of the World Tree
-    [483] = { altName = L["CAM"] }, -- 4.3.4 Meta        Conquest Arena Meta
-    [484] = { altName = L["CRB"] }, -- 4.3.4 Meta        Conquest Rated BG Meta
-    [515] = { altName = L["DMT"] }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
-    [614] = { altName = L["MOD"] }, -- 4.3.4 Cataclysm   Mote of Darkness
-    [615] = { altName = L["EOC"] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
+    -- [Currency:Name]   : Adaptive output between Type-0 and Type-1
+    -- Type-0 = [Currency:Name-0] : [Icon][Total amount]
+    -- Type-1 = [Currency:Name-1] : [Icon][Total amount]([earnedThisWeek])
+    -- Type-2 = [Currency:Name-2] : [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
+    -- Type-3 = [Currency:Name-3] : [earnedThisWeek]
+    -- Type-4 = [Currency:Name-4] : [weeklyMax]
+    -- Type-5 = [Currency:Name-5] : [totalMax]
+    [395] = { altName = L["JP"      ] }, -- 4.0.1 Hidden      Justice Points
+    [396] = { altName = L["VP"      ] }, -- 4.0.1 Hidden      Valor Points
+    [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
+    [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
+    [391] = { altName = L["TBC"     ] }, -- 4.0.1 PvP         Tol Barad Commendation
+    [384] = { altName = L["AF1"     ] }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
+    [385] = { altName = L["AF2"     ] }, -- 4.0.1 Archaeology Troll Archaeology Fragment
+    [393] = { altName = L["AF3"     ] }, -- 4.0.1 Archaeology Fossil Archaeology Fragment
+    [394] = { altName = L["AF4"     ] }, -- 4.0.1 Archaeology Night Elf Archaeology Fragment
+    [397] = { altName = L["AF5"     ] }, -- 4.3.4 Archaeology Orc Archaeology Fragment
+    [398] = { altName = L["AF6"     ] }, -- 4.3.4 Archaeology Draenei Archaeology Fragment
+    [399] = { altName = L["AF7"     ] }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
+    [400] = { altName = L["AF8"     ] }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
+    [401] = { altName = L["AF9"     ] }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
+    [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
+    [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
+--    [483] = { altName = L["CAM"     ] }, -- 4.3.4 Meta        Conquest Arena Meta
+--    [484] = { altName = L["CRB"     ] }, -- 4.3.4 Meta        Conquest Rated BG Meta
+    [515] = { altName = L["DPT"     ] }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
+    [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
+    [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
 
     order = {
-        1,2,3,1901,1900,395,396     -- Money, Honor, Arena, Justice, Valor
-        361,                        -- Jewelcraft
-        391,
-        384,385,393,394,397,398,399,400,401,    -- Archaeology
-        402,
-        416,
-        483,
-        484,
-        515,
-        614,
-        615,
+        1,2,3,1901,390,1900,-- Money, PvP
+        395,396,            -- Justice, Valor
+        361,402,            -- Jewelcraft, Cooking
+        391,                -- Tol Barad
+        384,385,393,394,397,398,399,400,401,    -- Archaeology Fragments
+        416,614,615,        -- Raid Rewards
+        --483,484,            -- (Maybe)PvP
+        515,                -- Darkmoon
     }
 }
 setmetatable(SavedClassic.currencies, { __index = 
