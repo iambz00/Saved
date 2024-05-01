@@ -125,6 +125,8 @@ L["CRB"     ] = true
 L["DPT"     ] = true
 L["MOD"     ] = true
 L["EOC"     ] = true
+L["sidereal"] = true
+L["defilers"] = true
 -- Heroic dungeon names, abbrs
 L["H4_BRC"] = true
 L["H4_ToT"] = true

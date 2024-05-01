@@ -84,7 +84,7 @@ SavedClassic.currencies = {
     -- Type-5 = [Currency:Name-5] : [totalMax]
     [395] = { altName = L["JP"      ] }, -- 4.0.1 Hidden      Justice Points
     [396] = { altName = L["VP"      ] }, -- 4.0.1 Hidden      Valor Points
-    [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
+--    [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
     [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
     [391] = { altName = L["TBC"     ] }, -- 4.0.1 PvP         Tol Barad Commendation
     [384] = { altName = L["AF1"     ] }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
@@ -96,7 +96,7 @@ SavedClassic.currencies = {
     [399] = { altName = L["AF7"     ] }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
     [400] = { altName = L["AF8"     ] }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
     [401] = { altName = L["AF9"     ] }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
-    [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
+--    [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
     [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
 --    [483] = { altName = L["CAM"     ] }, -- 4.3.4 Meta        Conquest Arena Meta
 --    [484] = { altName = L["CRB"     ] }, -- 4.3.4 Meta        Conquest Rated BG Meta
@@ -104,6 +104,10 @@ SavedClassic.currencies = {
     [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
     [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
 
+    [61]  = { altName = L["jewel"   ] }, -- 3.0.2 Dalaran Jewelcrafter's Token
+    [81]  = { altName = L["cook"    ] }, -- 3.1.0 Epicurean's Award
+    [2589]= { altName = L["sidereal"] }, -- 3.4.2 Sidereal Essence
+    [2711]= { altName = L["defilers"] }, -- 3.4.3 Defiler's Scourgestone
     order = {
         1,2,3,1901,390,1900,-- Money, PvP
         395,396,            -- Justice, Valor
@@ -113,6 +117,7 @@ SavedClassic.currencies = {
         384,385,393,394,397,398,399,400,401,    -- Archaeology Fragments
         --483,484,            -- (Maybe)PvP
         515,                -- Darkmoon
+        61,81,2589,2711,    -- WotLK Currencies
     }
 }
 setmetatable(SavedClassic.currencies, { __index = 
@@ -146,12 +151,12 @@ SavedClassic.abbr.heroic = {
 }
 SavedClassic.abbr.raid = {
     -- Cataclysm Raid
-    [C_Map.GetAreaInfo(5094)] = { order = -406, name = L["R4_BWD"], color = nil },
-    [C_Map.GetAreaInfo(5334)] = { order = -405, name = L["R4_BoT"], color = nil },
-    [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["R4_TFW"], color = nil },
-    [C_Map.GetAreaInfo(5723)] = { order = -403, name = L["R4_FL" ], color = nil },
-    [C_Map.GetAreaInfo(5892)] = { order = -402, name = L["R4_DS" ], color = nil },
-    [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["R4_BH" ], color = nil },
+    [C_Map.GetAreaInfo(5094)] = { order = -406, name = L["R4_BWD"], color = "d1001f" },
+    [C_Map.GetAreaInfo(5334)] = { order = -405, name = L["R4_BoT"], color = "de0a26" },
+    [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["R4_TFW"], color = "f01e2c" },
+    [C_Map.GetAreaInfo(5723)] = { order = -403, name = L["R4_FL" ], color = "ff2c2c" },
+    [C_Map.GetAreaInfo(5892)] = { order = -402, name = L["R4_DS" ], color = "f94449" },
+    [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["R4_BH" ], color = "ee6b6e" },
     -- WotLK Raid 
     [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["R3_ICC" ], color = "a8daf9" },
     [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["R3_ToC" ], color = "2a9df4" },
@@ -408,14 +413,13 @@ function SavedClassic:InitPlayerDB()
     playerdb.info2_1 = ""
 
     local soulshards = (class == "WARLOCK") and "["..L["item"]..":6265/cc66cc] " or ""
-
     if UnitLevel("player") < GetMaxPlayerLevel() then
         playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] "..soulshards.."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         playerdb.info2_1 = "   ["..L["color"].."/cc66ff]["..L["expCur"].."]/["..L["expMax"].."] (["..L["exp%"].."]%)["..L["color"].."] ["..L["color"].."/66ccff]+["..L["expRest"].."] (["..L["expRest%"].."]%)["..L["color"].."]"
         playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
     else
         playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] "..soulshards.."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["VP"].."] ["..L["currency"]..":"..L["JP"].."] ["..L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["conquest"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["VP"].."] ["..L["currency"]..":"..L["JP"].."] ["..L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["conquest"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."] [".. L["currency"]..":"..L["sidereal"].."]["..L["color"].."] [".. L["currency"]..":"..L["defilers"].."]["..L["color"].."]"
         playerdb.info2_2 = ""
     end
 
