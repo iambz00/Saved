@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "4.4.0.1"
+SavedClassic.version = "4.4.0.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
@@ -14,7 +14,9 @@ local MSG_SUFFIX = " |cff00ff00■|r"
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
-
+local function GetMaxPlayerLevel()  -- GetMaxPlayerLevel() returns 85 when initializing
+    return 80
+end
 -- Raid Table 
 local CELL_WIDTH, CELL_HEIGHT = 80, 24
 local BORDER_LEFT = 12
@@ -294,10 +296,10 @@ function SavedClassic:OnInitialize()
 
     -- Reset old db
     if not self.db.global.version then
-        self.db:ResetDB()
+        self:ResetWholeDBDB()
     elseif self.db.global.version < "4.4.0" then
         p(L["Reset due to update"](self.db.global.version, self.version))
-        self.db:ResetDB()
+        self:ResetWholeDBDB()
     end
 
     self.db.global.version = self.version
@@ -411,7 +413,6 @@ function SavedClassic:InitPlayerDB()
     playerdb.info1_2 = "\n["..L["currency"]..":"..L["gold"].."/ffee99]  "
     playerdb.info2 = true
     playerdb.info2_1 = ""
-
     local soulshards = (class == "WARLOCK") and "["..L["item"]..":6265/cc66cc] " or ""
     if UnitLevel("player") < GetMaxPlayerLevel() then
         playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] "..soulshards.."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
