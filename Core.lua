@@ -1,10 +1,6 @@
 local addonName, _ = ...
-SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
-SavedClassic.name = addonName
---SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "4.4.0.2"
-
+local SavedClassic = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 local LibGearScore = LibStub("LibGearScore.1000", true)
 
@@ -50,148 +46,13 @@ local dbDefault = {
     }
 }
 
-SavedClassic.ts = { -- Tradeskills of long cooldowns
-    -- Alchemy
-    [53781] = { icon = "237220", },   -- Transmute with Cardinal Ruby icon
-    [60893] = { icon = "136240", },   -- Northrend Alchemy Research
-    -- Mining
-    [55208] = { icon = "237046", },   -- Smelt Titansteel
-    -- Tailoring
-    [56001] = { icon = "237025", },   -- Moonshroud
-    [56002] = { icon = "237022", },   -- Ebonweave
-    [56003] = { icon = "237026", },   -- Spellweave
-    [56005] = { icon = "133666", },   -- Glacial Bag
-    -- Inscription
-    [61177] = { icon = "237171", },   -- Northrend Inscription Research
-    [61288] = { icon = "237133", },   -- Minor Inscription Research
-    -- Jewelcrafting
-    [62242] = { icon = "134095", },   -- Icy Prism
-}
-SavedClassic.items = {  -- Items to count always
-    [6265] = { },   -- Soulshard
-}
-SavedClassic.currencies = {
-    [1]   = { altName = L["gold"    ], icon = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"},   -- Gold
-    [2]   = { altName = L["silver"  ], icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
-    [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
-    [1901]= { altName = L["honor"   ] }, -- Honor point
-    [1900]= { altName = L["arena"   ] }, -- Arena point
-    -- Cataclysm
-    -- [Currency:Name]   : Adaptive output between Type-0 and Type-1
-    -- Type-0 = [Currency:Name-0] : [Icon][Total amount]
-    -- Type-1 = [Currency:Name-1] : [Icon][Total amount]([earnedThisWeek])
-    -- Type-2 = [Currency:Name-2] : [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
-    -- Type-3 = [Currency:Name-3] : [earnedThisWeek]
-    -- Type-4 = [Currency:Name-4] : [weeklyMax]
-    -- Type-5 = [Currency:Name-5] : [totalMax]
-    [395] = { altName = L["JP"      ] }, -- 4.0.1 Hidden      Justice Points
-    [396] = { altName = L["VP"      ] }, -- 4.0.1 Hidden      Valor Points
---    [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
-    [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
-    [391] = { altName = L["TBC"     ] }, -- 4.0.1 PvP         Tol Barad Commendation
-    [384] = { altName = L["AF1"     ] }, -- 4.0.1 Archaeology Dwarf Archaeology Fragment
-    [385] = { altName = L["AF2"     ] }, -- 4.0.1 Archaeology Troll Archaeology Fragment
-    [393] = { altName = L["AF3"     ] }, -- 4.0.1 Archaeology Fossil Archaeology Fragment
-    [394] = { altName = L["AF4"     ] }, -- 4.0.1 Archaeology Night Elf Archaeology Fragment
-    [397] = { altName = L["AF5"     ] }, -- 4.3.4 Archaeology Orc Archaeology Fragment
-    [398] = { altName = L["AF6"     ] }, -- 4.3.4 Archaeology Draenei Archaeology Fragment
-    [399] = { altName = L["AF7"     ] }, -- 4.3.4 Archaeology Vrykul Archaeology Fragment
-    [400] = { altName = L["AF8"     ] }, -- 4.3.4 Archaeology Nerubian Archaeology Fragment
-    [401] = { altName = L["AF9"     ] }, -- 4.3.4 Archaeology Tol'vir Archaeology Fragment
---    [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
-    [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
---    [483] = { altName = L["CAM"     ] }, -- 4.3.4 Meta        Conquest Arena Meta
---    [484] = { altName = L["CRB"     ] }, -- 4.3.4 Meta        Conquest Rated BG Meta
-    [515] = { altName = L["DPT"     ] }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
-    [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
-    [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
-
-    [61]  = { altName = L["jewel"   ] }, -- 3.0.2 Dalaran Jewelcrafter's Token
-    [81]  = { altName = L["cook"    ] }, -- 3.1.0 Epicurean's Award
-    [2589]= { altName = L["sidereal"] }, -- 3.4.2 Sidereal Essence
-    [2711]= { altName = L["defilers"] }, -- 3.4.3 Defiler's Scourgestone
-    order = {
-        1,2,3,1901,390,1900,-- Money, PvP
-        395,396,            -- Justice, Valor
-        416,615,614,        -- Raid Rewards
-        361,402,            -- Jewelcraft, Cooking
-        391,                -- Tol Barad
-        384,385,393,394,397,398,399,400,401,    -- Archaeology Fragments
-        --483,484,            -- (Maybe)PvP
-        515,                -- Darkmoon
-        61,81,2589,2711,    -- WotLK Currencies
-    }
-}
-setmetatable(SavedClassic.currencies, { __index = 
-        function(t,k)
-            for id, v in pairs(t) do
-                if v.altName and v.altName == k then
-                    v.id = id   -- Will be used in _TranslationTable
-                    return v
-                end
-            end
-            return nil
-        end }
-)
-
-SavedClassic.abbr = {}
-SavedClassic.abbr.heroic = {
-    [C_Map.GetAreaInfo(4926)] = L["H4_BRC"],
-    [C_Map.GetAreaInfo(5004)] = L["H4_ToT"],
-    [C_Map.GetAreaInfo(5035)] = L["H4_VP" ],
-    [C_Map.GetAreaInfo(5088)] = L["H4_SC" ],
-    [C_Map.GetAreaInfo(5396)] = L["H4_LCT"],
-    [C_Map.GetAreaInfo(4945)] = L["H4_HoO"],
-    [C_Map.GetAreaInfo(4950)] = L["H4_GB" ],
-    [C_Map.GetAreaInfo(5789)] = L["H4_ET" ],
-    [C_Map.GetAreaInfo(5788)] = L["H4_WoE"],
-    [C_Map.GetAreaInfo(5844)] = L["H4_HoT"],
-    [C_Map.GetAreaInfo(1581)] = L["H4_DM" ],
-    [C_Map.GetAreaInfo( 209)] = L["H4_SFK"],
-    [C_Map.GetAreaInfo(1977)] = L["H4_ZG" ],
-    [C_Map.GetAreaInfo(3805)] = L["H4_ZA" ],
-}
-SavedClassic.abbr.raid = {
-    -- Cataclysm Raid
-    [C_Map.GetAreaInfo(5094)] = { order = -406, name = L["R4_BWD"], color = "d1001f" },
-    [C_Map.GetAreaInfo(5334)] = { order = -405, name = L["R4_BoT"], color = "de0a26" },
-    [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["R4_TFW"], color = "f01e2c" },
-    [C_Map.GetAreaInfo(5723)] = { order = -403, name = L["R4_FL" ], color = "ff2c2c" },
-    [C_Map.GetAreaInfo(5892)] = { order = -402, name = L["R4_DS" ], color = "f94449" },
-    [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["R4_BH" ], color = "ee6b6e" },
-    -- WotLK Raid 
-    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["R3_ICC" ], color = "a8daf9" },
-    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["R3_ToC" ], color = "2a9df4" },
-    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["R3_ULD" ], color = "2a9df4" },
-    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["R3_Naxx"], color = "187bcd" },
-    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["R3_RS"  ], color = "a8daf9" },
-    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["R3_Ony" ], color = "2a9df4" },
-    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["R3_EoE" ], color = "187bcd" },
-    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["R3_OS"  ], color = "187bcd" },
-    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["R3_VoA" ], color = "1167b1" },
-    -- TBC Raid
-    [C_Map.GetAreaInfo(4075)] = { order = -209, name = L["R2_SP"] },
-    [C_Map.GetAreaInfo(3959)] = { order = -207, name = L["R2_BT"] },
-    [C_Map.GetAreaInfo(3606)] = { order = -206, name = L["R2_MH"] },
-    [C_Map.GetAreaInfo(3607)] = { order = -205, name = L["R2_SC"] },
-    [C_Map.GetAreaInfo(3845)] = { order = -204, name = L["R2_TK"] },
-    [C_Map.GetAreaInfo(3457)] = { order = -203, name = L["R2_KZ"] },
-    [C_Map.GetAreaInfo(3923)] = { order = -202, name = L["R2_GL"] },
-    [C_Map.GetAreaInfo(3836)] = { order = -201, name = L["R2_ML"] },
-    -- Vanilla Raid
-    [C_Map.GetAreaInfo(3428)] = { order = -105, name = L["R1_AQ"] },
-    [C_Map.GetAreaInfo(3429)] = { order = -104, name = L["R1_RA"] },
-    [C_Map.GetAreaInfo(2677)] = { order = -102, name = L["R1_BW"] },
-    [C_Map.GetAreaInfo(2717)] = { order = -101, name = L["R1_MC"] },
-}
-
 local _TranslationTable = {
     ["color"    ] = function(_, option, color) return (color and color ~= "") and "|cff"..color or "|r" end,
     ["item"     ] = function(db, option, color)
-                        local _, itemLink = GetItemInfo(option)
+                        local _, itemLink = C_Item.GetItemInfo(option)
                         if itemLink then
                             local id = SavedClassic:StripLink(itemLink)
-                            local result = "|T"..GetItemIcon(id)..":14:14|t"..(db.itemCount[id] or "-")
+                            local result = "|T"..C_Item.GetItemIconByID(id)..":14:14|t"..(db.itemCount[id] or "-")
                             if color and color ~= "" then result = "|cff"..color..result.."|r" end
                             return result
                         else
@@ -221,7 +82,7 @@ local _TranslationTable = {
                             elseif currency_type == "2" then  -- Type-2: [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
                                 result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..(currency.weeklyMax and "/"..currency.weeklyMax)")"
                             elseif currency_type == "3" then  -- Type-3: [earnedThisWeek]
-                                result = saved_currency.week or 0
+                                result = saved_currency.week or "0"
                             elseif currency_type == "4" then  -- Type-4: [weeklyMax]
                                 result = currency.weeklyMax or ""
                             elseif currency_type == "5" then  -- Type-5: [totalMax]
@@ -413,13 +274,12 @@ function SavedClassic:InitPlayerDB()
     playerdb.info1_2 = "\n["..L["currency"]..":"..L["gold"].."/ffee99]  "
     playerdb.info2 = true
     playerdb.info2_1 = ""
-    local soulshards = (class == "WARLOCK") and "["..L["item"]..":6265/cc66cc] " or ""
     if UnitLevel("player") < GetMaxPlayerLevel() then
-        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] "..soulshards.."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
+        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] ".."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         playerdb.info2_1 = "   ["..L["color"].."/cc66ff]["..L["expCur"].."]/["..L["expMax"].."] (["..L["exp%"].."]%)["..L["color"].."] ["..L["color"].."/66ccff]+["..L["expRest"].."] (["..L["expRest%"].."]%)["..L["color"].."]"
         playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
     else
-        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] "..soulshards.."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
+        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] ".."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["VP"].."] ["..L["currency"]..":"..L["JP"].."] ["..L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["conquest"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."] [".. L["currency"]..":"..L["sidereal"].."]["..L["color"].."] [".. L["currency"]..":"..L["defilers"].."]["..L["color"].."]"
         playerdb.info2_2 = ""
     end
@@ -440,7 +300,7 @@ function SavedClassic:InitPlayerDB()
     playerdb.zone = ""
     playerdb.subzone = ""
 
-    playerdb.lastUpdate = currentTime
+    playerdb.lastUpdate = time()
     playerdb.frameShow = false
 
     self:PLAYER_MONEY()
@@ -586,15 +446,15 @@ function SavedClassic:BAG_UPDATE_DELAYED()
     local infoStr = db.info1_1..db.info1_2..db.info2_1..db.info2_2
     local itemList = string.gmatch(infoStr, "%["..L["item"]..":([^]]+)%]")
 
-    for itemLink in itemList do -- item link or ID or name
-        local _, itemLink = GetItemInfo(itemLink)
+    for item in itemList do -- item link or ID or name
+        local _, itemLink = C_Item.GetItemInfo(item)
         if itemLink then
             local itemID = self:StripLink(itemLink)
-            db.itemCount[itemID] = GetItemCount(itemLink, true) or 0
+            db.itemCount[itemID] = C_Item.GetItemCount(itemLink, true) or 0
         end
     end
     for id, _ in pairs(self.items) do
-        db.itemCount[id] = GetItemCount(id, true) or 0
+        db.itemCount[id] = C_Item.GetItemCount(id, true) or 0
     end
 end
 
@@ -847,7 +707,7 @@ function SavedClassic:InitUI()
     ui:SetBackdropBorderColor(1,0.82,0,1)
     ui:SetPoint("CENTER")
 
-    text = ui:CreateFontString()
+    local text = ui:CreateFontString()
     text:SetAllPoints()
     text:SetFontObject("GameFontNormal")
     text:SetText("|cff00ff00Saved|r ")

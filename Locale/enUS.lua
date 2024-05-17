@@ -1,5 +1,5 @@
-local AddonName, Addon = ...
-local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "enUS", true)
+local addonName, _ = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
 if L then
 L["Transmute"] = true
@@ -48,7 +48,7 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Keywords for Character info|r|n"
     .."|cffccaa00[gs] [ilvl]|r|n"
     .."|cffccaa00[color/######]|r Color starts(RGB code)|n|cffccaa00[color]|r Color ends|n"
     .."  attach /###### to apply color|n"
-    .."|cffffeeaa(ex) |r|cffccaa00[color/ffffff]WHITE[color] =>|r |cffffffffWHITE|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..GetItemIcon(6265)..":14:14|t12|r|n"
+    .."|cffffeeaa(ex) |r|cffccaa00[color/ffffff]WHITE[color] =>|r |cffffffffWHITE|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..C_Item.GetItemIconByID(6265)..":14:14|t12|r|n"
     .."|cffccaa00[currency:|cffffeeaaname or ID|r]|r Currency Icon and Count|n"
 L["Tooltip - Raid instances"] = true
 L["Lines of raid instances"] = true
@@ -127,67 +127,67 @@ L["MOD"     ] = true
 L["EOC"     ] = true
 L["sidereal"] = true
 L["defilers"] = true
--- Heroic dungeon names, abbrs
-L["H4_BRC"] = true
-L["H4_ToT"] = true
-L["H4_VP" ] = true
-L["H4_SC" ] = true
-L["H4_LCT"] = true
-L["H4_HoO"] = true
-L["H4_GB" ] = true
-L["H4_ET" ] = true
-L["H4_WoE"] = true
-L["H4_HoT"] = true
-L["H4_DM" ] = true
-L["H4_SFK"] = true
-L["H4_ZG" ] = true
-L["H4_ZA" ] = true
+-- Heroic abbr. Cataclysm
+L["H4_Blackrock Caverns"] = "BRC"
+L["H4_Throne of the Tides"] = "ToT"
+L["H4_Vortex Pinnacle"] = "VP"
+L["H4_The Stonecore"] = "SC"
+L["H4_Lost City of the Tol'vir"] = "LCT"
+L["H4_Halls of Origination"] = "HoO"
+L["H4_Grim Batol"] = "GB"
+L["H4_End Time"] = "ET"
+L["H4_Well of Eternity"] = "WotE"
+L["H4_Hour of Twilight"] = "HoT"
+L["H4_Deadmines"] = "DM"
+L["H4_Shadowfang Keep"] = "SFK"
+L["H4_Zul'Gurub"] = "ZG"
+L["H4_Zul'Aman"] = "ZA"
 -- Raid abbr. Cataclysm
-L["R4_BWD"] = true
-L["R4_BoT"] = true
-L["R4_TFW"] = true
-L["R4_FL" ] = true
-L["R4_DS" ] = true
-L["R4_BH" ] = true
+L["R4_Blackwing Descent"] = "BWD"
+L["R4_Bastion of Twilight"] = "BoT"
+L["R4_Throne of the Four Winds"] = "T4W"
+L["R4_Firelands"] = "FL"
+L["R4_Dragon Soul"] = "DS"
+L["R4_Baradin Hold"] = "BH"
 -- Heroic abbr. WotLK
-L["H3_TOK"] = true
-L["H3_AN" ] = true
-L["H3_DTK"] = true
-L["H3_Gun"] = true
-L["H3_HoL"] = true
-L["H3_HoS"] = true
-L["H3_CoS"] = true
-L["H3_Nex"] = true
-L["H3_Ocu"] = true
-L["H3_VH" ] = true
-L["H3_UK" ] = true
-L["H3_UP" ] = true
-L["H3_ToCh"] = "ToC"
-L["H3_HoR"] = true
-L["H3_PoS"] = true
-L["H3_FoS"] = true
+L["H3_Ahn'kahet: The Old Kingdom"] = "AK"
+L["H3_Azjol-Nerub"] = "AN"
+L["H3_Drak'Tharon Keep"] = "DTK"
+L["H3_Gundrak"] = "Gun"
+L["H3_Halls of Lightning"] = "HoL"
+L["H3_Halls of Stone"] = "HoS"
+L["H3_Culling of Stratholme"] = "CoStrat"
+L["H3_The Nexus"] = "Nex"
+L["H3_The Oculus"] = "Ocu"
+L["H3_Violet Hold"] = "VH"
+L["H3_Utgarde Keep"] = "UK"
+L["H3_Utgarde Pinnacle"] = "UP"
+L["H3_Trial of the Champion"] = "ToC"
+L["H3_Halls of Reflection"] = "HoR"
+L["H3_Pit of Saron"] = "PoS"
+L["H3_Forge of Souls"] = "FoS"
 -- Raid abbr. WotLK
-L["R3_Naxx"] = true
-L["R3_OS"]   = true
-L["R3_EoE"]  = true
-L["R3_ULD"]  = true
-L["R3_Ony"]  = true
-L["R3_ToC"]  = true
-L["R3_ICC"]  = true
-L["R3_RS"]   = true
-L["R3_VoA"]  = true
+L["R3_Naxxramas"] = "Naxx"
+L["R3_Obsidian Sanctum"]  = "OS"
+L["R3_Eye of Eternity"]  = "EoE"
+L["R3_Ulduar"]  = "ULD"
+L["R3_Onyxia's Lair"]  = "Ony"
+L["R3_Trial of the Crusader"]  = "CC"
+L["R3_Icecrown Citadel"]  = "IC"
+L["R3_Ruby Sanctum"]  = "RS"
+L["R3_Vault of Archavon"]  = "VoA"
 -- Raid abbr. TBC
-L["R2_SP"] = true
-L["R2_BT"] = true
-L["R2_MH"] = true
-L["R2_SC"] = true
-L["R2_TK"] = true
-L["R2_KZ"] = true
-L["R2_GL"] = true
-L["R2_ML"] = true
+L["R2_Sunwell Plateau"] = "SP"
+L["R2_Black Temple"] = "BT"
+L["R2_Battle for Mount Hyjal"] = "Hyjal"
+L["R2_Serpentshrine CavernC"] = "SSC"
+L["R2_The Eye"] = "TK"  -- Tempest Keep
+L["R2_Karazhan"] = "KZ"
+L["R2_Gruul's Lair"] = "Gruul"
+L["R2_Magtheridon's Lair"] = "Mag"
 -- Raid abbr. Vanilla
-L["R1_AQ"] = true
-L["R1_RA"] = true
-L["R1_BW"] = true
-L["R1_MC"] = true
+L["R1_Temple of Ahn'Qiraj"] = "TAQ"
+L["R1_Ruins of Ahn'Qiraj"] = "RAQ"
+L["R1_Blackwing Lair"] = "BW"
+L["R1_Molten Core"] = "MC"
 end
