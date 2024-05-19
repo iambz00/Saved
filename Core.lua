@@ -10,9 +10,7 @@ local MSG_SUFFIX = " |cff00ff00■|r"
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
-local function GetMaxPlayerLevel()  -- GetMaxPlayerLevel() returns 85 when initializing
-    return 80
-end
+
 -- Raid Table 
 local CELL_WIDTH, CELL_HEIGHT = 80, 24
 local BORDER_LEFT = 12
@@ -243,7 +241,7 @@ function SavedClassic:SetOrder()
             if db.sortOrder == "gold" then
                 aa = a.currencyCount[0] and a.currencyCount[0].total or 0
                 bb = b.currencyCount[0] and b.currencyCount[0].total or 0
-            elseif db.sortOrder == "gearScore" then -- Strip gearscore color
+            elseif db.sortOrder == "gearScore" or db.sortOrder == "gearAvgLevel" then -- Strip color
                 aa = tonumber(string.match(aa, "|c........(%d+)|r")) or 0
                 bb = tonumber(string.match(bb, "|c........(%d+)|r")) or 0
             end
@@ -279,8 +277,8 @@ function SavedClassic:InitPlayerDB()
         playerdb.info2_1 = "   ["..L["color"].."/cc66ff]["..L["expCur"].."]/["..L["expMax"].."] (["..L["exp%"].."]%)["..L["color"].."] ["..L["color"].."/66ccff]+["..L["expRest"].."] (["..L["expRest%"].."]%)["..L["color"].."]"
         playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
     else
-        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["gs"].."] ".."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["VP"].."] ["..L["currency"]..":"..L["JP"].."] ["..L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["conquest"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."] [".. L["currency"]..":"..L["sidereal"].."]["..L["color"].."] [".. L["currency"]..":"..L["defilers"].."]["..L["color"].."]"
+        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["ilvl"].."] ".."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
+        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["VP"].."] ["..L["currency"]..":"..L["JP"].."] ["..L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["conquest"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
         playerdb.info2_2 = ""
     end
 
@@ -497,7 +495,7 @@ function SavedClassic:LibGearScore_Update(event, guid, gearScore)
     if guid == playerGUID and gearScore then
         local color = gearScore.Color or CreateColor(0.62, 0.62, 0.62)
         db.gearScore = color:WrapTextInColorCode(gearScore.GearScore or 0)
-        db.gearAvgLevel = gearScore.AvgItemLevel or 0
+        db.gearAvgLevel = color:WrapTextInColorCode(gearScore.AvgItemLevel or 0)
     end
 end
 

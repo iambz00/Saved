@@ -125,8 +125,6 @@ L["CRB"     ] = true
 L["DPT"     ] = true
 L["MOD"     ] = true
 L["EOC"     ] = true
-L["sidereal"] = true
-L["defilers"] = true
 -- Heroic abbr. Cataclysm
 L["H4_Blackrock Caverns"] = "BRC"
 L["H4_Throne of the Tides"] = "ToT"

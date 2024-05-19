@@ -125,8 +125,6 @@ L["CRB"     ] = true
 L["DPT"     ] = "다크문"
 L["MOD"     ] = "티끌"
 L["EOC"     ] = "정수"
-L["sidereal"] = "항성"
-L["defilers"] = "모독"
 -- Heroic abbr. Cataclysm
 L["H4_Blackrock Caverns"] = "검바"
 L["H4_Throne of the Tides"] = "파도"
