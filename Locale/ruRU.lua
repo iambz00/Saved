@@ -45,7 +45,7 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Использование - Инф�
     .."|cffccaa00[cooldown]|r Перезарядка навыков профессии|n"
     .."|cffccaa00[dqCom] [dqMax]|r|n"
     .."|cffccaa00[dqReset]|r Time left until DQ Reset|n"
-    .."|cffccaa00[gs] [ilvl]|r|n"
+    .."|cffccaa00[ilvl] [ilvl_avg] [ilvl_equip]|r|n"
     .."|cffccaa00[color/######]|r Цвет начала(RGB кодировка)|n|cffccaa00[color]|r Цвет окончания|n"
     .."  Цвет, добавляя /###### в конец|n"
     .."|cffffeeaa(ex) |r|cffccaa00[color/ffffff]Белый[color] =>|r |cffffffffБелый|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..C_Item.GetItemIconByID(6265)..":14:14|t12|r|n"
@@ -90,8 +90,9 @@ L["expRest%"  ] = true
 L["dqCom"     ] = true
 L["dqMax"     ] = true
 L["dqReset"   ] = true
-L["gs"        ] = true
 L["ilvl"      ] = true
+L["ilvl_avg"  ] = true
+L["ilvl_equip"] = true
 L["instName"  ] = true
 L["instID"    ] = true
 L["difficulty"] = true

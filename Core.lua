@@ -2,7 +2,6 @@ local addonName, _ = ...
 
 local SavedClassic = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
-local LibGearScore = LibStub("LibGearScore.1000", true)
 
 local MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
 local MSG_SUFFIX = " |cff00ff00■|r"
@@ -27,6 +26,7 @@ local dbDefault = {
             hideLevelUnder = 1,
             sortOrder = "level",
             sortOption = 0,
+            currentFirst = true,
 
             default = true,
             minimapIcon = { hide = false },
@@ -37,8 +37,8 @@ local dbDefault = {
             dqComplete = -1, dqMax = -1, dqReset = -1,
 
             lastUpdate = -1,
-            gearScore = -1,
             gearAvgLevel = -1,
+            gearEquippedLevel = -1,
             exclude = "",
         }
     }
@@ -46,18 +46,17 @@ local dbDefault = {
 
 local _TranslationTable = {
     ["color"    ] = function(_, option, color) return (color and color ~= "") and "|cff"..color or "|r" end,
-    ["item"     ] = function(db, option, color)
+    ["item"     ] = function(db, option)
                         local _, itemLink = C_Item.GetItemInfo(option)
                         if itemLink then
                             local id = SavedClassic:StripLink(itemLink)
                             local result = "|T"..C_Item.GetItemIconByID(id)..":14:14|t"..(db.itemCount[id] or "-")
-                            if color and color ~= "" then result = "|cff"..color..result.."|r" end
                             return result
                         else
                             return ""
                         end
                     end,
-    ["currency" ] = function(db, option, color)
+    ["currency" ] = function(db, option)
                         local currency_type
                         option:gsub("([^-]*)-(.*)", function(a, b) -- Dash-Deparated option
                             option = a
@@ -78,7 +77,7 @@ local _TranslationTable = {
                             elseif currency_type == "1" then  -- Type-1: [Icon][Total amount]([earnedThisWeek])
                                 result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..")"
                             elseif currency_type == "2" then  -- Type-2: [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
-                                result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..(currency.weeklyMax and "/"..currency.weeklyMax)")"
+                                result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..(currency.weeklyMax and "/"..currency.weeklyMax)..")"
                             elseif currency_type == "3" then  -- Type-3: [earnedThisWeek]
                                 result = saved_currency.week or "0"
                             elseif currency_type == "4" then  -- Type-4: [weeklyMax]
@@ -86,7 +85,6 @@ local _TranslationTable = {
                             elseif currency_type == "5" then  -- Type-5: [totalMax]
                                 result = currency.totalMax or ""
                             end
-                            if color and color ~= "" then result = "|cff"..color..result.."|r" end
                             return result
                         else
                             return ""
@@ -107,8 +105,9 @@ local _TranslationTable = {
     ["dqCom"    ] = "dqComplete",
     ["dqMax"    ] = "dqMax",
     ["dqReset"  ] = "dqReset",
-    ["gearScore"] = "gearScore",
-    ["ilvl"     ] = "gearAvgLevel",
+    ["ilvl_equip"] = "gearEquippedLevel",
+    ["ilvl_avg" ] = "gearAvgLevel",
+    ["ilvl"     ] = function(db) return db.gearEquippedLevel.."/"..db.gearAvgLevel end,
     ["instName" ] = "name",
     ["instID"   ] = "id",
     ["difficulty"]= "difficultyName",
@@ -138,8 +137,9 @@ local _TranslationTable = {
         [L["dqCom"     ] ] = "dqCom",
         [L["dqMax"     ] ] = "dqMax",
         [L["dqReset"   ] ] = "dqReset",
-        [L["gs"        ] ] = "gearScore",
-        [L["ilvl"      ] ] = "gearAvgLevel",
+        [L["ilvl"      ] ] = "ilvl",
+        [L["ilvl_equip"] ] = "ilvl_equip",
+        [L["ilvl_avg"  ] ] = "ilvl_avg",
         [L["instName"  ] ] = "instName",
         [L["instID"    ] ] = "instID",
         [L["difficulty"] ] = "difficulty",
@@ -177,6 +177,7 @@ function SavedClassic:OnInitialize()
 
     self:RegisterEvent("PLAYER_MONEY", "CurrencyUpdate")
     self:RegisterEvent("PLAYER_XP_UPDATE")
+    self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
     self:RegisterEvent("PLAYER_LEAVING_WORLD", "SaveZone")
     self:RegisterEvent("PLAYER_ENTERING_WORLD", "SaveInfo")
 
@@ -192,7 +193,6 @@ function SavedClassic:OnInitialize()
     self:RegisterEvent("QUEST_TURNED_IN")
 
     self:RegisterEvent("CHAT_MSG_COMBAT_HONOR_GAIN", "CurrencyUpdate")
-    LibGearScore.RegisterCallback(self, "LibGearScore_Update")
 
     self.totalMoney = 0 -- Total money except current character
     for character, saved in pairs(self.db.realm) do
@@ -204,7 +204,6 @@ function SavedClassic:OnInitialize()
     self:ClearItemCount()
     self:QUEST_TURNED_IN()
     self:BAG_UPDATE_DELAYED()
-    LibGearScore:PLAYER_ENTERING_WORLD()
 end
 
 function SavedClassic:OnEnable()
@@ -241,9 +240,6 @@ function SavedClassic:SetOrder()
             if db.sortOrder == "gold" then
                 aa = a.currencyCount[0] and a.currencyCount[0].total or 0
                 bb = b.currencyCount[0] and b.currencyCount[0].total or 0
-            elseif db.sortOrder == "gearScore" or db.sortOrder == "gearAvgLevel" then -- Strip color
-                aa = tonumber(string.match(aa, "|c........(%d+)|r")) or 0
-                bb = tonumber(string.match(bb, "|c........(%d+)|r")) or 0
             end
 
             if aa == bb then
@@ -273,11 +269,11 @@ function SavedClassic:InitPlayerDB()
     playerdb.info2 = true
     playerdb.info2_1 = ""
     if UnitLevel("player") < GetMaxPlayerLevel() then
-        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] ".."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
+        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] ["..L["ilvl"].."] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         playerdb.info2_1 = "   ["..L["color"].."/cc66ff]["..L["expCur"].."]/["..L["expMax"].."] (["..L["exp%"].."]%)["..L["color"].."] ["..L["color"].."/66ccff]+["..L["expRest"].."] (["..L["expRest%"].."]%)["..L["color"].."]"
-        playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["honor"].."]["..L["color"].."]"
+        playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["JP"].."]["..L["color"].."]"
     else
-        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]]["..L["ilvl"].."] ".."["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
+        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]] ["..L["ilvl"].."] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
         playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["VP"].."] ["..L["currency"]..":"..L["JP"].."] ["..L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["conquest"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
         playerdb.info2_2 = ""
     end
@@ -372,6 +368,7 @@ function SavedClassic:SaveInfo()
     db.heroics = heroics
 
     self:PLAYER_XP_UPDATE()
+    self:PLAYER_EQUIPMENT_CHANGED()
     self:CurrencyUpdate()
     self:SaveZone() 
     self:SaveTSCooldowns()
@@ -402,6 +399,13 @@ function SavedClassic:PLAYER_XP_UPDATE()
     db.expRest = GetXPExhaustion() or 0
 
     self:SetOrder()
+end
+
+function SavedClassic:PLAYER_EQUIPMENT_CHANGED()
+    local db = self.db.realm[player]
+    db.gearAvgLevel, db.gearEquippedLevel = GetAverageItemLevel()
+    db.gearAvgLevel = floor(db.gearAvgLevel)
+    db.gearEquippedLevel = floor(db.gearEquippedLevel)
 end
 
 function SavedClassic:SaveZone()
@@ -475,7 +479,7 @@ function SavedClassic:CurrencyUpdate()
         local _, currentAmount, _, earnedThisWeek = GetCurrencyInfo(currencyID)
         db.currencyCount[currencyID] = {
             total = currentAmount,
-            week = earnedThisWeek
+            week = floor(earnedThisWeek / 100)
         }
         --local name, currentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(currencyID)
         --db.currencyCount[currencyID] = { currentAmount, earnedThisWeek, weeklyMax, totalMax }
@@ -487,16 +491,6 @@ function SavedClassic:CurrencyUpdate()
     -- Emblems of Heroism, Valor, Conquest, Triumph, Frost
 --  local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
 --  local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
-end
-
-function SavedClassic:LibGearScore_Update(event, guid, gearScore)
-    local db = self.db.realm[player]
-    local playerGUID = UnitGUID("player")
-    if guid == playerGUID and gearScore then
-        local color = gearScore.Color or CreateColor(0.62, 0.62, 0.62)
-        db.gearScore = color:WrapTextInColorCode(gearScore.GearScore or 0)
-        db.gearAvgLevel = color:WrapTextInColorCode(gearScore.AvgItemLevel or 0)
-    end
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
@@ -656,12 +650,12 @@ function SavedClassic:TranslateCharacterWord(db, strBefore, keyword, option, col
     local result = strBefore
     if tKeyword then 
         if type(tKeyword) == "function" then    -- color, item, currency need option1, option2 is color if present
-            result = tKeyword(db, option, color)
+            result = tKeyword(db, option, color)    -- arg color is only for [color] keyword
         else                                    -- others don't need option, option1 is color if present
             result = db[tKeyword] or strBefore
-            if color and color ~= "" then
-                result = "|cff"..color..result.."|r"
-            end
+        end
+        if color and color ~= "" then
+            result = "|cff"..color..result.."|r"
         end
     end
     return result
@@ -1055,8 +1049,8 @@ function SavedClassic:BuildOptions()
                             name    = L["name"],
                             level   = L["level"],
                             gold    = L["gold"],
-                            gearScore    = L["gs"],
-                            gearAvgLevel = L["ilvl"],
+                            gearEquippedLevel = L["ilvl_equip"],
+                            gearAvgLevel = L["ilvl_avg"],
                             zone    = L["zone"],
                             elapsed = L["elapsed"],
                         },

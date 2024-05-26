@@ -45,7 +45,7 @@ L["Desc_Char"] = "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r|n"
     .."|cffccaa00[cooldown]|r 專業技能冷卻時間|n"
     .."|cffccaa00[dqCom] [dqMax]|r|n"
     .."|cffccaa00[dqReset]|r 日常任務重置時間|n"
-    .."|cffccaa00[gs] [ilvl]|r|n"
+    .."|cffccaa00[ilvl] [ilvl_avg] [ilvl_equip]|r|n"
     .."|cffccaa00[color/######]|r 顏色開始(RGB 代碼)|n|cffccaa00[color]|r  顏色結束|n"
     .."  通過在末尾添加 /###### 著色|n"
     .."|cffffeeaa(例如) |r|cffccaa00[color/ffffff]白色[color] =>|r |cffffffff白色|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..C_Item.GetItemIconByID(6265)..":14:14|t12|r|n"
@@ -90,8 +90,9 @@ L["expRest%"  ] = true
 L["dqCom"     ] = true
 L["dqMax"     ] = true
 L["dqReset"   ] = true
-L["gs"        ] = true
 L["ilvl"      ] = true
+L["ilvl_avg"  ] = true
+L["ilvl_equip"] = true
 L["instName"  ] = true
 L["instID"    ] = true
 L["difficulty"] = true
