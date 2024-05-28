@@ -2,6 +2,7 @@ local addonName, _ = ...
 
 local SavedClassic = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
+local LibTable = LibStub:GetLibrary("LibTable")
 
 local MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
 local MSG_SUFFIX = " |cff00ff00■|r"
@@ -9,13 +10,6 @@ local MSG_SUFFIX = " |cff00ff00■|r"
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
-
--- Raid Table 
-local CELL_WIDTH, CELL_HEIGHT = 80, 24
-local BORDER_LEFT = 12
-local BORDER_RIGHT = 24
-local BORDER_TOP = 4
-local BORDER_BOTTOM = 8
 
 local dbDefault = {
     realm = {
@@ -45,7 +39,7 @@ local dbDefault = {
 }
 
 local _TranslationTable = {
-    ["color"    ] = function(_, option, color) return (color and color ~= "") and "|cff"..color or "|r" end,
+    ["color"    ] = function(_, _, color) return (color and color ~= "") and "|cff"..color or "|r" end,
     ["item"     ] = function(db, option)
                         local _, itemLink = C_Item.GetItemInfo(option)
                         if itemLink then
@@ -67,7 +61,7 @@ local _TranslationTable = {
                         if currency then
                             local result = ""
                             id = currency.id
-                            saved_currency = db.currencyCount[id] or { }
+                            local saved_currency = db.currencyCount[id] or { }
                             local is_weeklyMax = (currency.weeklyMax or 0) > 0
                             if not currency_type or currency_type == "" then       -- weekly max goes Type-1 else Type-0
                                 currency_type = is_weeklyMax and "1" or "0"
@@ -370,7 +364,7 @@ function SavedClassic:SaveInfo()
     self:PLAYER_XP_UPDATE()
     self:PLAYER_EQUIPMENT_CHANGED()
     self:CurrencyUpdate()
-    self:SaveZone() 
+    self:SaveZone()
     self:SaveTSCooldowns()
 end
 
@@ -481,16 +475,8 @@ function SavedClassic:CurrencyUpdate()
             total = currentAmount,
             week = floor(earnedThisWeek / 100)
         }
-        --local name, currentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(currencyID)
-        --db.currencyCount[currencyID] = { currentAmount, earnedThisWeek, weeklyMax, totalMax }
     end
-    -- It doesn't matter that belows overwrite 1-5
     self:PLAYER_MONEY()
-    -- name, CurrentAmount, texture, earnedThisWeek, weeklyMax, totalMax, isDiscovered = GetCurrencyInfo(index)
-    -- Achievement, Honor, Arena points
-    -- Emblems of Heroism, Valor, Conquest, Triumph, Frost
---  local _, db.honorPoint, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(392)
---  local _, db,justice, _, earnedThisWeek, weeklyMax, totalMax = GetCurrencyInfo(395)
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
@@ -518,7 +504,7 @@ function SavedClassic:ShowInfoTooltip(tooltip)
     if db.showInfoPer == "realm" then
         for _, v in ipairs(self.order) do
             if v.level < db.hideLevelUnder then
-            else    
+            else
                 self:ShowInstanceInfo(tooltip, v.name)
             end
         end
@@ -778,28 +764,19 @@ function SavedClassic:ToggleConfig()
 end
 
 function SavedClassic:InitRaidTable()
-    local raidTable =  CreateFrame("Frame", self.name.."RaidTable", UIParent, "TooltipBorderedFrameTemplate")
-    raidTable:SetMovable(true)
-    raidTable:SetUserPlaced(true)
-    raidTable:SetPoint("CENTER")
-    raidTable:SetClampedToScreen(true)
-    raidTable:Hide()
-
-    table.insert(UISpecialFrames, raidTable:GetName())    -- Set Esc-Closable
-    
-    raidTable:SetScript("OnMouseDown", raidTable.StartMoving)
-    raidTable:SetScript("OnMouseUp", raidTable.StopMovingOrSizing)
-    self.raidTable = raidTable
+    self.raidTable = self.raidTable or LibTable:CreateTable(self.name.."RaidTable", UIParent,
+    { SetMovable = true, SetUserPlaced = true, SetPoint = "CENTER", SetClampedToScreen = true, ESCClosable = true })
 end
 
 function SavedClassic:ToggleRaidTable()
-    if self.raidTable:IsShown() then
-        self.raidTable:Hide()
+    local raidTable = self.raidTable
+
+    if raidTable:IsShown() then
+        raidTable:Hide()
         return
     end
 
     local rdb = self.db.realm
-    local raidTable = self.raidTable
     local maxLv = GetMaxPlayerLevel()
     local ilt = {}  -- Instance Lock Table(Ordered)
 
@@ -869,30 +846,8 @@ Character2  -           10          -           ...
 Character3  25          -           -           ...
 ...
 ]]
-
-    local raidTable = self.raidTable
-    raidTable:SetSize((#olit + 1) * CELL_WIDTH + BORDER_LEFT + BORDER_RIGHT, (#ilt + 1) * CELL_HEIGHT + BORDER_TOP + BORDER_BOTTOM)
-
-    raidTable.rows = raidTable.rows or {}
-    for r, rowdata in ipairs(data) do
-        if not raidTable.rows[r] then
-            local row = CreateFrame("Button", raidTable:GetName().."Row"..tostring(r), raidTable)
-            row:SetSize(1, CELL_HEIGHT)
-            row:SetPoint("TOPLEFT", BORDER_LEFT, - BORDER_TOP - (r - 1) * CELL_HEIGHT)
-            raidTable.rows[r] = row
-        end
-        raidTable.rows[r].cols = raidTable.rows[r].cols or {}
-        for c, coldata in ipairs(rowdata) do
-            if not raidTable.rows[r].cols[c] then
-                local col = raidTable.rows[r]:CreateFontString(raidTable.rows[r]:GetName().."Col"..tostring(c), "ARTWORK", "GameFontNormal")
-                col:SetPoint("LEFT", (c - 1) * CELL_WIDTH, 0)
-                col:SetSize(CELL_WIDTH, CELL_HEIGHT)
-                col:SetTextColor(0.8, 0.8, 0.8)
-                raidTable.rows[r].cols[c] = col
-            end
-            raidTable.rows[r].cols[c]:SetText(coldata)
-        end
-    end
+    raidTable:Resize({ rows = #data, cols = #data[1], widths = 80, heights = 24, })
+    raidTable:SetTable(data)
 
     self.raidTable:Show()
 end
@@ -927,13 +882,6 @@ function SavedClassic:BuildOptions()
                 end
                 currencyTooltipText = currencyTooltipText.."\n"..currency.icon.."("..id.."): "..currency.name
             end
---[[
-            if currency.name then
-                currencyTooltipText = currencyTooltipText.."\n"..currency.icon..currency.altName.."("..id.."): "..currency.name
-            else
-                currencyTooltipText = currencyTooltipText..currency.icon..currency.altName
-            end
-]]--
         end
     end
     local db = self.db.realm[player]
