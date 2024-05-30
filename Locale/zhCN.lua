@@ -35,30 +35,8 @@ L["Line 1 of char info."] = "角色信息第一行"
 L["Line 2 of char info."] = "角色信息第二行"
 L["Left"] = "左"
 L["Right"] = "右"
-L["Desc_Char"] = "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r|n"
-    .."|cffccaa00[name]|r 名称(职业颜色)|n"
-    .."|cffccaa00[name2]|r 名称(无颜色)|n"
-    .."|cffccaa00[level] [expCur] [expMax] [exp%]|r|n"
-    .."|cffccaa00[expRest] [expRest%] [zone] [subzone]|r|n"
-    .."|cffccaa00[elapsed]|r 自上次更新经过的时间|n"
-    .."|cffccaa00[item:|cffffeeaaname or ID|r]|r 图标和价格|n"
-    .."|cffccaa00[cooldown]|r 专业技能冷却时间|n"
-    .."|cffccaa00[dqCom] [dqMax]|r|n"
-    .."|cffccaa00[dqReset]|r 日常任务重置时间|n"
-    .."|cffccaa00[ilvl] [ilvl_avg] [ilvl_equip]|r|n"
-    .."|cffccaa00[color/######]|r 颜色开始(RGB 代码)|n|cffccaa00[color]|r  颜色结束|n"
-    .."  通過在末尾添加 /###### 著色|n"
-    .."|cffffeeaa(例如) |r|cffccaa00[color/ffffff]白色[color] =>|r |cffffffff白色|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..C_Item.GetItemIconByID(6265)..":14:14|t12|r|n"
-    .."|cffccaa00[currency:|cffffeeaaname or ID|r]|r 图标和价格|n"
 L["Tooltip - Raid instances"] = "提示 - 团本信息"
 L["Lines of raid instances"] = "团本信息行"
-L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00使用方法 - 副本信息|r|n"
-    .."|cffccaa00[instName]|r 副本名称|n"
-    .."|cffccaa00[difficulty]|r 大小和难度|n"
-    .."|cffccaa00[progress]|r BOSS击杀数量|n"
-    .."|cffccaa00[bosses]|r BOSS数量|n"
-    .."|cffccaa00[time]|r 重置时间|n"
-    .."|cffccaa00[instID]|r 副本 ID|n"
 L["Tooltip - Heroic instances"] = "提示 - 英雄本信息"
 L["Lines of heroic instances"] = "英雄本信息行"
 L["Show in one-line"] = "单行显示"
@@ -111,23 +89,33 @@ L["cook"    ] = true
 L["JP"      ] = true
 L["VP"      ] = true
 L["TBC"     ] = true
-L["AF1"     ] = true
-L["AF2"     ] = true
-L["AF3"     ] = true
-L["AF4"     ] = true
-L["AF5"     ] = true
-L["AF6"     ] = true
-L["AF7"     ] = true
-L["AF8"     ] = true
-L["AF9"     ] = true
 L["MOW"     ] = true
 L["CAM"     ] = true
 L["CRB"     ] = true
 L["DPT"     ] = true
 L["MOD"     ] = true
 L["EOC"     ] = true
-L["sidereal"] = true
-L["defilers"] = true
+-- Usage
+L["Usage_Character"] = {
+    { "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r" },
+    { "[name]"          , "名称(职业颜色)"  , "[name2]"         , "名称(无颜色)"    },
+    { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
+    { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
+    { "[elapsed]"       , "自上次更新经过的时间", "[cooldown]"     , "专业技能冷却时间"    },
+    { "[item:name]"     , "[item:name]"     , "图标和价格",            },
+    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       ,               },
+    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,               },
+    { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
+                        , "颜色开始(RGB 代码)", "[color]"         , "颜色结束"   },
+    { " |cffff0000!|r 通過在末尾添加 /###### 著色",             },
+    { "[currency:name]" , "[currency:ID]"   , "图标和价格",  },
+}
+L["Usage_Instance"] = {
+    { "|cff00ff00■|r |cffccaa00Keywords for Instance info|r",   },
+    { "[instName]"      , "副本名称"        , "[difficulty]"    , "大小和难度"  },
+    { "[progress]"      , "BOSS击杀数量"    , "[bosses]"        , "BOSS数量"    },
+    { "[time]"          , "重置时间"        , "[instID]"        , "副本 ID"     },
+}
 -- Heroic abbr. Cataclysm
 L["H4_Blackrock Caverns"] = "BRC"
 L["H4_Throne of the Tides"] = "ToT"

@@ -62,7 +62,9 @@ local _TranslationTable = {
                             local result = ""
                             id = currency.id
                             local saved_currency = db.currencyCount[id] or { }
-                            local is_weeklyMax = (currency.weeklyMax or 0) > 0
+                            local _, _, _, _, weeklyMax = GetCurrencyInfo(id)
+                            local is_weeklyMax = (weeklyMax or 0) > 0
+                            currency.weeklyMax = weeklyMax
                             if not currency_type or currency_type == "" then       -- weekly max goes Type-1 else Type-0
                                 currency_type = is_weeklyMax and "1" or "0"
                             end
@@ -71,7 +73,7 @@ local _TranslationTable = {
                             elseif currency_type == "1" then  -- Type-1: [Icon][Total amount]([earnedThisWeek])
                                 result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..")"
                             elseif currency_type == "2" then  -- Type-2: [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
-                                result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..(currency.weeklyMax and "/"..currency.weeklyMax)..")"
+                                result = currency.icon..(saved_currency.total or "").."("..(saved_currency.week or 0)..(currency.weeklyMax and "/"..currency.weeklyMax or "")..")"
                             elseif currency_type == "3" then  -- Type-3: [earnedThisWeek]
                                 result = saved_currency.week or "0"
                             elseif currency_type == "4" then  -- Type-4: [weeklyMax]
@@ -150,7 +152,7 @@ function SavedClassic:OnInitialize()
     -- Reset old db
     if not self.db.global.version then
         self:ResetWholeDB()
-    elseif self.db.global.version < "4.4.0" then
+    elseif self.db.global.version < "4.4.0.7" then
         p(L["Reset due to update"](self.db.global.version, self.version))
         self:ResetWholeDB()
     end
@@ -165,10 +167,21 @@ function SavedClassic:OnInitialize()
     self:InitDBIcon()
     self:InitRaidTable()
 
+    self:BuildCurrencyInfo()   -- At this moment, GetCurrencyInfo DOESN'T fetch weeklyMax properly
     self:BuildOptions() -- Build some tables and self.optionsTable
     LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, self.optionsTable)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions(self.name, self.name, nil)
-
+    self:InitUsageTable()
+--[[    hooksecurefunc("SetItemRef", function(link, text)
+        if link == "addon:"..addonName then
+            local editbox = GetCurrentKeyBoardFocus()
+            if editbox then
+                local _, _, keyword = text:find("|h(.+)|h")
+                editbox:Insert(keyword or "")
+            end
+        end
+    end)
+]]
     self:RegisterEvent("PLAYER_MONEY", "CurrencyUpdate")
     self:RegisterEvent("PLAYER_XP_UPDATE")
     self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -255,29 +268,35 @@ function SavedClassic:InitPlayerDB()
 
     playerdb.default = false
     playerdb.name = player
-    playerdb.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
+    playerdb.coloredName = classColor:WrapTextInColorCode(player)
 
     playerdb.info1 = true
     playerdb.info1_1 = ""
-    playerdb.info1_2 = "\n["..L["currency"]..":"..L["gold"].."/ffee99]  "
+    playerdb.info1_2 = format("\n[%s:%s/ffee99]", L["currency"], L["gold"])
     playerdb.info2 = true
     playerdb.info2_1 = ""
+
     if UnitLevel("player") < GetMaxPlayerLevel() then
-        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["level"].."/ffffff]:["..L["name"].."]] ["..L["ilvl"].."] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        playerdb.info2_1 = "   ["..L["color"].."/cc66ff]["..L["expCur"].."]/["..L["expMax"].."] (["..L["exp%"].."]%)["..L["color"].."] ["..L["color"].."/66ccff]+["..L["expRest"].."] (["..L["expRest%"].."]%)["..L["color"].."]"
-        playerdb.info2_2 = "["..L["color"].."/ffffff]["..L["currency"]..":"..L["JP"].."]["..L["color"].."]"
+        playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s/ffffff]:[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
+                                L["color"], L["color"], L["level"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
+        playerdb.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
+                                L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
+        playerdb.info2_2 = format("[%s/ffffff][%s:%s][%s]",
+                                L["color"], L["currency"], L["JP"], L["color"] )
     else
-        playerdb.info1_1 = "\n["..L["color"].."/00ff00]■["..L["color"].."] [["..L["name"].."]] ["..L["ilvl"].."] ["..L["color"].."/ffffff](["..L["zone"].."]: ["..L["subzone"].."])["..L["color"].."]"
-        playerdb.info2_1 = "   ["..L["color"].."/ffffff]["..L["currency"]..":"..L["VP"].."] ["..L["currency"]..":"..L["JP"].."] ["..L["currency"]..":"..L["arena"].."] [".. L["currency"]..":"..L["conquest"].."] [".. L["currency"]..":"..L["honor"].."]["..L["color"].."]"
-        playerdb.info2_2 = ""
+        playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
+                                L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
+        playerdb.info2_1 = format("   [%s/ffffff][%s:%s-2] [%s:%s] [%s:%s] [%s:%s][%s]",
+                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["color"])
+        playerdb.info2_2 = format("[%s/ffffff][%s]/[%s][%s]", L["color"], L["dqCom"], L["dqMax"], L["color"])
     end
 
     playerdb.info3 = true
-    playerdb.info3_1 = "   ["..L["instName"].."] (["..L["difficulty"].."]) ["..L["progress"].."]/["..L["bosses"].."]"
-    playerdb.info3_2 = "["..L["time"].."] "
+    playerdb.info3_1 = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"])
+    playerdb.info3_2 = format("[%s]", L["time"])
     playerdb.info4 = true
-    playerdb.info4_1 = "   ["..L["color"].."/ffff99]["..L["instName"].."] (["..L["difficulty"].."]) ["..L["progress"].."]/["..L["bosses"].."]["..L["color"].."]"
-    playerdb.info4_2 = "["..L["time"].."/ffff99] "
+    playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][%s[", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
+    playerdb.info4_2 = format("[%s/ffff99]", L["time"])
 
     playerdb.raids = { }
     playerdb.heroics = { }
@@ -322,7 +341,8 @@ end
 function SavedClassic:SaveInfo()
     local db = self.db.realm[player]
     local classColor = RAID_CLASS_COLORS[class]
-    db.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
+    --db.coloredName = string.format("|cff%.2x%.2x%.2x%s|r", classColor.r*255, classColor.g*255, classColor.b*255, player)
+    db.coloredName = classColor:WrapTextInColorCode(player)
 
     local raids, heroics = { }, { }
     local currentTime = time()
@@ -764,8 +784,8 @@ function SavedClassic:ToggleConfig()
 end
 
 function SavedClassic:InitRaidTable()
-    self.raidTable = self.raidTable or LibTable:CreateTable(self.name.."RaidTable", UIParent,
-    { SetMovable = true, SetUserPlaced = true, SetPoint = "CENTER", SetClampedToScreen = true, ESCClosable = true })
+    self.raidTable = self.raidTable or LibTable:CreateTable(self.name.."RaidTable", UIParent, nil,
+        { SetMovable = true, SetUserPlaced = true, SetPoint = "CENTER", SetClampedToScreen = true, ESCClosable = true })
 end
 
 function SavedClassic:ToggleRaidTable()
@@ -852,6 +872,97 @@ Character3  25          -           -           ...
     self.raidTable:Show()
 end
 
+function SavedClassic:InitUsageTable()
+    local uc = LibTable:CreateTable(self.name.."UsageCharacterTable", UIParent, nil,
+        { SetMovable = true, SetPoint = "TOPLEFT", SetClampedToScreen = true, ESCClosable = true }
+    )
+    local ui = LibTable:CreateTable(self.name.."UsageCharacterTable", uc, nil,
+        { SetPoint = { "TOPLEFT", uc, "BOTTOMLEFT" }, SetClampedToScreen = true }
+    )
+    ui:SetCallback({
+        OnMouseDown = uc.StartMoving,
+        OnMouseUp   = uc.StopMovingOrSizing,
+        OnShow      = function()
+                        if not self.usage_character.loaded then
+                            self:BuildUsageTable()
+                            self.usage_character.loaded = true
+                        end
+                    end
+    })
+    self.usage_character = uc
+    self.usage_instance = ui
+    self:BuildUsageTable()
+end
+
+function SavedClassic:BuildUsageTable()
+    local uc = self.usage_character
+    local uctbl = L["Usage_Character"]
+    local ucdtbl = { }
+    local function CreateHyperlinkAndColor(_, cell)
+        local text = cell:GetText() or ""
+        text = text:gsub("|c[Ff][Ff]......", ""):gsub("|r", "") -- strip color
+        local _, _, keyword = text:find("^(%[[^]]+%])")
+        if cell.data or keyword then
+            local link = format("|Haddon:%s:|h%s|h", addonName, cell.data or keyword)
+            cell:SetTextColor(0.8, 0.67, 0)  -- #ccaa00 - gold color
+            cell:SetText(link)
+            cell.data = nil
+        end
+    end
+    uc:Resize({ rows = #uctbl, cols = 4, widths = 100 })
+    uc:SetRangeOption(true, true, { SetTextColor={ 0.9, 0.9, 0.9 } })
+    --
+    for i, _ in ipairs(uctbl) do
+        ucdtbl[i] = { }
+    end
+
+    --self:BuildCurrencyInfo()
+    for _, id in pairs(self.currencies.order) do
+        local currency = self.currencies[id]
+        if currency then
+            table.insert(uctbl , {
+                format("%s %s", currency.icon, id),
+                format("(%s)", currency.altName),
+                currency.name
+            })
+            table.insert(ucdtbl, {
+                format("[%s:%s]", L["currency"], id),
+                format("[%s:%s]", L["currency"], currency.altName)
+            })
+        end
+    end
+
+    uc:SetTable(uctbl)
+    uc:SetTableData(ucdtbl)
+    uc:RangeFunction(true, true, CreateHyperlinkAndColor)
+
+    local ui = self.usage_instance
+    local uitbl = L["Usage_Instance"]
+    ui:Resize({ rows = #uitbl, cols = 4, widths = 100 })
+    ui:SetRangeOption(true, true, { SetTextColor={ 0.9, 0.9, 0.9 } })
+    ui:SetTable(uitbl)
+    ui:RangeFunction(true, true, CreateHyperlinkAndColor)
+end
+
+function SavedClassic:BuildCurrencyInfo()
+    for _, id in pairs(self.currencies.order) do
+        if id > 3 then
+            local currency = self.currencies[id]
+            if currency then
+                if not currency.icon then
+                    local name, _, icon, _, weeklyMax, totalMax = GetCurrencyInfo(id)
+                    currency.name = name
+                    if weeklyMax and weeklyMax > 0 then
+                        currency.weeklyMax = weeklyMax
+                    end
+                    currency.totalMax = totalMax
+                    currency.icon = "|T"..icon..":14:14|t"
+                end
+            end
+        end
+    end
+end
+
 function SavedClassic:BuildOptions()
     local rdb = self.db.realm
     local ch = player
@@ -861,29 +972,7 @@ function SavedClassic:BuildOptions()
     for i = 1, #order do
         names[order[i].name] = rdb[order[i].name].coloredName
     end
-    local currencyTooltipText = ""
-    -- icon into currency table and tooltip text
-    for _, id in pairs(self.currencies.order) do
-        if id > 3 then
-            local currency = self.currencies[id]
-            if currency then
-                if not currency.icon then
-                    local name, _, icon, _, weeklyMax, totalMax = GetCurrencyInfo(id)
-                    currency.name = name
-                    if weeklyMax and weeklyMax ~= 0 then
-                        currency.weeklyMax = weeklyMax
-                    end
-                    currency.totalMax = totalMax
-                    if id == 1901 then
-                        currency.icon = "|T"..icon..":14:14:::14:14:8:0:8:0|t"
-                    else
-                        currency.icon = "|T"..icon..":14:14|t"
-                    end
-                end
-                currencyTooltipText = currencyTooltipText.."\n"..currency.icon.."("..id.."): "..currency.name
-            end
-        end
-    end
+
     local db = self.db.realm[player]
     self.optionsTable = {
         name = self.name .. " option",
@@ -1083,7 +1172,7 @@ function SavedClassic:BuildOptions()
                         type = "input",
                         width = 2.5,
                         multiline = 2,
-                        desc = L["Desc_Char"]..currencyTooltipText,
+                        desc = function() self.usage_character:Show() end,
                         order = 12
                     },
                     info1_2 = {
@@ -1091,7 +1180,7 @@ function SavedClassic:BuildOptions()
                         type = "input",
                         width = 1,
                         multiline = 2,
-                        desc = L["Desc_Char"]..currencyTooltipText,
+                        desc = function() self.usage_character:Show() end,
                         order = 13
                     },
                     info2_1 = {
@@ -1099,7 +1188,7 @@ function SavedClassic:BuildOptions()
                         type = "input",
                         width = 2.5,
                         multiline = 2,
-                        desc = L["Desc_Char"]..currencyTooltipText,
+                        desc = function() self.usage_character:Show() end,
                         order = 22
                     },
                     info2_2 = {
@@ -1107,7 +1196,7 @@ function SavedClassic:BuildOptions()
                         type = "input",
                         width = 1,
                         multiline = 2,
-                        desc = L["Desc_Char"]..currencyTooltipText,
+                        desc = function() self.usage_character:Show() end,
                         order = 23
                     },
                 },
@@ -1134,7 +1223,7 @@ function SavedClassic:BuildOptions()
                         type = "input",
                         width = 2.5,
                         multiline = 2,
-                        desc = L["Desc_Inst"],
+                        desc = function() self.usage_character:Show() end,
                         order = 32
                     },
                     info3_2 = {
@@ -1142,7 +1231,7 @@ function SavedClassic:BuildOptions()
                         type = "input",
                         width = 1,
                         multiline = 2,
-                        desc = L["Desc_Inst"],
+                        desc = function() self.usage_character:Show() end,
                         order = 33
                     },
                 },
@@ -1169,7 +1258,7 @@ function SavedClassic:BuildOptions()
                         type = "input",
                         width = 2.5,
                         multiline = 2,
-                        desc = L["Desc_Inst"],
+                        desc = function() self.usage_character:Show() end,
                         order = 32
                     },
                     info4_2 = {
@@ -1177,7 +1266,7 @@ function SavedClassic:BuildOptions()
                         type = "input",
                         width = 1,
                         multiline = 2,
-                        desc = L["Desc_Inst"],
+                        desc = function() self.usage_character:Show() end,
                         order = 33
                     },
                 },

@@ -35,30 +35,8 @@ L["Line 1 of char info."] = "캐릭터별 정보 첫번째 줄"
 L["Line 2 of char info."] = "캐릭터별 정보 두번째 줄"
 L["Left"] = "왼쪽"
 L["Right"] = "오른쪽"
-L["Desc_Char"] = "|cff00ff00■|r |cffccaa00캐릭터별 정보 키워드|r|n"
-    .."|cffccaa00[이름]|r 캐릭터명(직업색상)|n"
-    .."|cffccaa00[이름2]|r 캐릭터명(색상없음)|n"
-    .."|cffccaa00[레벨] [현재경험치] [최대경험치] [경험치%]|r|n"
-    .."|cffccaa00[휴경] [휴경%] [위치] [상세위치]|r|n"
-    .."|cffccaa00[경과시간]|r 최종 업데이트 후 경과 시간|n"
-    .."|cffccaa00[아이템:|cffffeeaa이름 또는 ID|r]|r 아이템 아이콘과 수량|n"
-    .."|cffccaa00[전문기술]|r 주요 전문기술 쿨다운|n"
-    .."|cffccaa00[일퀘완료] [일퀘최대]|r|n"
-    .."|cffccaa00[일퀘리셋]|r 일퀘 리셋까지 남은 시간|n"
-    .."|cffccaa00[템렙] [평균템렙] [착용템렙]|r|n"
-    .."|cffccaa00[색/######]|r 색 지정 시작(RGB코드)|n|cffccaa00[색]|r 색 지정 종료|n"
-    .."  끝에 /######를 붙여 색 지정 가능|n"
-    .."|cffffeeaa(예시) |r|cffccaa00[색/ffffff]흰색[색] =>|r |cffffffff흰색|r|n   |cffccaa00[아이템:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..C_Item.GetItemIconByID(6265)..":14:14|t12|r|n"
-    .."|cffccaa00[화폐:|cffffeeaa이름 또는 ID|r]|r 화폐 아이콘과 수량|n"
 L["Tooltip - Raid instances"] = "툴팁 설정 - 공격대 귀속 정보"
 L["Lines of raid instances"] = "공격대 귀속 정보 표시줄"
-L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00인스턴스 정보 키워드|r|n"
-    .."|cffccaa00[인스턴스명]|r 인스턴스명|n"
-    .."|cffccaa00[난이도]|r 인원 및 난이도|n"
-    .."|cffccaa00[진행도]|r 진행 상황(보스 킬 수)|n"
-    .."|cffccaa00[전체보스]|r 보스 수|n"
-    .."|cffccaa00[리셋시간]|r 리셋까지 남은 시간|n"
-    .."|cffccaa00[인스턴스ID]|r 인스턴스 ID|n"
 L["Tooltip - Heroic instances"] = "툴팁 설정 - 영던 귀속 정보"
 L["Lines of heroic instances"] = "영던 귀속 정보 표시줄"
 L["Show in one-line"] = "한 줄로 보기"
@@ -111,21 +89,33 @@ L["cook"    ] = "요리"
 L["JP"      ] = "정점"
 L["VP"      ] = "용점"
 L["TBC"     ] = "톨바"
-L["AF1"     ] = "고고1"
-L["AF2"     ] = "고고2"
-L["AF3"     ] = "고고3"
-L["AF4"     ] = "고고4"
-L["AF5"     ] = "고고5"
-L["AF6"     ] = "고고6"
-L["AF7"     ] = "고고7"
-L["AF8"     ] = "고고8"
-L["AF9"     ] = "고고9"
 L["MOW"     ] = "징표"
 L["CAM"     ] = true
 L["CRB"     ] = true
 L["DPT"     ] = "다크문"
 L["MOD"     ] = "티끌"
 L["EOC"     ] = "정수"
+-- Usage
+L["Usage_Character"] = {
+    { "|cff00ff00■|r |cffccaa00캐릭터별 정보 키워드|r" },
+    { "[이름]"          , "캐릭터명(직업색상)"  , "[이름2]"         , "캐릭터명(색상없음)"  },
+    { "[레벨]"          , "[현재경험치]"        , "[최대경험치]"    , "[경험치%]"   },
+    { "[휴경]"          , "[휴경%]"             , "[위치]"          , "[상세위치]"  },
+    { "[경과시간]"      , "최종 접속 시간"      , "[전문기술]"      , "주요 전문기술 쿨다운"    },
+    { "[아이템:이름]"   , "[아이템:ID]"         , "아이콘과 수량"   ,   },
+    { "[일퀘완료]"      , "[일퀘최대]"          , "[일퀘리셋]"      ,   },
+    { "[템렙]"          , "[평균템렙]"          , "[착용템렙]"      ,   },
+    { "[색/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
+                        , "색지정 시작(RGB)"    , "[색]"            , "색지정 끝"   },
+    { " |cffff0000!|r 모든 키워드 끝에 /###### 를 붙여 색 지정 가능",   },
+    { "[화폐:이름]"     , "[화폐:ID]"           , "아이콘과 수량"   ,   },
+}
+L["Usage_Instance"] = {
+    { "|cff00ff00■|r |cffccaa00인스턴스 정보 키워드|r", },
+    { "[인스턴스명]"    , "인스턴스명"          , "[난이도]"        , "인원 및 난이도"  },
+    { "[진행도]"        , "진행 상황(킬 수)"    , "[전체보스]"      , "전체 보스 수"    },
+    { "[리셋시간]"      , "리셋까지 남은 시간"  , "[인스턴스ID]"    , "인스턴스 ID"     },
+}
 -- Heroic abbr. Cataclysm
 L["H4_Blackrock Caverns"] = "검바"
 L["H4_Throne of the Tides"] = "파도"

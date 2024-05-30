@@ -35,30 +35,8 @@ L["Line 1 of char info."] = true
 L["Line 2 of char info."] = true
 L["Left"] = true
 L["Right"] = true
-L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Keywords for Character info|r|n"
-    .."|cffccaa00[name]|r Name(Class color)|n"
-    .."|cffccaa00[name2]|r Name(No color)|n"
-    .."|cffccaa00[level] [expCur] [expMax] [exp%]|r|n"
-    .."|cffccaa00[expRest] [expRest%] [zone] [subzone]|r|n"
-    .."|cffccaa00[elapsed]|r Elapsed time after last update|n"
-    .."|cffccaa00[item:|cffffeeaaname or ID|r]|r Item Icon and Count|n"
-    .."|cffccaa00[cooldown]|r Tradeskill cooldowns|n"
-    .."|cffccaa00[dqCom] [dqMax]|r|n"
-    .."|cffccaa00[dqReset]|r Time left until DQ reset|n"
-    .."|cffccaa00[ilvl] [ilvl_avg] [ilvl_equip]|r|n"
-    .."|cffccaa00[color/######]|r Color starts(RGB code)|n|cffccaa00[color]|r Color ends|n"
-    .."  attach /###### to apply color|n"
-    .."|cffffeeaa(ex) |r|cffccaa00[color/ffffff]WHITE[color] =>|r |cffffffffWHITE|r|n   |cffccaa00[item:6265|cffcc3333/cc66cc|r] => |r|cffcc66cc".."|T"..C_Item.GetItemIconByID(6265)..":14:14|t12|r|n"
-    .."|cffccaa00[currency:|cffffeeaaname or ID|r]|r Currency Icon and Count|n"
 L["Tooltip - Raid instances"] = true
 L["Lines of raid instances"] = true
-L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Keywords for Instance info|r|n"
-    .."|cffccaa00[instName]|r Instance name|n"
-    .."|cffccaa00[difficulty]|r Size and Difficulty|n"
-    .."|cffccaa00[progress]|r Number of bosses killed|n"
-    .."|cffccaa00[bosses]|r Number of bosses|n"
-    .."|cffccaa00[time]|r Time to reset|n"
-    .."|cffccaa00[instID]|r Instance ID|n"
 L["Tooltip - Heroic instances"] = true
 L["Lines of heroic instances"] = true
 L["Show in one-line"] = true
@@ -90,7 +68,6 @@ L["expRest%"  ] = true
 L["dqCom"     ] = true
 L["dqMax"     ] = true
 L["dqReset"   ] = true
-L["gs"        ] = true
 L["ilvl"      ] = true
 L["ilvl_avg"  ] = true
 L["ilvl_equip"] = true
@@ -112,21 +89,33 @@ L["cook"    ] = true
 L["JP"      ] = true
 L["VP"      ] = true
 L["TBC"     ] = true
-L["AF1"     ] = true
-L["AF2"     ] = true
-L["AF3"     ] = true
-L["AF4"     ] = true
-L["AF5"     ] = true
-L["AF6"     ] = true
-L["AF7"     ] = true
-L["AF8"     ] = true
-L["AF9"     ] = true
 L["MOW"     ] = true
 L["CAM"     ] = true
 L["CRB"     ] = true
 L["DPT"     ] = true
 L["MOD"     ] = true
 L["EOC"     ] = true
+-- Usage
+L["Usage_Character"] = {
+    { "|cff00ff00■|r |cffccaa00Keywords for Character info|r" },
+    { "[name]"          , "Name(color)"     , "[name2]"         , "Name(no color)"  },
+    { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
+    { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
+    { "[elapsed]"       , "After last update", "[cooldown]"     , "Tradeskill cooldowns"    },
+    { "[item:name]"     , "[item:name]"     , "Item Icon and Count",            },
+    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       ,               },
+    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,               },
+    { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
+                        , "Color start(RGB)", "[color]"         , "Color end"   },
+    { "! attach /###### to any keyword to apply color",             },
+    { "[currency:name]" , "[currency:ID]"   , "Currency Icon and Count",  },
+}
+L["Usage_Instance"] = {
+    { "|cff00ff00■|r |cffccaa00Keywords for Instance info|r",   },
+    { "[instName]"      , "Instance name"   , "[difficulty]"    , "Size and Difficulty" },
+    { "[progress]"      , "Killed"          , "[bosses]"        , "Total"       },
+    { "[time]"          , "Time to reset"   , "[instID]"        , "Instance ID" },
+}
 -- Heroic abbr. Cataclysm
 L["H4_Blackrock Caverns"] = "BRC"
 L["H4_Throne of the Tides"] = "ToT"

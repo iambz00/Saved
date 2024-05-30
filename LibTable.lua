@@ -45,8 +45,9 @@
     tbl:SetRange(rows, cols, text)
     tbl:SetRangeData(rows, cols, data)
     tbl:SetRangeJustify(rows, cols, method)
-    tbl:SetRangeOptions(rows, cols, optiontbl)
-    tbl:SetRangeCallbacks(rows, cols, callbacktbl)
+    tbl:SetRangeOption(rows, cols, optiontbl)
+    tbl:SetRangeCallback(rows, cols, callbacktbl)
+    tbl:RangeFunction(rows, cols, function)
 
     'range' consists of rows and cols
     where rows/cols contains row/col numbers (table or one number)
@@ -97,7 +98,7 @@ function LibTable_SetOption(tbl, options)
 end
 
 function LibTable_Resize(tbl, size)
-    tbl.size = size
+    tbl.size = size or tbl.size
     size.widths = size.widths or DEFAULT_WIDTH
     size.heights = size.heights or DEFAULT_HEIGHTS
     if type(size.widths) == "number" then size.widths = { size.widths } end
@@ -210,6 +211,8 @@ function LibTable_SetRange(tbl, mode, rows, cols, value)
                     end
                 elseif mode == "justify" then
                     LibTable_Cell_Justify(tbl, row, col, strlower(value))
+                elseif mode == "functions" and type(value) == "function" then
+                    value(tbl, cell)
                 end
             end
         end
@@ -261,8 +264,9 @@ function lib:CreateTable(name, parent, size, options, callbacks)
     tbl.SetRange     =  function(stbl, rows, cols, text) return LibTable_SetRange(stbl, "text", rows, cols, text) end
     tbl.SetRangeData =  function(stbl, rows, cols, data) return LibTable_SetRange(stbl, "data", rows, cols, data) end
     tbl.SetRangeJustify = function(stbl, rows, cols, method) return LibTable_SetRange(stbl, "justify", rows, cols, method) end
-    tbl.SetRangeOptions = function(stbl, rows, cols, optiontbl) return LibTable_SetRange(stbl, "options", rows, cols, optiontbl) end
-    tbl.SetRangeCallbacks = function(stbl, rows, cols, callbacktbl) return LibTable_SetRange(stbl, "callbacks", rows, cols, callbacktbl) end
+    tbl.SetRangeOption = function(stbl, rows, cols, optiontbl) return LibTable_SetRange(stbl, "options", rows, cols, optiontbl) end
+    tbl.SetRangeCallback = function(stbl, rows, cols, callbacktbl) return LibTable_SetRange(stbl, "callbacks", rows, cols, callbacktbl) end
+    tbl.RangeFunction = function(stbl, rows, cols, func) return LibTable_SetRange(stbl, "functions", rows, cols, func) end
 
     tbl:Resize(size):SetOption(options):SetCallback(callbacks)
 
@@ -271,7 +275,7 @@ function lib:CreateTable(name, parent, size, options, callbacks)
 end
 
 function lib:Test()
-    local test = self:CreateTable({ rows = 4, cols = 5, widths = {24,64,32}, heights = 18 }, library.."TestTable", UIParent,
+    local test = self:CreateTable(library.."TestTable", UIParent, { rows = 4, cols = 5, widths = {24,64,32}, heights = 18 },
         { SetPoint = "CENTER", SetMovable = true, })
     test:SetTable({
         {"*",library,"Test","Table",""},

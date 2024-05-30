@@ -20,7 +20,6 @@ SavedClassic.currencies = {
     [2]   = { altName = L["silver"  ], icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
     [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
     [1901]= { altName = L["honor"   ] }, -- Honor point
-    [1900]= { altName = L["arena"   ] }, -- Arena point
     -- Cataclysm
     -- [Currency:Name]   : Adaptive output between Type-0 and Type-1
     -- Type-0 = [Currency:Name-0] : [Icon][Total amount]
@@ -42,7 +41,7 @@ SavedClassic.currencies = {
     [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
     [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
     order = {
-        1,2,3,1901,390,1900,-- Money, PvP
+        1,2,3,1901,390,     -- Money, PvP
         395,396,            -- Justice, Valor
         416,615,614,        -- Raid Rewards
         361,402,            -- Jewelcraft, Cooking
