@@ -98,7 +98,8 @@ function LibTable_SetOption(tbl, options)
 end
 
 function LibTable_Resize(tbl, size)
-    tbl.size = size or tbl.size
+    size = size or tbl.size
+    tbl.size = size
     size.widths = size.widths or DEFAULT_WIDTH
     size.heights = size.heights or DEFAULT_HEIGHTS
     if type(size.widths) == "number" then size.widths = { size.widths } end
@@ -167,14 +168,6 @@ function LibTable_SetTable(tbl, mode, vtbl)
     end
 end
 
-function LibTable_SetTableData(tbl, itbl)
-    -- Data exceed range are clipped
-    for row = 1, #tbl.tr do
-        for col = 1, #tbl.tr[row].td do
-        end
-    end
-end
-
 function LibTable_SetRange(tbl, mode, rows, cols, value)
     if type(rows) == "number" then rows = { rows } end
     if type(cols) == "number" then cols = { cols } end
@@ -222,8 +215,8 @@ end
 
 function LibTable_Cell_Justify(tbl, row, col, method)
     local cell = tbl.tr[row].td[col]
-    local xoffset = tbl.size.borders.left
-    for c = 1, col do
+    local xoffset = 0
+    for c = 1, col-1 do
         xoffset = xoffset + tbl.size.widths[c]
     end
     if method == "left" then
@@ -231,11 +224,11 @@ function LibTable_Cell_Justify(tbl, row, col, method)
         cell:SetJustifyH("LEFT")
     elseif method == "center" then
         xoffset = xoffset + math.floor(tbl.size.widths[col] / 2)
-        cell:SetPoint("CENTER", tbl.tr[row], "LEFT", xoffset, 0)
+        cell:SetSize(tbl.size.widths[col], tbl.size.heights[row])
+        cell:SetPoint("CENTER", xoffset, 0)
     elseif method == "right" then
-        local totalwidth, _ = tbl:GetSize()
         xoffset = xoffset + tbl.size.widths[col]
-        cell:SetPoint("RIGHT", totalwidth - tbl.size.borders.right - xoffset, 0)
+        cell:SetPoint("RIGHT", xoffset - 1, 0)
         cell:SetJustifyH("RIGHT")
     end
 end
@@ -275,13 +268,14 @@ function lib:CreateTable(name, parent, size, options, callbacks)
 end
 
 function lib:Test()
-    local test = self:CreateTable(library.."TestTable", UIParent, { rows = 4, cols = 5, widths = {24,64,32}, heights = 18 },
+    local test = self:CreateTable(library.."TestTable", UIParent, { rows = 5, cols = 5, widths = {24,64,32}, heights = 18 },
         { SetPoint = "CENTER", SetMovable = true, })
     test:SetTable({
         {"*",library,"Test","Table",""},
         {"a","|cffff3333b|r","c","d","e"},
         {1,2,3,4,5},
         {"가","나","다","라","마"},
+        {"Long-value","Long",nil, "OK"},
     })
     test:Show()
     return test
