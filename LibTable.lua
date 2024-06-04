@@ -83,6 +83,15 @@ function LibTable_SetOption(tbl, options)
     tbl.ESCClosable = tbl.ESCClosable or function()
         table.insert(UISpecialFrames, tbl:GetName())
     end
+    tbl.PlaceCloseButton = tbl.PlaceCloseButton or function(slf, ...)
+        if #{...} == 0 then
+            slf:PlaceCloseButton("TOPRIGHT", -2, -2)
+        else
+            local cb = tbl.closebutton or CreateFrame("Button", tbl:GetName().."CloseButton", tbl)
+            cb:SetPoint(...)
+            tbl.closebutton = cb
+        end
+    end
     if options.SetMovable then
         tbl:SetScript("OnMouseDown", tbl.StartMoving)
         tbl:SetScript("OnMouseUp", tbl.StopMovingOrSizing)
@@ -98,7 +107,8 @@ function LibTable_SetOption(tbl, options)
 end
 
 function LibTable_Resize(tbl, size)
-    tbl.size = size or tbl.size
+    size = size or tbl.size
+    tbl.size = size
     size.widths = size.widths or DEFAULT_WIDTH
     size.heights = size.heights or DEFAULT_HEIGHTS
     if type(size.widths) == "number" then size.widths = { size.widths } end
@@ -108,11 +118,11 @@ function LibTable_Resize(tbl, size)
     local totalwidth = size.borders.left + size.borders.right
     local totalheight = size.borders.top + size.borders.bottom
     for row = 1, size.rows do
-        size.heights[row] = size.heights[row] or size.heights[#size.heights]    -- last for rests
+        size.heights[row] = size.heights[row] or size.heights[#size.heights]    -- lasts for rests
         totalheight = totalheight + size.heights[row]
     end
     for col = 1, size.cols do
-        size.widths[col] = size.widths[col] or size.widths[#size.widths]    -- last for rests
+        size.widths[col] = size.widths[col] or size.widths[#size.widths]    -- lasts for rests
         totalwidth = totalwidth + size.widths[col]
     end
     tbl:SetSize(totalwidth, totalheight)
@@ -130,9 +140,12 @@ function LibTable_Resize(tbl, size)
         tr.td = tr.td or {}
         local xoffset = 0
         for col = 1, size.cols do
-            local td = tr.td[col] or tr:CreateFontString(tr:GetName().."Col"..col, "ARTWORK", "GameFontNormal")
+            local td = tr.td[col] or CreateFrame("Button", tr:GetName().."Col"..col, tr)
             xoffset = xoffset + (size.widths[col-1] or 0)
             td:SetPoint("LEFT", xoffset, 0)
+            td:SetSize(size.widths[col], size.heights[row])
+            td.text = td.text or td:CreateFontString(td:GetName().."Text", "ARTWORK", "GameFontNormal")
+            td.text:SetAllPoints()
             td.row = row
             td.col = col
             tr.td[col] = td
@@ -154,23 +167,15 @@ function LibTable_SetTable(tbl, mode, vtbl)
     -- Data exceed range are clipped
     for row = 1, #tbl.tr do
         for col = 1, #tbl.tr[row].td do
-            if mode == "value" then
+            if mode == "text" then
                 local value = vtbl[row] and vtbl[row][col]
                 if value then   -- Nil DOESN'T change value
-                    tbl.tr[row].td[col]:SetText(value)
+                    tbl.tr[row].td[col].text:SetText(value)
                 end
             elseif mode == "data" then
                 -- Nil changes data
                 tbl.tr[row].td[col].data = vtbl[row] and vtbl[row][col]
             end
-        end
-    end
-end
-
-function LibTable_SetTableData(tbl, itbl)
-    -- Data exceed range are clipped
-    for row = 1, #tbl.tr do
-        for col = 1, #tbl.tr[row].td do
         end
     end
 end
@@ -192,16 +197,16 @@ function LibTable_SetRange(tbl, mode, rows, cols, value)
                 local cell = tbl.tr[row].td[col]
                 if mode == "text" then
                     if value then   -- nil DOESN'T change value
-                        cell:SetText(value)
+                        cell.text:SetText(value)
                     end
                 elseif mode =="data" then
                     -- nil changes data
                     cell.data = value
-                elseif mode == "callbacks" then
+                elseif mode == "callback" then
                     for event, script in pairs(value) do
                         cell:SetScript(event, script)
                     end
-                elseif mode == "options" then
+                elseif mode == "option" then
                     for func, arg in pairs(value) do
                         if type(arg) == "table" then
                             cell[func](cell, unpack(arg))
@@ -209,9 +214,17 @@ function LibTable_SetRange(tbl, mode, rows, cols, value)
                             cell[func](cell, arg)
                         end
                     end
+                elseif mode == "textoption" then
+                    for func, arg in pairs(value) do
+                        if type(arg) == "table" then
+                            cell.text[func](cell, unpack(arg))
+                        else
+                            cell.text[func](cell, arg)
+                        end
+                    end
                 elseif mode == "justify" then
                     LibTable_Cell_Justify(tbl, row, col, strlower(value))
-                elseif mode == "functions" and type(value) == "function" then
+                elseif mode == "function" and type(value) == "function" then
                     value(tbl, cell)
                 end
             end
@@ -222,21 +235,22 @@ end
 
 function LibTable_Cell_Justify(tbl, row, col, method)
     local cell = tbl.tr[row].td[col]
-    local xoffset = tbl.size.borders.left
-    for c = 1, col do
+    local xoffset = 0
+    for c = 1, col-1 do
         xoffset = xoffset + tbl.size.widths[c]
     end
     if method == "left" then
         cell:SetPoint("LEFT", xoffset, 0)
-        cell:SetJustifyH("LEFT")
+        cell.text:SetJustifyH("LEFT")
     elseif method == "center" then
         xoffset = xoffset + math.floor(tbl.size.widths[col] / 2)
-        cell:SetPoint("CENTER", tbl.tr[row], "LEFT", xoffset, 0)
+        cell:SetSize(tbl.size.widths[col], tbl.size.heights[row])
+        cell:SetPoint("CENTER", xoffset, 0)
+        cell.text:SetJustifyH("CENTER")
     elseif method == "right" then
-        local totalwidth, _ = tbl:GetSize()
         xoffset = xoffset + tbl.size.widths[col]
-        cell:SetPoint("RIGHT", totalwidth - tbl.size.borders.right - xoffset, 0)
-        cell:SetJustifyH("RIGHT")
+        cell:SetPoint("RIGHT", xoffset - 1, 0)
+        cell.text:SetJustifyH("RIGHT")
     end
 end
 
@@ -259,14 +273,15 @@ function lib:CreateTable(name, parent, size, options, callbacks)
     tbl.Resize       =  function(...) return LibTable_Resize(...) end
     tbl.SetOption    =  function(...) return LibTable_SetOption(...) end
     tbl.SetCallback  =  function(...) return LibTable_SetCallback(...) end
-    tbl.SetTable     =  function(stbl, vtbl) return LibTable_SetTable(stbl, "value", vtbl) end
+    tbl.SetTable     =  function(stbl, vtbl) return LibTable_SetTable(stbl, "text", vtbl) end
     tbl.SetTableData =  function(stbl, dtbl) return LibTable_SetTable(stbl, "data", dtbl) end
     tbl.SetRange     =  function(stbl, rows, cols, text) return LibTable_SetRange(stbl, "text", rows, cols, text) end
     tbl.SetRangeData =  function(stbl, rows, cols, data) return LibTable_SetRange(stbl, "data", rows, cols, data) end
     tbl.SetRangeJustify = function(stbl, rows, cols, method) return LibTable_SetRange(stbl, "justify", rows, cols, method) end
-    tbl.SetRangeOption = function(stbl, rows, cols, optiontbl) return LibTable_SetRange(stbl, "options", rows, cols, optiontbl) end
-    tbl.SetRangeCallback = function(stbl, rows, cols, callbacktbl) return LibTable_SetRange(stbl, "callbacks", rows, cols, callbacktbl) end
-    tbl.RangeFunction = function(stbl, rows, cols, func) return LibTable_SetRange(stbl, "functions", rows, cols, func) end
+    tbl.SetRangeOption = function(stbl, rows, cols, optiontbl) return LibTable_SetRange(stbl, "option", rows, cols, optiontbl) end
+    tbl.SetRangeTextOption = function(stbl, rows, cols, optiontbl) return LibTable_SetRange(stbl, "textoption", rows, cols, optiontbl) end
+    tbl.SetRangeCallback = function(stbl, rows, cols, callbacktbl) return LibTable_SetRange(stbl, "callback", rows, cols, callbacktbl) end
+    tbl.RangeFunction = function(stbl, rows, cols, func) return LibTable_SetRange(stbl, "function", rows, cols, func) end
 
     tbl:Resize(size):SetOption(options):SetCallback(callbacks)
 
@@ -275,13 +290,14 @@ function lib:CreateTable(name, parent, size, options, callbacks)
 end
 
 function lib:Test()
-    local test = self:CreateTable(library.."TestTable", UIParent, { rows = 4, cols = 5, widths = {24,64,32}, heights = 18 },
+    local test = self:CreateTable(library.."TestTable", UIParent, { rows = 5, cols = 5, widths = {24,64,32}, heights = 18 },
         { SetPoint = "CENTER", SetMovable = true, })
     test:SetTable({
         {"*",library,"Test","Table",""},
         {"a","|cffff3333b|r","c","d","e"},
         {1,2,3,4,5},
         {"가","나","다","라","마"},
+        {"Long-value","Long",nil, "OK"},
     })
     test:Show()
     return test

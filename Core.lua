@@ -295,7 +295,7 @@ function SavedClassic:InitPlayerDB()
     playerdb.info3_1 = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"])
     playerdb.info3_2 = format("[%s]", L["time"])
     playerdb.info4 = true
-    playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][%s[", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
+    playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
     playerdb.info4_2 = format("[%s/ffff99]", L["time"])
 
     playerdb.raids = { }
@@ -867,6 +867,7 @@ Character3  25          -           -           ...
 ...
 ]]
     raidTable:Resize({ rows = #data, cols = #data[1], widths = 80, heights = 24, })
+    raidTable:SetRangeJustify(true, true, "CENTER")
     raidTable:SetTable(data)
 
     self.raidTable:Show()
