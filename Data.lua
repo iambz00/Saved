@@ -21,16 +21,14 @@ SavedClassic.currencies = {
     [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
     [1901]= { altName = L["honor"   ] }, -- Honor point
     -- Cataclysm
-    -- [Currency:Name]   : Adaptive output between Type-0 and Type-1
-    -- Type-0 = [Currency:Name-0] : [Icon][Total amount]
-    -- Type-1 = [Currency:Name-1] : [Icon][Total amount]([earnedThisWeek])
-    -- Type-2 = [Currency:Name-2] : [Icon][Total amount]([earnedThisWeek]/[WeeklyMax])
-    -- Type-3 = [Currency:Name-3] : [earnedThisWeek]
-    -- Type-4 = [Currency:Name-4] : [weeklyMax]
-    -- Type-5 = [Currency:Name-5] : [totalMax]
-    [395] = { altName = L["JP"      ] }, -- 4.0.1 Hidden      Justice Points
-    [396] = { altName = L["VP"      ] }, -- 4.0.1 Hidden      Valor Points
-    [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
+    -- [Currency:Name]   : Adaptive output between Type-0 and Type-2
+    -- Type-0 = [Currency:Name-0] : [Icon][Quantity]
+    -- Type-1 = [Currency:Name-1] : [Icon][Quantity]([Earnable])  -- Earnable in minus value
+    -- Type-2 = [Currency:Name-2] : [Icon][Quantity]([Earnable])  -- Earnable in red font
+    -- Type-3 = [Currency:Name-3] : [Icon][Quantity]([Earned]/[MaxQuantity])
+    [395] = { altName = L["JP"      ], totalMax  = true }, -- 4.0.1 Hidden      Justice Points
+    [396] = { altName = L["VP"      ], seasonMax = true }, -- 4.0.1 Hidden      Valor Points
+    [390] = { altName = L["conquest"], seasonMax = true }, -- 4.0.1 PvP         Conquest Point
     [391] = { altName = L["TBC"     ] }, -- 4.0.1 PvP         Tol Barad Commendation
     [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
 --    [483] = { altName = L["CAM"     ] }, -- 4.3.4 Meta        Conquest Arena Meta
@@ -82,22 +80,22 @@ SavedClassic.abbr.heroic = {
 
 SavedClassic.abbr.raid = {
     -- Cataclysm Raid
-    [C_Map.GetAreaInfo(5094)] = { order = -406, name = L["R4_Blackwing Descent"],        color = "d1001f" },
-    [C_Map.GetAreaInfo(5334)] = { order = -405, name = L["R4_Bastion of Twilight"],      color = "de0a26" },
-    [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["R4_Throne of the Four Winds"], color = "f01e2c" },
-    [C_Map.GetAreaInfo(5723)] = { order = -403, name = L["R4_Firelands"],                color = "ff2c2c" },
-    [C_Map.GetAreaInfo(5892)] = { order = -402, name = L["R4_Dragon Soul"],              color = "f94449" },
-    [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["R4_Baradin Hold"],             color = "ee6b6e" },
+    [C_Map.GetAreaInfo(5094)] = { order = -406, name = L["R4_Blackwing Descent"],        color = "ffd1001f" },
+    [C_Map.GetAreaInfo(5334)] = { order = -405, name = L["R4_Bastion of Twilight"],      color = "ffde0a26" },
+    [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["R4_Throne of the Four Winds"], color = "fff01e2c" },
+    [C_Map.GetAreaInfo(5723)] = { order = -403, name = L["R4_Firelands"],                color = "ffff2c2c" },
+    [C_Map.GetAreaInfo(5892)] = { order = -402, name = L["R4_Dragon Soul"],              color = "fff94449" },
+    [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["R4_Baradin Hold"],             color = "ffee6b6e" },
     -- WotLK Raid 
-    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["R3_Naxxramas"],             color = "a8daf9" },
-    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["R3_Obsidian Sanctum"],      color = "2a9df4" },
-    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["R3_Eye of Eternity"],       color = "2a9df4" },
-    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["R3_Ulduar"],                color = "187bcd" },
-    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["R3_Onyxia's Lair"],         color = "a8daf9" },
-    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["R3_Trial of the Crusader"], color = "2a9df4" },
-    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["R3_Icecrown Citadel"],      color = "187bcd" },
-    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["R3_Ruby Sanctum"],          color = "187bcd" },
-    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["R3_Vault of Archavon"],     color = "1167b1" },
+    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["R3_Naxxramas"],             color = "ffa8daf9" },
+    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["R3_Obsidian Sanctum"],      color = "ff2a9df4" },
+    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["R3_Eye of Eternity"],       color = "ff2a9df4" },
+    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["R3_Ulduar"],                color = "ff187bcd" },
+    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["R3_Onyxia's Lair"],         color = "ffa8daf9" },
+    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["R3_Trial of the Crusader"], color = "ff2a9df4" },
+    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["R3_Icecrown Citadel"],      color = "ff187bcd" },
+    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["R3_Ruby Sanctum"],          color = "ff187bcd" },
+    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["R3_Vault of Archavon"],     color = "ff1167b1" },
     -- TBC Raid
     [C_Map.GetAreaInfo(4075)] = { order = -209, name = L["R2_Sunwell Plateau"],       },
     [C_Map.GetAreaInfo(3959)] = { order = -207, name = L["R2_Black Temple"],          },
