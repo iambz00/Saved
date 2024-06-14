@@ -447,10 +447,10 @@ function SavedClassic:SaveTSCooldowns()
         if duration > 0 then
             local remain =  start + duration - GetTime()
             if remain > 0 and remain < duration+100 then
-                local ends = currentTime + remain   -- resolve game time to real time
+                local ends = currentTime + remain   -- Resolve game time to real time
+                id = ts.share or id
                 db.tradeSkills[id] = db.tradeSkills[id] or {}
-                db.tradeSkills[id].ends = ends
-                db.tradeSkills[id].name = ts.altName or GetSpellInfo(id)
+                db.tradeSkills[id].ends = math.max(db.tradeSkills[id].ends or 0, ends)
             end
         else
             db.tradeSkills[id] = nil
@@ -552,7 +552,14 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             if ts and cooldown and cooldown.ends then
                 local remain = cooldown.ends - currentTime
                 if remain > 0 then
-                    tsstr = tsstr..(ts.altName or ("|T"..ts.icon..":14:14|t"))..string.format("%02d:%02d", floor(remain / 3600), floor(remain % 3600 / 60))
+                    local hh, mm = floor(remain / 3600), floor(remain % 3600 / 60)
+                    local cooldown_str
+                    if hh > 72 then
+                        cooldown_str = format("%dd", floor(hh / 24))
+                    else
+                        cooldown_str = format("%02d:%02d", hh, mm)
+                    end
+                    tsstr = tsstr..(ts.altName or ("|T"..ts.icon..":14:14|t"))..cooldown_str
                 else
                     db.tradeSkills[id] = nil
                 end

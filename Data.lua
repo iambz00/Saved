@@ -8,10 +8,17 @@ SavedClassic.version = "4.4.0.8"
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 SavedClassic.ts = { -- Tradeskills of long cooldowns
-    -- Alchemy
-    [80243] = { icon = "466847", },   -- Transmute: Truegold
-    -- Tailoring
-    [75146] = { icon = "132698", },   -- Dream of ...
+    [80243] = { icon = "466847", }, -- (Alchemy) Transmute: Truegold
+    -- Tailoring - 6 Dreamcloth recipe shares cooldown
+    [94743] = { icon = "132698" },  -- (Tailoring) Dream of Destruction (Chaos)
+    [75141] = { share = 94743   },  -- (Tailoring) Dream of Skywall (Air)
+    [75142] = { share = 94743   },  -- (Tailoring) Dream of Deepholm (Earth)
+    [75144] = { share = 94743   },  -- (Tailoring) Dream of Hyjal (Life)
+    [75145] = { share = 94743   },  -- (Tailoring) Dream of Ragnaros (Fire)
+    [75146] = { share = 94743   },  -- (Tailoring) Dream of Azshara (Water)
+    [73478] = { icon = "134128" },  -- (Jewelcraft) Fire Prism
+    [86654] = { icon = "237446" },  -- (Inscription) Forged documents(Horde)
+    [89244] = { icon = "237446" },  -- (Inscription) Forged documents(Alliance)
 }
 SavedClassic.items = {  -- Items to count always
 }
