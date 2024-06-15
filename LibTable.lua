@@ -83,6 +83,12 @@ function LibTable_SetOption(tbl, options)
     tbl.ESCClosable = tbl.ESCClosable or function()
         table.insert(UISpecialFrames, tbl:GetName())
     end
+    tbl.PlaceCloseButton = tbl.PlaceCloseButton or function(...)
+        local _, point, relativeFrame, relativePoint, offsetx, offsety  = ...
+        if point == true then point = "TOPRIGHT" end
+        tbl.closeButton = CreateFrame("Button", tbl:GetName().."CloseButton", tbl, "UIPanelCloseButton")
+        tbl.closeButton:SetPoint(point or "TOPRIGHT", relativeFrame or tbl, relativePoint or "TOPRIGHT", offsetx, offsety)
+    end
     if options.SetMovable then
         tbl:SetScript("OnMouseDown", tbl.StartMoving)
         tbl:SetScript("OnMouseUp", tbl.StopMovingOrSizing)

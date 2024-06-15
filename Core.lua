@@ -800,7 +800,7 @@ end
 
 function SavedClassic:InitRaidTable()
     self.raidTable = self.raidTable or LibTable:CreateTable(self.name.."RaidTable", UIParent, nil,
-        { SetMovable = true, SetUserPlaced = true, SetPoint = "CENTER", SetClampedToScreen = true, ESCClosable = true })
+        { SetMovable = true, SetUserPlaced = true, SetPoint = "CENTER", SetClampedToScreen = true, ESCClosable = true, PlaceCloseButton = true })
 end
 
 function SavedClassic:ToggleRaidTable()
@@ -890,7 +890,7 @@ end
 
 function SavedClassic:InitUsageTable()
     local uc = LibTable:CreateTable(self.name.."UsageCharacterTable", UIParent, nil,
-        { SetMovable = true, SetPoint = "TOPLEFT", SetClampedToScreen = true, ESCClosable = true }
+        { SetMovable = true, SetPoint = "TOPLEFT", SetClampedToScreen = true, ESCClosable = true, PlaceCloseButton = true }
     )
     local ui = LibTable:CreateTable(self.name.."UsageCharacterTable", uc, nil,
         { SetPoint = { "TOPLEFT", uc, "BOTTOMLEFT" }, SetClampedToScreen = true }
@@ -932,19 +932,32 @@ function SavedClassic:BuildUsageTable()
         ucdtbl[i] = { }
     end
 
-    --self:BuildCurrencyInfo()
+    -- Here goes Currencies
+    -- Gold, Silver, Copper at 1st line
+    table.insert(uctbl, {
+        format("%s %s", self.currencies[1].icon, self.currencies[1].altName),
+        format("%s %s", self.currencies[2].icon, self.currencies[2].altName),
+        format("%s %s", self.currencies[3].icon, self.currencies[3].altName),
+    })
+    table.insert(ucdtbl, {
+        format("[%s:%s]", L["currency"], self.currencies[1].altName),
+        format("[%s:%s]", L["currency"], self.currencies[2].altName),
+        format("[%s:%s]", L["currency"], self.currencies[3].altName),
+    })
+    -- Next, 4 currencies at one line
+    table.insert(uctbl, {})
+    table.insert(ucdtbl, {})
     for _, id in pairs(self.currencies.order) do
-        local currency = self.currencies[id]
-        if currency then
-            table.insert(uctbl , {
-                format("%s %s", currency.icon, id),
-                format("(%s)", currency.altName),
-                currency.name
-            })
-            table.insert(ucdtbl, {
-                format("[%s:%s]", L["currency"], id),
-                format("[%s:%s]", L["currency"], currency.altName)
-            })
+        if id > 3 then
+            local currency = self.currencies[id]
+            if currency then
+                if #uctbl[#uctbl] >= 4 then
+                    table.insert(uctbl, {})
+                    table.insert(ucdtbl, {})
+                end
+                table.insert(uctbl[#uctbl], format("%s %s", currency.icon, currency.altName))
+                table.insert(ucdtbl[#ucdtbl], format("[%s:%s]", L["currency"], currency.altName))
+            end
         end
     end
 
