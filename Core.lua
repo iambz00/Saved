@@ -550,6 +550,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
         for id, cooldown in pairs(db.tradeSkills) do
             local ts = self.ts[id]
             if ts and cooldown and cooldown.ends then
+                if ts.share then ts = self.ts[ts.share] end
                 local remain = cooldown.ends - currentTime
                 if remain > 0 then
                     local hh, mm = floor(remain / 3600), floor(remain % 3600 / 60)
@@ -559,7 +560,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                     else
                         cooldown_str = format("%02d:%02d", hh, mm)
                     end
-                    tsstr = tsstr..(ts.altName or ("|T"..ts.icon..":14:14|t"))..cooldown_str
+                    tsstr = tsstr..("|T"..(ts.icon or ts.altName or "")..":14:14|t")..cooldown_str
                 else
                     db.tradeSkills[id] = nil
                 end
