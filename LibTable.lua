@@ -86,7 +86,7 @@ function LibTable_SetOption(tbl, options)
     tbl.PlaceCloseButton = tbl.PlaceCloseButton or function(...)
         local _, point, relativeFrame, relativePoint, offsetx, offsety  = ...
         if point == true then point = "TOPRIGHT" end
-        tbl.closeButton = tbl.closeButton or CreateFrame("Button", tbl:GetName().."CloseButton", tbl, "UIPanelCloseButton")
+        tbl.closeButton = CreateFrame("Button", tbl:GetName().."CloseButton", tbl, "UIPanelCloseButton")
         tbl.closeButton:SetPoint(point or "TOPRIGHT", relativeFrame or tbl, relativePoint or "TOPRIGHT", offsetx, offsety)
     end
     if options.SetMovable then

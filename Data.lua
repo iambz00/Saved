@@ -84,11 +84,11 @@ SavedClassic.abbr.heroic = {
 
 SavedClassic.abbr.raid = {
     -- Cataclysm Raid
-    [C_Map.GetAreaInfo(5094)] = { order = -406, name = L["R4_Dragon Soul"],             color = "FFB3001B" },
-    [C_Map.GetAreaInfo(5334)] = { order = -405, name = L["R4_Firelands"],               color = "FFDE0A26" },
+    [C_Map.GetAreaInfo(5892)] = { order = -406, name = L["R4_Dragon Soul"],             color = "FFB3001B" },
+    [C_Map.GetAreaInfo(5723)] = { order = -405, name = L["R4_Firelands"],               color = "FFDE0A26" },
     [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["R4_Throne of the Four Winds"],color = "FFF01E2C" },
-    [C_Map.GetAreaInfo(5723)] = { order = -403, name = L["R4_Blackwing Descent"],       color = "FFFF2C2C" },
-    [C_Map.GetAreaInfo(5892)] = { order = -402, name = L["R4_Bastion of Twilight"],     color = "FFF94449" },
+    [C_Map.GetAreaInfo(5094)] = { order = -403, name = L["R4_Blackwing Descent"],       color = "FFFF2C2C" },
+    [C_Map.GetAreaInfo(5334)] = { order = -402, name = L["R4_Bastion of Twilight"],     color = "FFF94449" },
     [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["R4_Baradin Hold"],            color = "FFEE6B6E" },
     -- WotLK Raid 
     [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["R3_Icecrown Citadel"],        color = "FFA8DAF9" },
