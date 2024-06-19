@@ -885,6 +885,7 @@ Character3  25          -           -           ...
     raidTable:Resize({ rows = #data, cols = #data[1], widths = 80, heights = 24, })
     raidTable:SetRangeJustify(true, true, "CENTER")
     raidTable:SetTable(data)
+    raidTable:SetRangeOption(true, true, { SetTextColor={ 1, 1, 1 } })
 
     self.raidTable:Show()
 end
@@ -893,7 +894,7 @@ function SavedClassic:InitUsageTable()
     local uc = LibTable:CreateTable(self.name.."UsageCharacterTable", UIParent, nil,
         { SetMovable = true, SetPoint = "TOPLEFT", SetClampedToScreen = true, ESCClosable = true, PlaceCloseButton = true }
     )
-    local ui = LibTable:CreateTable(self.name.."UsageCharacterTable", uc, nil,
+    local ui = LibTable:CreateTable(self.name.."UsageInstanceTable", uc, nil,
         { SetPoint = { "TOPLEFT", uc, "BOTTOMLEFT" }, SetClampedToScreen = true }
     )
     ui:SetCallback({
