@@ -8,17 +8,18 @@ SavedClassic.version = "4.4.0.8"
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 SavedClassic.ts = { -- Tradeskills of long cooldowns
-    [80243] = { icon = "466847", }, -- (Alchemy) Transmute: Truegold
-    -- Tailoring - 6 Dreamcloth recipe shares cooldown
-    [75141] = { share = 75146   },  -- (Tailoring) Dream of Skywall (Air)
-    [75142] = { share = 75146   },  -- (Tailoring) Dream of Deepholm (Earth)
-    [75144] = { share = 75146   },  -- (Tailoring) Dream of Hyjal (Life)
-    [75145] = { share = 75146   },  -- (Tailoring) Dream of Ragnaros (Fire)
-    [75146] = { icon = "132698" },  -- (Tailoring) Dream of Azshara (Water)
-    [73478] = { icon = "134128" },  -- (Jewelcraft) Fire Prism
-    [86654] = { icon = "237446" },  -- (Inscription) Forged documents(Horde)
-    [89244] = { icon = "237446" },  -- (Inscription) Forged documents(Alliance)
+    [80243] = { icon = "|T466847:14:14|t" }, -- (Alchemy) Transmute: Truegold
+    [73478] = { icon = "|T134128:14:14|t" }, -- (Jewelcraft) Fire Prism
+    [86654] = { icon = "|T237446:14:14|t" }, -- (Inscription) Forged documents(Horde)
+    [89244] = { icon = "|T237446:14:14|t" }, -- (Inscription) Forged documents(Alliance)
+    -- Tailoring Recipes have same cooldowns
+    [75141] = { icon = "|T463565:14:14|t", tailoring = true }, -- (Tailoring) Dream of Skywall (Air)
+    [75142] = { icon = "|T463566:14:14|t", tailoring = true }, -- (Tailoring) Dream of Deepholm (Earth)
+    [75144] = { icon = "|T468265:14:14|t", tailoring = true }, -- (Tailoring) Dream of Hyjal (Life)
+    [75145] = { icon = "|T463567:14:14|t", tailoring = true }, -- (Tailoring) Dream of Ragnaros (Fire)
+    [75146] = { icon = "|T463570:14:14|t", tailoring = true }, -- (Tailoring) Dream of Azshara (Water)
 }
+
 SavedClassic.items = {  -- Items to count always
 }
 SavedClassic.currencies = {

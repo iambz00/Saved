@@ -39,7 +39,7 @@ local dbDefault = {
 }
 
 local _TranslationTable = {
-    ["color"    ] = function(_, _, color) return ((color and color ~= "") and "|cff"..color or "|r"), false end,    -- Do not wrap with color for [color] keyword
+    ["color"    ] = function(_, _, color) return ((color and color ~= "") and "|cff"..color or "|r"), false end,
     ["item"     ] = function(db, option)
                         local _, itemLink = C_Item.GetItemInfo(option)
                         if itemLink then
@@ -292,7 +292,7 @@ function SavedClassic:InitPlayerDB()
     playerdb.info3_1 = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"])
     playerdb.info3_2 = format("[%s]", L["time"])
     playerdb.info4 = true
-    playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
+    playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
     playerdb.info4_2 = format("[%s/ffff99]", L["time"])
 
     playerdb.raids = { }
@@ -537,11 +537,12 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     local currentTime = time()
 
     local tsstr = ""
+    local ts_icon, ts_cooldown = "", "" -- for Tailoring cooldowns integration
     if db.tradeSkills then
         for id, cooldown in pairs(db.tradeSkills) do
             local ts = self.ts[id]
             if ts and cooldown and cooldown.ends then
-                if ts.share then ts = self.ts[ts.share] end
+                --if ts.share then ts = self.ts[ts.share] end
                 local remain = cooldown.ends - currentTime
                 if remain > 0 then
                     local hh, mm = floor(remain / 3600), floor(remain % 3600 / 60)
@@ -551,7 +552,12 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                     else
                         cooldown_str = format("%02d:%02d", hh, mm)
                     end
-                    tsstr = tsstr..("|T"..(ts.icon or ts.altName or "")..":14:14|t")..cooldown_str
+                    if ts.tailoring then
+                        ts_icon = ts_icon..(ts.icon or ts.altName or "")
+                        ts_cooldown = cooldown_str
+                    else
+                        tsstr = tsstr..(ts.icon or ts.altName or "")..cooldown_str
+                    end
                 else
                     db.tradeSkills[id] = nil
                 end
@@ -560,7 +566,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             end
         end
     end
-    db.tsstr = tsstr
+    db.tsstr = tsstr..ts_icon..ts_cooldown
 
     if db.dqResetReal and currentTime > db.dqResetReal then
         db.dqComplete = 0
