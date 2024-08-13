@@ -178,16 +178,7 @@ function SavedClassic:OnInitialize()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, self.optionsTable)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions(self.name, self.name, nil)
     self:InitUsageTable()
---[[    hooksecurefunc("SetItemRef", function(link, text)
-        if link == "addon:"..addonName then
-            local editbox = GetCurrentKeyBoardFocus()
-            if editbox then
-                local _, _, keyword = text:find("|h(.+)|h")
-                editbox:Insert(keyword or "")
-            end
-        end
-    end)
-]]
+
     self:RegisterEvent("PLAYER_MONEY", "CurrencyUpdate")
     self:RegisterEvent("PLAYER_XP_UPDATE")
     self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -822,13 +813,16 @@ function SavedClassic:ToggleRaidTable()
 
         if level < maxLv then
         else
-            local locked = {}
+            local locked = {}   -- locked[instance name] = 'size'
             for i = 1, #db.raids do
                 local instance = db.raids[i]
                 local remain = SecondsToTime(instance.reset - time())
                 if remain and ( remain ~= "" ) then
                     local size = instance.difficultyName:gsub("[^0-9]*","")
-                    locked[instance.name] = locked[instance.name] and (locked[instance.name].."/"..size) or size
+                    locked[instance.name] = locked[instance.name] or size
+                    if locked[instance.name] ~= size then
+                        locked[instance.name] = locked[instance.name].."/"..size
+                    end
                 end
             end
             table.insert(ilt, { name = name, locked = locked })
