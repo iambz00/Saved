@@ -591,29 +591,30 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     db.raids = db.raids or {}
     if db.info3 then
         if db.info3oneline then
-            local lastName = ""
-            local oneline
+            local oneline = ""
+            local lit = {}
             for i = 1, #db.raids do
                 local instance = db.raids[i]
                 local remain = SecondsToTime(instance.reset - time())
-                local name = self.abbr.raid[instance.name] and self.abbr.raid[instance.name].name or instance.name
                 if remain and ( remain ~= "" ) then
-                    if name ~= lastName then
-                        if oneline then
-                            oneline = oneline..") "
-                        else
-                            oneline = ""
-                        end
-                        oneline = oneline..name.."("..instance.difficultyName:gsub("[^0-9]*","")
-                    else
-                        oneline = oneline.."/"..instance.difficultyName:gsub("[^0-9]*","")
+                    local name = self.abbr.raid[instance.name] and self.abbr.raid[instance.name].name or instance.name
+                    local size = instance.difficultyName:gsub("[^0-9]*","")
+                    local li  = lit[#lit]
+                    if not li or li and li.name ~= name then
+                        li = {}
+                        lit[#lit+1] = li
                     end
-                    lastName = name
+                    li.name = name
+                    li.size = li.size or size
+                    if li.size ~= size then
+                        li.size = li.size.."/"..size
+                    end
                 end
             end
-            if oneline and oneline ~= "" then
-                oneline = oneline .. ")"
-                oneline = oneline:gsub("^ ","") -- trim leading space
+            for _, li in ipairs(lit) do
+                oneline = oneline..li.name.."("..li.size..") "
+            end
+            if oneline ~= "" then
                 tooltip:AddLine("   "..oneline)
             end
         else
