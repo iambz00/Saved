@@ -689,13 +689,14 @@ end
 function SavedClassic:TranslateInstanceWord(instance, strBefore, keyword, color)
     local tKeyword = _TranslationTable[keyword]
     local result = strBefore
+    local wrapColor = true
     if tKeyword then
         if type(tKeyword) == "function" then
-            result = tKeyword(instance)
+            result, wrapColor = tKeyword(instance, _, color)
         else
             result = instance[tKeyword] or strBefore
         end
-        if color and color ~= "" then
+        if wrapColor and color and color ~= "" then
             result = "|cff"..color..result.."|r"
         end
     end
