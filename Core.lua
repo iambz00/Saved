@@ -295,6 +295,9 @@ function SavedClassic:InitPlayerDB()
     playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
     playerdb.info4_2 = format("[%s/ffff99]", L["time"])
 
+    playerdb.info3oneline = true
+    playerdb.info4oneline = true
+
     playerdb.raids = { }
     playerdb.heroics = { }
     playerdb.tradeSkills = { }
