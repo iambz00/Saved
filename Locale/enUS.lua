@@ -109,6 +109,8 @@ L["Usage_Character"] = {
                         , "Color start(RGB)", "[color]"         , "Color end"   },
     { "! attach /###### to any keyword to apply color",             },
     { "[currency:name]" , "[currency:ID]"   , "Currency Icon and Count",  },
+    { " |cffff0000!|r Valor/Conquest Style" ,  "", "[currency:VP-3]", "|T463447:14:14|t960(4460/9600)"   },
+    { "[currency:VP-2]" , "|T463447:14:14|t960(|cFFFF75755140|r)", "[currency:VP-1]"   , "|T463447:14:14|t960(-5140)"   },
 }
 L["Usage_Instance"] = {
     { "|cff00ff00■|r |cffccaa00Keywords for Instance info|r",   },

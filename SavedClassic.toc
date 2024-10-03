@@ -1,6 +1,6 @@
 ## Interface: 40400
 ## Title: Saved! Classic
-## Version: 4.4.0.15
+## Version: 4.4.0.16
 ## X-Curse-Project-ID: 357612
 
 ## Notes-koKR: 인스턴스 귀속 정보 및 골드, 경험치 한눈에 보기
