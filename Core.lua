@@ -64,7 +64,14 @@ local _TranslationTable = {
                             local saved_currency = db.currencyCount[id] or { }
                             saved_currency.quantity = saved_currency.quantity or saved_currency.total   -- For compatibility
                             saved_currency.total = nil
-                            if not currency_type or currency_type == "" or currency_type == "0" then    -- Type-0: [Icon][Quantity]
+                            if not currency_type or currency_type == "" then
+                                -- Earnable amount is shown when total earned amount is under 8000
+                                if saved_currency.totalEarned and saved_currency.totalEarned < 8000 then
+                                    currency_type = "2"
+                                else currency_type = "0"
+                                end
+                            end
+                            if currency_type == "0" then    -- Type-0: [Icon][Quantity]
                                 result = currency.icon..(saved_currency.quantity or "")
                             elseif currency_type == "1" then  -- Type-1: [Icon][Quantity]([Earnable])
                                 local earnable = (saved_currency.totalEarned or 0) - (saved_currency.maxQuantity or 0)     -- Earnable is MINUS value
