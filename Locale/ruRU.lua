@@ -95,6 +95,7 @@ L["CRB"     ] = true
 L["DPT"     ] = true
 L["MOD"     ] = true
 L["EOC"     ] = true
+L["FS"      ] = true
 -- Usage
 L["Usage_Character"] = {
     { "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r" },

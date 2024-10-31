@@ -36,9 +36,10 @@ SavedClassic.currencies = {
     [395] = { altName = L["JP"      ] }, -- 4.0.1 Hidden      Justice Points
     [396] = { altName = L["VP"      ] }, -- 4.0.1 Hidden      Valor Points
     [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
-    [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
     [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
     [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
+    [3148]= { altName = L["FSF"     ] }, -- 4.4.1 Cataclysm   Elemental Rune Dungeon - Protocol Inferno
+    [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
     [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
     [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
     [391] = { altName = L["TBC"     ] }, -- 4.0.1 PvP         Tol Barad Commendation
@@ -47,7 +48,9 @@ SavedClassic.currencies = {
         1,2,3,          -- Gold, Silver, Copper
         396,395,        -- [Valor], Justice
         390,1901,       -- [Conquest], Honor
-        416,614,615,    -- Raid Rewards
+        614,615,        -- Raid Rewards
+        3148,           -- Elemental Rune Dungeon
+        416,            -- Daily Quest
         361,402,        -- Jewelcraft, Cooking
         391,            -- Tol Barad
         515,            -- Darkmoon

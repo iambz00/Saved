@@ -283,8 +283,8 @@ function SavedClassic:InitPlayerDB()
     else
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                 L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
-        playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
-                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["color"])
+        playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
+                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["FS"], L["color"])
         playerdb.info2_2 = format("[%s/ffffff][%s]/[%s][%s]", L["color"], L["dqCom"], L["dqMax"], L["color"])
     end
 
