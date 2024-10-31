@@ -65,10 +65,21 @@ local _TranslationTable = {
                             saved_currency.quantity = saved_currency.quantity or saved_currency.total   -- For compatibility
                             saved_currency.total = nil
                             if not currency_type or currency_type == "" then
-                                -- Earnable amount is shown when total earned amount is under 8000
-                                if saved_currency.totalEarned and saved_currency.totalEarned < 8000 then
-                                    currency_type = "2"
-                                else currency_type = "0"
+                                -- Auto-style : Condition for display earnable amount(maximum - earned)
+                                --     1) Currency has maximum amount 
+                                -- and 2) Earnable <= 1600
+                                -- or  3) Total earned < 9000 and Max < 10000
+                                -- then Type-2 else Type-0
+                                currency_type = "0"
+                                if saved_currency.maxQuantity and saved_currency.maxQuantity > 0 then
+                                    local maxQuantity = saved_currency.maxQuantity or 0
+                                    local totalEarned = saved_currency.totalEarned or 0
+                                    local earnable = maxQuantity - totalEarned
+
+                                    if (earnable <= 1600 and earnable >= 0)
+                                    or (totalEarned < 9000 and maxQuantity < 10000) then
+                                        currency_type = "2"
+                                    end
                                 end
                             end
                             if currency_type == "0" then    -- Type-0: [Icon][Quantity]

@@ -38,7 +38,7 @@ SavedClassic.currencies = {
     [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
     [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
     [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
-    [3148]= { altName = L["FSF"     ] }, -- 4.4.1 Cataclysm   Elemental Rune Dungeon - Protocol Inferno
+    [3148]= { altName = L["FS"      ] }, -- 4.4.1 Cataclysm   Elemental Rune Dungeon - Protocol Inferno
     [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
     [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
     [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
