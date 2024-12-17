@@ -62,36 +62,32 @@ local _TranslationTable = {
                             local result = ""
                             id = currency.id
                             local saved_currency = db.currencyCount[id] or { }
-                            saved_currency.quantity = saved_currency.quantity or saved_currency.total   -- For compatibility
-                            saved_currency.total = nil
-                            if not currency_type or currency_type == "" then
-                                -- Auto-style : Condition for display earnable amount(maximum - earned)
-                                --     1) Currency has maximum amount 
-                                -- and 2) Earnable <= 1600
-                                -- or  3) Total earned < 9000 and Max < 10000
-                                -- then Type-2 else Type-0
-                                currency_type = "0"
-                                if saved_currency.maxQuantity and saved_currency.maxQuantity > 0 then
-                                    local maxQuantity = saved_currency.maxQuantity or 0
+                            local maxQuantity = SavedClassic.db.global.maxQty[id] or 0
+                            if maxQuantity > 0 then -- if currency has max quantity
+                                if not currency_type or currency_type == "" then
+                                    -- Show 'Earnable' amount(Type-2) for Valor, Conquest when no type specified
+                                    -- If MaxQuantity >= 10000 then hide 'Earnable' (Type-0)
+                                    -- But 'Earnable' <= 1600 show 'Earnable' (For those who work hard every week)
+                                    currency_type = "0"
                                     local totalEarned = saved_currency.totalEarned or 0
                                     local earnable = maxQuantity - totalEarned
-
-                                    if (earnable <= 1600 and earnable >= 0)
-                                    or (totalEarned < 9000 and maxQuantity < 10000) then
+                                    if (earnable <= 1600) or (maxQuantity < 10000) then
                                         currency_type = "2"
                                     end
                                 end
+                            else     -- if currency doesn't have max quantity, force type-0
+                                currency_type = "0"
                             end
-                            if currency_type == "0" then    -- Type-0: [Icon][Quantity]
+                            if     currency_type == "0" then  -- Type-0: [Icon][Quantity]
                                 result = currency.icon..(saved_currency.quantity or "")
                             elseif currency_type == "1" then  -- Type-1: [Icon][Quantity]([Earnable])
-                                local earnable = (saved_currency.totalEarned or 0) - (saved_currency.maxQuantity or 0)     -- Earnable is MINUS value
+                                local earnable = (saved_currency.totalEarned or 0) - maxQuantity     -- Earnable is MINUS value
                                 result = currency.icon..(saved_currency.quantity or "").."("..earnable..")"
                             elseif currency_type == "2" then  -- Type-2: [Icon][Quantity]([Earnable])
-                                local earnable = (saved_currency.maxQuantity or 0) - (saved_currency.totalEarned or 0)     -- Earnable is RED font
+                                local earnable = maxQuantity - (saved_currency.totalEarned or 0)     -- Earnable is RED font
                                 result = currency.icon..(saved_currency.quantity or "").."(|c".."FFFF7575"..earnable.."|r)"
                             elseif currency_type == "3" then  -- Type-3: [Icon][Quantity]([Earned]/[MaxQuantity])
-                                result = currency.icon..(saved_currency.quantity or "").."("..(saved_currency.totalEarned or 0)..(saved_currency.maxQuantity and "/"..saved_currency.maxQuantity or "")..")"
+                                result = currency.icon..(saved_currency.quantity or "").."("..(saved_currency.totalEarned or 0).."/"..maxQuantity..")"
                             end
                             return result
                         else
@@ -172,6 +168,21 @@ function SavedClassic:OnInitialize()
     elseif self.db.global.version < "4.4.0.7" then
         p(L["Reset due to update"](self.db.global.version, self.version))
         self:ResetWholeDB()
+    else
+        for _, saved in pairs(self.db.realm) do
+            for id, currency in pairs(saved.currencyCount or {}) do
+                currency.quantity = tonumber(currency.quantity or currency.total)
+                currency.total = nil
+                if currency.maxQuantity then
+                    self.db.global.maxQty = self.db.global.maxQty or {}
+                    local oldMax = self.db.global.maxQty[id] or 0
+                    if currency.maxQuantity > oldMax then
+                        self.db.global.maxQty[id] = oldMax
+                    end
+                    currency.maxQuantity = nil
+                end
+            end
+        end
     end
 
     self.db.global.version = self.version
@@ -212,7 +223,7 @@ function SavedClassic:OnInitialize()
     self.totalMoney = 0 -- Total money except current character
     for character, saved in pairs(self.db.realm) do
         if character and (character ~= player) and saved.currencyCount and saved.currencyCount[0] then
-            self.totalMoney = self.totalMoney + (saved.currencyCount[0].total or 0)
+            self.totalMoney = self.totalMoney + (saved.currencyCount[0].quantity or 0)
         end
     end
 
@@ -253,8 +264,8 @@ function SavedClassic:SetOrder()
             local bb = b[db.sortOrder] or 0
 
             if db.sortOrder == "gold" then
-                aa = a.currencyCount[0] and a.currencyCount[0].total or 0
-                bb = b.currencyCount[0] and b.currencyCount[0].total or 0
+                aa = a.currencyCount[0] and a.currencyCount[0].quantity or 0
+                bb = b.currencyCount[0] and b.currencyCount[0].quantity or 0
             end
 
             if aa == bb then
@@ -339,6 +350,7 @@ end
 function SavedClassic:ResetWholeDB()
     self.db:ResetDB()
     self.db.global.version = self.version
+    self.db.global.maxQty = {}
     self:InitPlayerDB()
     self:SetOrder()
     self.totalMoney = 0
@@ -491,10 +503,10 @@ end
 function SavedClassic:PLAYER_MONEY()
     local money = abs(GetMoney())
     local db = self.db.realm[player]
-    db.currencyCount[0] = { total = money }
-    db.currencyCount[1] = { total = floor(money / 10000) }
-    db.currencyCount[2] = { total = floor(money % 10000 / 100) }
-    db.currencyCount[3] = { total = floor(money % 100) }
+    db.currencyCount[0] = { quantity = money }
+    db.currencyCount[1] = { quantity = floor(money / 10000) }
+    db.currencyCount[2] = { quantity = floor(money % 10000 / 100) }
+    db.currencyCount[3] = { quantity = floor(money % 100) }
 end
 
 function SavedClassic:CurrencyUpdate()
@@ -502,10 +514,14 @@ function SavedClassic:CurrencyUpdate()
     for _, currencyID in pairs(self.currencies.order) do
         local info = SavedClassic_GetCurrencyInfo(currencyID)
         if info then
-            db.currencyCount[currencyID] = { quantity = info.quantity }
+            db.currencyCount[currencyID] = { quantity = tonumber(info.quantity) }
             if info.useTotalEarnedForMaxQty then
-                db.currencyCount[currencyID]["totalEarned"] = info.totalEarned
-                db.currencyCount[currencyID]["maxQuantity"] = info.maxQuantity
+                db.currencyCount[currencyID]["totalEarned"] = info.totalEarned or 0
+                --db.currencyCount[currencyID]["maxQuantity"] = info.maxQuantity
+                if info.maxQuantity and info.maxQuantity > 0 then
+                    self.db.global.maxQty = self.db.global.maxQty or {}
+                    self.db.global.maxQty[currencyID] = info.maxQuantity
+                end
             end
         end
     end
@@ -524,7 +540,7 @@ function SavedClassic:ShowInfoTooltip(tooltip)
 
     local totalGold = ""
     if db.showTotalGold then
-        totalGold = floor((self.totalMoney + db.currencyCount[0].total) / 10000).. self.currencies[1].icon
+        totalGold = floor((self.totalMoney + db.currencyCount[0].quantity) / 10000).. self.currencies[1].icon
     end
     tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold)
 
