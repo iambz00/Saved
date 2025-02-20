@@ -3,7 +3,7 @@ SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "1.15.5.0"
+SavedClassic.version = "1.4.4"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
