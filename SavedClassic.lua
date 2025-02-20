@@ -1,9 +1,9 @@
-local addonName, addon = ...
+local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "1.4.4"
+SavedClassic.version = "1.15.5.0"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -17,58 +17,8 @@ local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
-SavedClassic.wb = {	-- World buffs and Flasks
-	[23768] = { },	-- DF damage 세이지 공격력
-	[23766] = { },	-- DF int 세이지 지능
-	[22817] = { },	-- DM1 펜구스의 흉포
-	[22818] = { },	-- DM2 몰다르의 투지
-	[22820] = { },	-- DM3 슬립킥의 손재주
-	[15366] = { },	-- SF 노래꽃의 세레나데
-	[22888] = { }, [355363] = { },	-- Ony, Nef 용사냥꾼 재집결의 외침
-	[24425] = { }, [355365] = { },	-- Zul'gurub 잔달라의 기백
-	[16609] = { }, [355366] = { },	-- BoW 대족장의 축복
-	[24382] = { }, 	-- Zanza 잔자의 기백
-	[17626] = { },	-- Titan 티탄
-	[17627] = { },	-- Distilled Wisdom 순지
-	[17628] = { },	-- Supreme Power 강마
-}
-SavedClassic.cd = {	-- for Chronoboon Displacer
-	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768,
-}
-SavedClassic.ts = {	-- Tradeskills of long cooldowns
-	[17187] = { altName = L["Transmute"], },	-- 연금 변환(아케이나이트)
-	[18560] = { },	-- 달빛 옷감 96
-	[19566] = { },	-- 소금 정제기 72
-}
-SavedClassic.items = {	-- Items to count always
-	[6265] = { },	-- Soulshard
-	[184937] = { },	-- Chronoboon Displacer
-}
-local pt = {
-	["%n"] = "coloredName",	["%N"] = "name",
-	["%Z"] = "zone" ,	["%z"] = "subzone" ,
 
-	["%g"] = "gold" ,	["%G"] = GOLD_ICON ,
-	["%s"] = "silver" ,	["%S"] = SILVER_ICON ,
-	["%c"] = "copper" ,	["%C"] = COPPER_ICON ,
 
-	["%B"] = "wbstr",	["%T"] = "tsstr",
-	["%L"] = "elapsedTime",
-
-	["%l"] = "level",
-	["%e"] = "expCurrent",	["%E"] = "expMax",	["%p"] = "expPercent",
-	["%R"] = "restXP",	["%P"] = "restPercent",
-
-	["%F"] = "|cff" ,	["%f"] = "|r" ,	["%r"] = "|n" ,
-	["%%"] = "%" ,
-
-	["!n"] = "name" ,	["!d"] = "difficultyName" ,
-	["!i"] = "id" ,	["!p"] = "progress" ,	["!P"] = "numBoss" ,
-	["!e"] = "" ,	-- classic doesn't support extened
-	["!!"] = "!" ,
-
---	["!t"] = "" ,
-}
 
 local dbDefault = {
 	realm = {
