@@ -1,21 +1,19 @@
-local AddonName, Addon = ...
-local L = LibStub("AceLocale-3.0"):NewLocale(AddonName, "ruRU")
-local GOLD_ICON = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"
-local SILVER_ICON = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t"
-local COPPER_ICON = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t"
-local SOUL_SHARD_ICON = "|TInterface/Icons/Inv_misc_gem_amethyst_02:14:14|t"
+local addonName, _ = ...
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "ruRU")
 
 if L then
 L["Transmute"] = "Трансмутация"
 
-L["Reset due to update"] = function(oldv, newv) return "Сброс некоторых или всех данных из-за обновления версии ("..oldv.." -> "..newv ")" end
+L["Reset due to update"] = function(oldv, newv) return "Сброс некоторых или всех данных из-за обновления версии ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(расширение)"
 
 L["minites"] = "м"
 L["Enabled"] = "Включено"
 L["Disabled"] = "Отключено"
 
+L["Raid Table Notice"] = "L-Click to open Raid table, R-Click to open Options"
 L["Display settings"] = "Настройки отображения"
+L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Every options are saved [per chracter]|r"
 L["Show floating UI frame"] = "Показать всплывающее окно"
 L["Floating UI width"] = "Ширина окна"
 L["Floating UI height"] = "Высота окна"
@@ -24,45 +22,170 @@ L["Show minimap icon"] = "Показать значок на миникарте"
 L["Show info"] = "Информационное окно"
 L["per Character"] = "По персонажу"
 L["per Realm"] = "По серверу"
+L["Show total gold"] = "показать общее золото"
 L["Hide info from level under"] = "Скрыть информацию с уровня ниже"
-
+L["Show current chracter first"] = true
+L["Sort Order"] = true
+L["Sort Option"] = true
+L["Exclude Characters"] = "Exclude Characters(Separate by , or space)"
+L["Descending"] = true
+L["Asscending"] = true
 L["Tooltip - Character info."] = "Информация, относящаяся к параметру всплывающей подсказки" --"Информация для персонажа"
 L["Line 1 of char info."] = "Первая строка с информацией по специализации персонажа"
 L["Line 2 of char info."] = "Вторая строка с информацией по специализации персонажа"
 L["Left"] = "Лево"
 L["Right"] = "Право"
-L["Desc_Char"] = "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r|n"
-	.."|cffccaa00%n|r Имя (цвет класса)|n|cffccaa00%N|r Имя (без цвета)|n"
-	.."|cffccaa00%g|r Золото   |cffccaa00%s|r Серебро   |cffccaa00%c|r Бронза|n"
-	.."|cffccaa00%G|r "..GOLD_ICON.."    |cffccaa00%S|r "..SILVER_ICON.."    |cffccaa00%C|r "..COPPER_ICON.."|n"
-	.."|cffccaa00%l|r Текущий уровень   |cffccaa00%p|r Текущий опыт %|n"
-	.."|cffccaa00%e|r Текущий опыт   |cffccaa00%E|r Макс Опыт|n"
-	.."|cffccaa00%R|r Опыт отдыха   |cffccaa00%P|r Опыт отдыха %|n"
-	.."|cffccaa00%Z|r Текущая зона   |cffccaa00%z|r Подзона치|n"
-	.."|cffccaa00%r|r Новая линия|n"
-	.."|cffccaa00%L|r Прошедшее время после последнего обновления|n"
-	.."|cffccaa00%B|r Мировые баффы и статус Эликсира|n"
-	.."|cffccaa00%i{|cffffffffСсылка на ID|cffccaa00}|r Значок предмета|n"
-	.."|cffccaa00%n{|cffffffffСсылка на ID|cffccaa00}|r Количество предметов|n"
-	.."|cffccaa00%i{|cffffffffСсылка на ID|cffccaa00}|r Значок + Количество|n"
-	.."|cffccaa00e.g. %I{|cffffffff[осколков души]|r} или %I{6265} => "..SOUL_SHARD_ICON.."25|r|n"
-		.."|cffccaa00%T|r Перезарядка навыков профессии|n"
-	.."|cffccaa00%F######|r Цвет начала(RGB кодировка)|n|cffccaa00%f|r Цвет окончания|n"
-	.."|cffccaa00(ex) %FffffffБелый%f =>|r |cffffffffБелый|r|n   |cffccaa00%Fff0000Красный%f => |r|cffff0000Красный|r"
-L["Desc_Char2"] = true
-L["Tooltip - Instance info"] = "Подсказка - информация о подземелье" --"Информация о лидере"
-L["Lines of instance info"] = "Строки информации о подземелье"
-L["Desc_Inst"] = "|cff00ff00■|r |cffccaa00Использование - Информация о подземелье|r|n"
-	.."|cffccaa00!n|r Название подземелья|n"
-	.."|cffccaa00!d|r Размер и сложность|n"
-	.."|cffccaa00!p|r Количество убитых боссов|n"
-	.."|cffccaa00!P|r Количество боссов|n"
-	.."|cffccaa00!t|r Время сброса|n"
-	.."|cffccaa00!i|r ID подземелья|n"
+L["Tooltip - Raid instances"] = true
+L["Lines of raid instances"] = true
+L["Tooltip - Heroic instances"] = true
+L["Lines of heroic instances"] = true
+L["Show in one-line"] = "Показать в одну строку"
+
+L["Select character"] = "Выбор персонажа"
 L["Reset selected character"] = "Сбросить выбранного персонажа"
 L["Are you really want to reset?"] = "Вы действительно хотите сбросить настройки?"
 L["Reset all characters"] = "Сбросить всех персонажей"
-L["Dupe settings to"] = "Настройки копирования на"
-L["Dupe"] = "Копировать"
-L["Dupe settings will overwirte character/instance info."] = "Настройки копирования перезапишут информацию о персонаже/подземелье."
+L["Copy settings to"] = "Настройки копирования на"
+L["Copy"] = "Копировать"
+L["Confirm copy"] = "Настройки копирования перезапишут информацию о персонаже/подземелье."
+
+-- Localized Translation Table
+L["color"     ] = true
+L["item"      ] = true
+L["currency"  ] = true
+L["name"      ] = true
+L["name2"     ] = true
+L["zone"      ] = true
+L["subzone"   ] = true
+L["worldbuff" ] = true
+L["cooldown"  ] = true
+L["elapsed"   ] = true
+L["level"     ] = true
+L["expCur"    ] = true
+L["expMax"    ] = true
+L["exp%"      ] = true
+L["expRest"   ] = true
+L["expRest%"  ] = true
+L["dqCom"     ] = true
+L["dqMax"     ] = true
+L["dqReset"   ] = true
+L["ilvl"      ] = true
+L["ilvl_avg"  ] = true
+L["ilvl_equip"] = true
+L["instName"  ] = true
+L["instID"    ] = true
+L["difficulty"] = true
+L["progress"  ] = true
+L["bosses"    ] = true
+L["time"      ] = true
+-- Localized Currency Name
+L["gold"    ] = true
+L["silver"  ] = true
+L["copper"  ] = true
+L["g"       ] = true
+L["s"       ] = true
+L["c"       ] = true
+L["honor"   ] = true
+L["arena"   ] = true
+L["conquest"] = true
+L["jewel"   ] = true
+L["cook"    ] = true
+L["JP"      ] = true
+L["VP"      ] = true
+L["TBC"     ] = true
+L["MOW"     ] = true
+L["CAM"     ] = true
+L["CRB"     ] = true
+L["DPT"     ] = true
+L["MOD"     ] = true
+L["EOC"     ] = true
+L["FS"      ] = true
+-- Usage
+L["Usage_Character"] = {
+    { "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r" },
+    { "[name]"          , "Имя (цвет класса)", "[name2]"        , "Имя (без цвета)"  },
+    { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
+    { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
+    { "[elapsed]"       , "Прошедшее время после последнего обновления", "[cooldown]"     , "Перезарядка навыков профессии"    },
+    { "[item:aимя]"     , "[item:name]"     , "значок и количество",            },
+    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       ,               },
+    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,               },
+    { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
+                        , "Цвет начала(RGB кодировка)", "[color]"         , "Цвет окончания"   },
+    { " |cffff0000!|r Цвет, добавляя /###### в конец",             },
+    { "[currency:имя]"  , "[currency:ID]"   , "значок и количество",  },
+    { " |cffff0000!|r Valor/Conquest Style" ,  "", "[currency:VP-3]", "|T463447:14:14|t960(4460/9600)"   },
+    { "[currency:VP-2]" , "|T463447:14:14|t960(|cFFFF75755140|r)", "[currency:VP-1]"   , "|T463447:14:14|t960(-5140)"   },
+}
+L["Usage_Instance"] = {
+    { "|cff00ff00■|r |cffccaa00Использование - Информация о подземелье|r",   },
+    { "[instName]"      , "Название подземелья", "[difficulty]"    , "Размер и сложность" },
+    { "[progress]"      , "Количество убитых боссов", "[bosses]"        , "Количество боссов"       },
+    { "[time]"          , "Время сброса"   , "[instID]"        , "ID подземелья" },
+}
+-- Heroic abbr. Cataclysm
+L["H4_Blackrock Caverns"] = "BRC"
+L["H4_Throne of the Tides"] = "ToT"
+L["H4_Vortex Pinnacle"] = "VP"
+L["H4_The Stonecore"] = "SC"
+L["H4_Lost City of the Tol'vir"] = "LCT"
+L["H4_Halls of Origination"] = "HoO"
+L["H4_Grim Batol"] = "GB"
+L["H4_End Time"] = "ET"
+L["H4_Well of Eternity"] = "WotE"
+L["H4_Hour of Twilight"] = "HoT"
+L["H4_Deadmines"] = "DM"
+L["H4_Shadowfang Keep"] = "SFK"
+L["H4_Zul'Gurub"] = "ZG"
+L["H4_Zul'Aman"] = "ZA"
+-- Raid abbr. Cataclysm
+L["R4_Blackwing Descent"] = "BWD"
+L["R4_Bastion of Twilight"] = "BoT"
+L["R4_Throne of the Four Winds"] = "T4W"
+L["R4_Firelands"] = "FL"
+L["R4_Dragon Soul"] = "DS"
+L["R4_Baradin Hold"] = "BH"
+-- Heroic abbr. WotLK
+L["H3_Ahn'kahet: The Old Kingdom"] = "AK"
+L["H3_Azjol-Nerub"] = "AN"
+L["H3_Drak'Tharon Keep"] = "DTK"
+L["H3_Gundrak"] = "Gun"
+L["H3_Halls of Lightning"] = "HoL"
+L["H3_Halls of Stone"] = "HoS"
+L["H3_Culling of Stratholme"] = "CoStrat"
+L["H3_The Nexus"] = "Nex"
+L["H3_The Oculus"] = "Ocu"
+L["H3_Violet Hold"] = "VH"
+L["H3_Utgarde Keep"] = "UK"
+L["H3_Utgarde Pinnacle"] = "UP"
+L["H3_Trial of the Champion"] = "ToC"
+L["H3_Halls of Reflection"] = "HoR"
+L["H3_Pit of Saron"] = "PoS"
+L["H3_Forge of Souls"] = "FoS"
+-- Raid abbr. WotLK
+L["R3_Naxxramas"] = "Naxx"
+L["R3_Obsidian Sanctum"]  = "OS"
+L["R3_Eye of Eternity"]  = "EoE"
+L["R3_Ulduar"]  = "ULD"
+L["R3_Onyxia's Lair"]  = "Ony"
+L["R3_Trial of the Crusader"]  = "CC"
+L["R3_Icecrown Citadel"]  = "IC"
+L["R3_Ruby Sanctum"]  = "RS"
+L["R3_Vault of Archavon"]  = "VoA"
+-- Raid abbr. TBC
+L["R2_Sunwell Plateau"] = "SP"
+L["R2_Black Temple"] = "BT"
+L["R2_Battle for Mount Hyjal"] = "Hyjal"
+L["R2_Serpentshrine CavernC"] = "SSC"
+L["R2_The Eye"] = "TK"  -- Tempest Keep
+L["R2_Karazhan"] = "KZ"
+L["R2_Gruul's Lair"] = "Gruul"
+L["R2_Magtheridon's Lair"] = "Mag"
+-- Raid abbr. Vanilla
+L["R1_Naxxramas"] = "Naxx"
+L["R1_Onyxia's Lair"]  = "Ony"
+L["R1_Temple of Ahn'Qiraj"] = "TAQ"
+L["R1_Ruins of Ahn'Qiraj"] = "RAQ"
+L["R1_Blackwing Lair"] = "BW"
+L["R1_Molten Core"] = "MC"
 end

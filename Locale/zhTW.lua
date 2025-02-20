@@ -1,53 +1,53 @@
 local addonName, _ = ...
-local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "zhTW")
 
 if L then
-L["Transmute"] = true
+L["Transmute"] = "轉換"
 
-L["Reset due to update"] = function(oldv, newv) return "Reset some or entire data due to version update ("..oldv.." -> "..newv.. ")" end
-L["extended"] = "(extended)"
+L["Reset due to update"] = function(oldv, newv) return "因版本更新而重置部分或者全部數據 ("..oldv.." -> "..newv.. ")" end
+L["extended"] = "(擴展)"
 
-L["minites"] = "m"
-L["Enabled"] = true
-L["Disabled"] = true
+L["minites"] = "分鐘"
+L["Enabled"] = "啟用"
+L["Disabled"] = "禁用"
 
-L["Raid Table Notice"] = "L-Click to open Raid table, R-Click to open Options"
-L["Display settings"] = true
-L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Every options are saved [per chracter]|r"
-L["Show floating UI frame"] = true
-L["Floating UI width"] = true
-L["Floating UI height"] = true
-L["Desc - Frame"] = "|cff00ff00■|r |cffccaa00Shift - Drag to move the Frame|r"
-L["Show minimap icon"] = true
-L["Show info"] = true
-L["per Character"] = true
-L["per Realm"] = true
-L["Show total gold"] = true
-L["Hide info from level under"] = true
-L["Show current chracter first"] = true
+L["Raid Table Notice"] = "左鍵點擊打開進度表格, 右鍵點擊打開設置"
+L["Display settings"] = "顯示設置"
+L["Desc - Common"] = "|cff00ff00■|r |cffccaa00每個配置已保存 [單角色]|r"
+L["Show floating UI frame"] = "顯示懸浮窗"
+L["Floating UI width"] = "懸浮窗寬度"
+L["Floating UI height"] = "懸浮窗高度"
+L["Desc - Frame"] = "|cff00ff00■|r |cffccaa00Shift - 拖動來移動框架|r"
+L["Show minimap icon"] = "顯示小地圖按鈕"
+L["Show info"] = "顯示信息"
+L["per Character"] = "單角色"
+L["per Realm"] = "單服務器"
+L["Show total gold"] = "顯示總金"
+L["Hide info from level under"] = "低於等級隱藏信息"
+L["Show current chracter first"] = "優先顯示當前角色"
 L["Sort Order"] = true
 L["Sort Option"] = true
-L["Exclude Characters"] = "Exclude Characters(Separate by , or space)"
+L["Exclude Characters"] = "不想看見的角色(用英文逗號或者空格分隔)"
 L["Descending"] = true
 L["Asscending"] = true
-L["Tooltip - Character info."] = true
-L["Line 1 of char info."] = true
-L["Line 2 of char info."] = true
-L["Left"] = true
-L["Right"] = true
-L["Tooltip - Raid instances"] = true
-L["Lines of raid instances"] = true
-L["Tooltip - Heroic instances"] = true
-L["Lines of heroic instances"] = true
-L["Show in one-line"] = true
+L["Tooltip - Character info."] = "提示 - 角色信息"
+L["Line 1 of char info."] = "角色信息第一行"
+L["Line 2 of char info."] = "角色信息第二行"
+L["Left"] = "左"
+L["Right"] = "右"
+L["Tooltip - Raid instances"] = "提示 - 團本信息"
+L["Lines of raid instances"] = "團本信息行"
+L["Tooltip - Heroic instances"] = "提示 - 英雄本信息"
+L["Lines of heroic instances"] = "英雄本信息行"
+L["Show in one-line"] = "單行顯示"
 
-L["Select character"] = true
-L["Reset selected character"] = true
-L["Are you really want to reset?"] = true
-L["Reset all characters"] = true
-L["Copy settings to"] = true
-L["Copy"] = true
-L["Confirm copy"] = "Overwrite settings to target character"
+L["Select character"] = "選擇角色"
+L["Reset selected character"] = "重置選擇的角色"
+L["Are you really want to reset?"] = "你確定要重置嗎？"
+L["Reset all characters"] = "重置所有角色"
+L["Copy settings to"] = "複製設定到"
+L["Copy"] = "複製"
+L["Confirm copy"] = "將設置覆蓋到目標角色上"
 
 -- Localized Translation Table
 L["color"     ] = true
@@ -102,26 +102,26 @@ L["EOC"     ] = true
 L["FS"      ] = true
 -- Usage
 L["Usage_Character"] = {
-    { "|cff00ff00■|r |cffccaa00Keywords for Character info|r" },
-    { "[name]"          , "Name(color)"     , "[name2]"         , "Name(no color)"  },
+    { "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r" },
+    { "[name]"          , "名稱(職業顏色)"  , "[name2]"         , "名稱(無顏色)"  },
     { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
-    { "[elapsed]"       , "After last update", "[cooldown]"     , "Tradeskill cooldowns"    },
-    { "[item:name]"     , "[item:name]"     , "Item Icon and Count",            },
+    { "[elapsed]"       , "自上次更新經過的時間", "[cooldown]"     , "專業技能冷卻時間"    },
+    { "[item:name]"     , "[item:name]"     , "物品圖標和數量"  ,               },
     { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       ,               },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,               },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
-                        , "Color start(RGB)", "[color]"         , "Color end"   },
-    { "! attach /###### to any keyword to apply color",             },
-    { "[currency:name]" , "[currency:ID]"   , "Currency Icon and Count",  },
+                        , "顏色開始(RGB 代碼)", "[color]"         , "顏色結束"  },
+    { " |cffff0000!|r 通過在末尾添加 /###### 著色",             },
+    { "[currency:name]" , "[currency:ID]"   , "物品圖標和數量",     },
     { " |cffff0000!|r Valor/Conquest Style" ,  "", "[currency:VP-3]", "|T463447:14:14|t960(4460/9600)"   },
     { "[currency:VP-2]" , "|T463447:14:14|t960(|cFFFF75755140|r)", "[currency:VP-1]"   , "|T463447:14:14|t960(-5140)"   },
 }
 L["Usage_Instance"] = {
-    { "|cff00ff00■|r |cffccaa00Keywords for Instance info|r",   },
-    { "[instName]"      , "Instance name"   , "[difficulty]"    , "Size and Difficulty" },
-    { "[progress]"      , "Killed"          , "[bosses]"        , "Total"       },
-    { "[time]"          , "Time to reset"   , "[instID]"        , "Instance ID" },
+    { "|cff00ff00■|r |cffccaa00使用方法 - 副本信息|r",   },
+    { "[instName]"      , "副本名稱"        , "[difficulty]"    , "大小和難度"  },
+    { "[progress]"      , "BOSS擊殺數量"    , "[bosses]"        , "BOSS數量"       },
+    { "[time]"          , "重置時間"        , "[instID]"        , "副本 ID" },
 }
 -- Heroic abbr. Cataclysm
 L["H4_Blackrock Caverns"] = "BRC"

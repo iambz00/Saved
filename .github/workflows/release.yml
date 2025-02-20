@@ -1,0 +1,28 @@
+name: Package and release
+
+on:
+  push:
+  # Package only when release version pushed
+    tags:
+      - '**'
+      - '!**[a-z]+'
+
+jobs:
+  release:
+    # runs-on: ubuntu-latest
+    # ubuntu-24.04 needs svn installed
+    runs-on: ubuntu-22.04
+
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # gets git history for changelogs
+      - name: WoW Packager
+        uses: BigWigsMods/packager@v2.4.1
+        with:
+          args: -g classic -p 357612 -n "{package-name}-{project-version}"
