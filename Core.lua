@@ -83,7 +83,7 @@ local function ResolveCurrency(db, option)
     end
 end
 
-local pt = {
+local _Migration = {
 	["%n"] = "["..L["name"      ].."]",
     ["%N"] = "["..L["name2"     ].."]",
 	["%Z"] = "["..L["zone"      ].."]",
@@ -94,14 +94,14 @@ local pt = {
 	["%G"] = "",    ["%S"] = "",    ["%C"] = "",
 	["%B"] = "wbstr",
     ["%T"] = "["..L["cooldown"  ].."]",
-	["%L"] = "["..L.."]",
+	["%L"] = "["..L["elapsed"   ].."]",
 	["%l"] = "["..L["level"     ].."]",
 	["%e"] = "["..L["expCur"    ].."]",
     ["%E"] = "["..L["expMax"    ].."]",
     ["%p"] = "["..L["exp%"      ].."]",
 	["%R"] = "["..L["expRest"   ].."]",
     ["%P"] = "["..L["expRest%"  ].."]",
-	-- ["%F"] = "|cff" ,
+	-- ["%F"], ["%I"]
     ["%f"] = "["..L["color"     ].."]",
     ["%r"] = "|n",
 	["%%"] = "%" ,
@@ -205,29 +205,32 @@ local function SavedClassic_GetCurrencyInfo(id)
     end
 end
 
+function SavedClassic:Migrate()
+    local function _Migrate(str)
+        return str:gsub("%%%w", _Migration):gsub("%%F(......)", "["..L["color"].."/%1]")
+                :gsub("%%I{([^}]+)}", "["..L["item"]..":%1]"):gsub("%%I%[([^]]+)%]", "["..L["item"]..":%1]")
+    end
+    for _, charDB in pairs(self.db.realm) do
+        charDB.info1_1 = _Migrate(charDB.info1_1)
+        charDB.info1_2 = _Migrate(charDB.info1_2)
+        charDB.info2_1 = _Migrate(charDB.info2_1)
+        charDB.info2_2 = _Migrate(charDB.info2_2)
+        charDB.info3_1 = _Migrate(charDB.info3_1)
+        charDB.info3_2 = _Migrate(charDB.info3_2)
+    end
+end
+
 function SavedClassic:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 
     -- Reset old db
     if not self.db.global.version then
         self:ResetWholeDB()
-    elseif self.db.global.version < "4.4.0.7" then
-        p(L["Reset due to update"](self.db.global.version, self.version))
-        self:ResetWholeDB()
     else
-        for _, saved in pairs(self.db.realm) do
-            for id, currency in pairs(saved.currencyCount or {}) do
-                currency.quantity = tonumber(currency.quantity or currency.total)
-                currency.total = nil
-                if currency.maxQuantity then
-                    self.db.global.maxQty = self.db.global.maxQty or {}
-                    local oldMax = self.db.global.maxQty[id] or 0
-                    if currency.maxQuantity > oldMax then
-                        self.db.global.maxQty[id] = oldMax
-                    end
-                    currency.maxQuantity = nil
-                end
-            end
+        if self.db.global.version:match("1.4.") then
+            self:Migrate()
+            -- p(L["Reset due to update"](self.db.global.version, self.version))
+            -- self:ResetWholeDB()
         end
     end
 
@@ -359,12 +362,12 @@ function SavedClassic:InitPlayerDB()
     playerdb.info3 = true
     playerdb.info3_1 = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"])
     playerdb.info3_2 = format("[%s]", L["time"])
-    playerdb.info4 = true
-    playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
-    playerdb.info4_2 = format("[%s/ffff99]", L["time"])
+    -- playerdb.info4 = true
+    -- playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
+    -- playerdb.info4_2 = format("[%s/ffff99]", L["time"])
 
     playerdb.info3oneline = true
-    playerdb.info4oneline = true
+    -- playerdb.info4oneline = true
 
     playerdb.raids = { }
     playerdb.heroics = { }
@@ -706,7 +709,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             end
         end
     end
-
+--[[
     db.heroics = db.heroics or {}
     if db.info4 then
         if db.info4oneline then
@@ -734,6 +737,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             end
         end
     end
+    --]]
 end
 
 function SavedClassic:TranslateCharacter(line, db)
@@ -1333,41 +1337,6 @@ function SavedClassic:BuildOptions()
                         order = 32
                     },
                     info3_2 = {
-                        name = L["Right"],
-                        type = "input",
-                        width = 1,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 33
-                    },
-                },
-            },
-
-            infoHeroic = {
-                name = L["Tooltip - Heroic instances"],
-                type = "group",
-                inline = true,
-                order = 51,
-                args = {
-                    info4 = {
-                        name = L["Lines of heroic instances"],
-                        type = "toggle",
-                        order = 30,
-                    },
-                    info4oneline = {
-                        name = L["Show in one-line"],
-                        type = "toggle",
-                        order = 31,
-                    },
-                    info4_1 = {
-                        name = L["Left"],
-                        type = "input",
-                        width = 2.5,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 32
-                    },
-                    info4_2 = {
                         name = L["Right"],
                         type = "input",
                         width = 1,
