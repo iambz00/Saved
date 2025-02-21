@@ -3,7 +3,7 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "4.4.1.3"
+SavedClassic.version = "4.4.2.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -39,6 +39,7 @@ SavedClassic.currencies = {
     [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
     [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
     [3148]= { altName = L["FS"      ] }, -- 4.4.1 Cataclysm   Elemental Rune Dungeon - Protocol Inferno
+    [3281]= { altName = L["OF"      ] }, -- 4.4.2 Cataclysm   Elemental Rune Dungeon - Protocol Twilight
     [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
     [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
     [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
@@ -49,7 +50,7 @@ SavedClassic.currencies = {
         396,395,        -- [Valor], Justice
         390,1901,       -- [Conquest], Honor
         614,615,        -- Raid Rewards
-        3148,           -- Elemental Rune Dungeon
+        3281,3148,      -- Elemental Rune Dungeon
         416,            -- Daily Quest
         361,402,        -- Jewelcraft, Cooking
         391,            -- Tol Barad

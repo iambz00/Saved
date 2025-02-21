@@ -168,7 +168,7 @@ function SavedClassic:OnInitialize()
     elseif self.db.global.version < "4.4.0.7" then
         p(L["Reset due to update"](self.db.global.version, self.version))
         self:ResetWholeDB()
-    else
+    elseif self.db.global.version < "4.4.1.3" then
         for _, saved in pairs(self.db.realm) do
             for id, currency in pairs(saved.currencyCount or {}) do
                 currency.quantity = tonumber(currency.quantity or currency.total)
@@ -182,6 +182,15 @@ function SavedClassic:OnInitialize()
                     currency.maxQuantity = nil
                 end
             end
+        end
+    end
+    if self.db.global.version < "4.4.2.1" then
+        -- Protocol Inferno(Fissure Stone) -> Protocol Twilight(Obsidian Fragment)
+        for _, saved in pairs(self.db.realm) do
+            saved.info1_1 = saved.info1_1:gsub(L["FS"], L["OF"])
+            saved.info1_2 = saved.info1_2:gsub(L["FS"], L["OF"])
+            saved.info2_1 = saved.info2_1:gsub(L["FS"], L["OF"])
+            saved.info2_2 = saved.info2_2:gsub(L["FS"], L["OF"])
         end
     end
 
@@ -306,7 +315,7 @@ function SavedClassic:InitPlayerDB()
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                 L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
         playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
-                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["FS"], L["color"])
+                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["OF"], L["color"])
         playerdb.info2_2 = format("[%s/ffffff][%s]/[%s][%s]", L["color"], L["dqCom"], L["dqMax"], L["color"])
     end
 
