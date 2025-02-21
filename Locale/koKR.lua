@@ -96,6 +96,7 @@ L["DPT"     ] = "다크문"
 L["MOD"     ] = "티끌"
 L["EOC"     ] = "정수"
 L["FS"      ] = "균열석"
+L["OF"      ] = "흑요석"
 -- Usage
 L["Usage_Character"] = {
     { "|cff00ff00■|r |cffccaa00캐릭터별 정보 키워드|r" },
