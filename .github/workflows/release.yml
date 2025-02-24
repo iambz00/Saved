@@ -5,12 +5,12 @@ on:
   # Package only when release version pushed
     tags:
       - '**'
-      - '!**[ab]+'
+      - '!**[a-z]+'
 
 jobs:
   release:
     # runs-on: ubuntu-latest
-    # ubuntu-24.04 has packager svn issue
+    # ubuntu-24.04 needs svn installed
     runs-on: ubuntu-22.04
 
     env:
