@@ -258,6 +258,8 @@ function SavedClassic:OnInitialize()
 
     self:RegisterEvent("ZONE_CHANGED", "SaveInfo")
     self:RegisterEvent("ZONE_CHANGED_INDOORS", "SaveInfo")
+    self:RegisterEvent("PLAYER_UPDATE_RESTING")
+
     self:RegisterEvent("PLAYER_REGEN_ENABLED", "RequestRaidInfo")
     self:RegisterEvent("PLAYER_REGEN_ENABLED", "CurrencyUpdate")
     self:RegisterEvent("UPDATE_INSTANCE_INFO", "SaveInfo")  -- API RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
@@ -374,7 +376,8 @@ function SavedClassic:InitPlayerDB()
     playerdb.tradeSkills = { }
     playerdb.itemCount = { }
     playerdb.currencyCount = { }
-
+    playerdb.worldBuffs = { }
+    playerdb.chrono = { }
     playerdb.zone = ""
     playerdb.subzone = ""
 
@@ -456,6 +459,7 @@ function SavedClassic:SaveInfo()
     self:PLAYER_EQUIPMENT_CHANGED()
     self:CurrencyUpdate()
     self:SaveZone()
+    self:SaveWorldBuffs()
     self:SaveTSCooldowns()
 end
 
@@ -486,11 +490,55 @@ function SavedClassic:PLAYER_XP_UPDATE()
     self:SetOrder()
 end
 
+function SavedClassic:PLAYER_UPDATE_RESTING(...)
+	if IsResting() then
+		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	else
+		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	end
+end
+
+function SavedClassic:COMBAT_LOG_EVENT_UNFILTERED(...)
+	local playerGUID = UnitGUID("player")
+	local _, combatEvent, _, _, _, _, _, destGUID, _, _, _, 
+		spellId = CombatLogGetCurrentEventInfo()
+	if combatEvent == "SPELL_AURA_APPLIED" and destGUID == playerGUID then
+		if self.wb[spellId] then
+			self:SaveWorldBuff()
+		end
+	end
+end
+
 function SavedClassic:PLAYER_EQUIPMENT_CHANGED()
     local db = self.db.realm[player]
     db.gearAvgLevel, db.gearEquippedLevel = GetAverageItemLevel()
     db.gearAvgLevel = floor(db.gearAvgLevel)
     db.gearEquippedLevel = floor(db.gearEquippedLevel)
+end
+
+function SavedClassic:SaveWorldBuffs()
+	local db = self.db.realm[player]
+	db.worldBuffs = {}
+	db.chrono = {}
+	for i=1,64 do
+		local _, _, _, _, _, expire, _, _, _, id = UnitBuff("player", i)
+		if id and self.wb[id] then
+			table.insert(db.worldBuffs, { id = id, remain = floor((expire-GetTime())/60) })
+		end
+		if id == 349981 then
+			self:SaveChronoBuff(i)
+		end
+	end
+	table.sort(db.worldBuffs, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
+end
+
+function SavedClassic:SaveChronoBuff(numBuff)
+	local db = self.db.realm[player]
+	local displacer = { UnitBuff("player", numBuff) }
+	for i=1,#self.cd do
+		table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[16 + i]/60) })
+	end
+	table.sort(db.chrono, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
 end
 
 function SavedClassic:SaveZone()
@@ -559,22 +607,21 @@ function SavedClassic:PLAYER_MONEY()
 end
 
 function SavedClassic:CurrencyUpdate()
---@
-    local db = self.db.realm[player]
-    for _, currencyID in pairs(self.currencies.order) do
-        local info = SavedClassic_GetCurrencyInfo(currencyID)
-        if info then
-            db.currencyCount[currencyID] = { quantity = tonumber(info.quantity) }
-            if info.useTotalEarnedForMaxQty then
-                db.currencyCount[currencyID]["totalEarned"] = info.totalEarned or 0
-                --db.currencyCount[currencyID]["maxQuantity"] = info.maxQuantity
-                if info.maxQuantity and info.maxQuantity > 0 then
-                    self.db.global.maxQty = self.db.global.maxQty or {}
-                    self.db.global.maxQty[currencyID] = info.maxQuantity
-                end
-            end
-        end
-    end
+    -- local db = self.db.realm[player]
+    -- for _, currencyID in pairs(self.currencies.order) do
+    --     local info = SavedClassic_GetCurrencyInfo(currencyID)
+    --     if info then
+    --         db.currencyCount[currencyID] = { quantity = tonumber(info.quantity) }
+    --         if info.useTotalEarnedForMaxQty then
+    --             db.currencyCount[currencyID]["totalEarned"] = info.totalEarned or 0
+    --             --db.currencyCount[currencyID]["maxQuantity"] = info.maxQuantity
+    --             if info.maxQuantity and info.maxQuantity > 0 then
+    --                 self.db.global.maxQty = self.db.global.maxQty or {}
+    --                 self.db.global.maxQty[currencyID] = info.maxQuantity
+    --             end
+    --         end
+    --     end
+    -- end
     self:PLAYER_MONEY()
 end
 
@@ -598,6 +645,7 @@ function SavedClassic:ShowInfoTooltip(tooltip)
     self:QUEST_TURNED_IN()
     self:BAG_UPDATE_DELAYED()
     self:CurrencyUpdate()
+    self:SaveWorldBuffs()
 
     if db.showInfoPer == "realm" then
         for _, v in ipairs(self.order) do

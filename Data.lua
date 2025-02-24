@@ -3,7 +3,7 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "1.15.5.0"
+SavedClassic.version = "1.15.5.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -23,7 +23,7 @@ SavedClassic.wb = {	-- World buffs and Flasks
 	[17628] = { },	-- Supreme Power 강마
 }
 SavedClassic.cd = {	-- for Chronoboon Displacer
-	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768,
+	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768, 23766
 }
 SavedClassic.ts = {	-- Tradeskills of long cooldowns
 	[17187] = { icon = "|TInterface/Icons/INT_MISC_STONETABLET_05:14:14|t"  },  -- Transmute(Arcanite) - 24H
@@ -46,27 +46,27 @@ SavedClassic.currencies = {
     -- Type-1 = [Currency:Name-1] : [Icon][Quantity]([Earnable])  -- Earnable in minus value
     -- Type-2 = [Currency:Name-2] : [Icon][Quantity]([Earnable])  -- Earnable in red font
     -- Type-3 = [Currency:Name-3] : [Icon][Quantity]([Earned]/[MaxQuantity])
-    [395] = { altName = L["JP"      ] }, -- 4.0.1 Hidden      Justice Points
-    [396] = { altName = L["VP"      ] }, -- 4.0.1 Hidden      Valor Points
-    [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
-    [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
-    [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
-    [3148]= { altName = L["FS"      ] }, -- 4.4.1 Cataclysm   Elemental Rune Dungeon - Protocol Inferno
-    [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
-    [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
-    [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
-    [391] = { altName = L["TBC"     ] }, -- 4.0.1 PvP         Tol Barad Commendation
-    [515] = { altName = L["DPT"     ] }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
+    -- [395] = { altName = L["JP"      ] }, -- 4.0.1 Hidden      Justice Points
+    -- [396] = { altName = L["VP"      ] }, -- 4.0.1 Hidden      Valor Points
+    -- [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
+    -- [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
+    -- [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
+    -- [3148]= { altName = L["FS"      ] }, -- 4.4.1 Cataclysm   Elemental Rune Dungeon - Protocol Inferno
+    -- [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
+    -- [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
+    -- [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
+    -- [391] = { altName = L["TBC"     ] }, -- 4.0.1 PvP         Tol Barad Commendation
+    -- [515] = { altName = L["DPT"     ] }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
     order = {
         1,2,3,          -- Gold, Silver, Copper
-        396,395,        -- [Valor], Justice
-        390,1901,       -- [Conquest], Honor
-        614,615,        -- Raid Rewards
-        3148,           -- Elemental Rune Dungeon
-        416,            -- Daily Quest
-        361,402,        -- Jewelcraft, Cooking
-        391,            -- Tol Barad
-        515,            -- Darkmoon
+        -- 396,395,        -- [Valor], Justice
+        -- 390,1901,       -- [Conquest], Honor
+        -- 614,615,        -- Raid Rewards
+        -- 3148,           -- Elemental Rune Dungeon
+        -- 416,            -- Daily Quest
+        -- 361,402,        -- Jewelcraft, Cooking
+        -- 391,            -- Tol Barad
+        -- 515,            -- Darkmoon
     }
 }
 setmetatable(SavedClassic.currencies, { __index = 
