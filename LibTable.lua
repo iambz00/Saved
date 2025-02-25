@@ -12,7 +12,10 @@
     tbl:Resize(size)
     tbl:SetOption(options)
     tbl:SetCallback(callbacks)
+    * Each function returns the table itself, so we can chain-call like
+    tbl:Resize(size):SetOption(options):SetCallback(callbacks)
 
+    * Arguments haveto be...
     size = {
         rows: num of rows,
         cols: num of columns,
@@ -54,7 +57,7 @@
     if rows = true, range become whole row
     if cols = true, range become whole column
     options and callbacks are like above
-    But a cell is "FontSring", so options differ from above
+    But a cell is "FontString", so options differ from above
 
 3. Access certain cell by row and col
     tbl.tr[row].td[col] == _G[tbl:GetName().."Row"..row.."Col"..col]
@@ -64,7 +67,7 @@ local library = "LibTable"
 assert(LibStub, format("%s requires LibStub", library))
 
 ---@class LibTable
-local lib, oldminor = LibStub:NewLibrary(library, 1)
+local lib, oldminor = LibStub:NewLibrary(library, 2)
 if not lib then return end
 oldminor = oldminor or 0
 
@@ -77,9 +80,10 @@ local DEFAULT_SIZE = {
     heights = DEFAULT_HEIGHTS,
 }
 
+lib.serial = lib.serial or 0
 lib.tables = lib.tables or { }
 
-function LibTable_SetOption(tbl, options)
+local function LibTable_SetOption(tbl, options)
     tbl.ESCClosable = tbl.ESCClosable or function()
         table.insert(UISpecialFrames, tbl:GetName())
     end
@@ -103,7 +107,7 @@ function LibTable_SetOption(tbl, options)
     return tbl
 end
 
-function LibTable_Resize(tbl, size)
+local function LibTable_Resize(tbl, size)
     size = size or tbl.size
     tbl.size = size
     size.widths = size.widths or DEFAULT_WIDTH
@@ -149,7 +153,7 @@ function LibTable_Resize(tbl, size)
     return tbl
 end
 
-function LibTable_SetCallback(tbl, callbacks)
+local function LibTable_SetCallback(tbl, callbacks)
     tbl.callbacks = callbacks
     for event, script in pairs(callbacks) do
         tbl:SetScript(event, script)
@@ -157,7 +161,7 @@ function LibTable_SetCallback(tbl, callbacks)
     return tbl
 end
 
-function LibTable_SetTable(tbl, mode, vtbl)
+local function LibTable_SetTable(tbl, mode, vtbl)
     -- Data exceed range are clipped
     for row = 1, #tbl.tr do
         for col = 1, #tbl.tr[row].td do
@@ -172,9 +176,30 @@ function LibTable_SetTable(tbl, mode, vtbl)
             end
         end
     end
+    return tbl
 end
 
-function LibTable_SetRange(tbl, mode, rows, cols, value)
+local function LibTable_Cell_Justify(tbl, row, col, method)
+    local cell = tbl.tr[row].td[col]
+    local xoffset = 0
+    for c = 1, col-1 do
+        xoffset = xoffset + tbl.size.widths[c]
+    end
+    if method == "left" then
+        cell:SetPoint("LEFT", xoffset, 0)
+        cell:SetJustifyH("LEFT")
+    elseif method == "center" then
+        xoffset = xoffset + math.floor(tbl.size.widths[col] / 2)
+        cell:SetSize(tbl.size.widths[col], tbl.size.heights[row])
+        cell:SetPoint("CENTER", xoffset, 0)
+    elseif method == "right" then
+        xoffset = xoffset + tbl.size.widths[col]
+        cell:SetPoint("RIGHT", xoffset - 1, 0)
+        cell:SetJustifyH("RIGHT")
+    end
+end
+
+local function LibTable_SetRange(tbl, mode, rows, cols, value)
     if type(rows) == "number" then rows = { rows } end
     if type(cols) == "number" then cols = { cols } end
     if type(rows) == "boolean" and rows then
@@ -219,24 +244,10 @@ function LibTable_SetRange(tbl, mode, rows, cols, value)
     return tbl
 end
 
-function LibTable_Cell_Justify(tbl, row, col, method)
-    local cell = tbl.tr[row].td[col]
-    local xoffset = 0
-    for c = 1, col-1 do
-        xoffset = xoffset + tbl.size.widths[c]
-    end
-    if method == "left" then
-        cell:SetPoint("LEFT", xoffset, 0)
-        cell:SetJustifyH("LEFT")
-    elseif method == "center" then
-        xoffset = xoffset + math.floor(tbl.size.widths[col] / 2)
-        cell:SetSize(tbl.size.widths[col], tbl.size.heights[row])
-        cell:SetPoint("CENTER", xoffset, 0)
-    elseif method == "right" then
-        xoffset = xoffset + tbl.size.widths[col]
-        cell:SetPoint("RIGHT", xoffset - 1, 0)
-        cell:SetJustifyH("RIGHT")
-    end
+local function LibTable_Destroy(tbl)
+    tbl:Hide()
+    lib.tables[tbl] = nil
+    _G[tbl:GetName()] = nil
 end
 
 ---Create Table Instance
@@ -248,7 +259,8 @@ end
 ---@param callbacks table<string, any>?
 ---@return table
 function lib:CreateTable(name, parent, size, options, callbacks)
-    name = name or (library.."CustomTable"..(#lib.tables + 1))
+    lib.serial = lib.serial + 1
+    name = name or (library.."_CustomTable_"..(lib.serial))
     parent = parent or UIParent
     size = size or DEFAULT_SIZE
     options = options or {}
@@ -262,27 +274,29 @@ function lib:CreateTable(name, parent, size, options, callbacks)
     tbl.SetTableData =  function(stbl, dtbl) return LibTable_SetTable(stbl, "data", dtbl) end
     tbl.SetRange     =  function(stbl, rows, cols, text) return LibTable_SetRange(stbl, "text", rows, cols, text) end
     tbl.SetRangeData =  function(stbl, rows, cols, data) return LibTable_SetRange(stbl, "data", rows, cols, data) end
-    tbl.SetRangeJustify = function(stbl, rows, cols, method) return LibTable_SetRange(stbl, "justify", rows, cols, method) end
-    tbl.SetRangeOption = function(stbl, rows, cols, optiontbl) return LibTable_SetRange(stbl, "options", rows, cols, optiontbl) end
+    tbl.SetRangeJustify  = function(stbl, rows, cols, method) return LibTable_SetRange(stbl, "justify", rows, cols, method) end
+    tbl.SetRangeOption   = function(stbl, rows, cols, optiontbl) return LibTable_SetRange(stbl, "options", rows, cols, optiontbl) end
     tbl.SetRangeCallback = function(stbl, rows, cols, callbacktbl) return LibTable_SetRange(stbl, "callbacks", rows, cols, callbacktbl) end
-    tbl.RangeFunction = function(stbl, rows, cols, func) return LibTable_SetRange(stbl, "functions", rows, cols, func) end
+    tbl.RangeFunction    = function(stbl, rows, cols, func) return LibTable_SetRange(stbl, "functions", rows, cols, func) end
+    tbl.Destroy      = function(stbl) return LibTable_Destroy(stbl) end
 
     tbl:Resize(size):SetOption(options):SetCallback(callbacks)
 
-    table.insert(lib.tables, tbl)
+    lib.tables[tbl] = true
     return tbl
 end
 
 function lib:Test()
-    local test = self:CreateTable(library.."TestTable", UIParent, { rows = 5, cols = 5, widths = {24,64,32}, heights = 18 },
-        { SetPoint = "CENTER", SetMovable = true, })
+    local test = self:CreateTable(library.."TestTable", UIParent, { rows = 5, cols = 5, widths = {32,64,32}, heights = 18 },
+        { SetPoint = "CENTER", SetMovable = true, }, { OnHide = function(stbl) stbl:Destroy() end })
     test:SetTable({
         {"*",library,"Test","Table",""},
         {"a","|cffff3333b|r","c","d","e"},
         {1,2,3,4,5},
         {"가","나","다","라","마"},
-        {"Long-value","Long",nil, "OK"},
+        {"Not-A-Long-Text","Long",nil, "OK"},
     })
     test:Show()
+
     return test
 end
