@@ -82,24 +82,7 @@ L["time"      ] = "리셋시간"
 L["gold"    ] = "골드"
 L["silver"  ] = "실버"
 L["copper"  ] = "코퍼"
-L["g"       ] = "골"
-L["s"       ] = "실"
-L["c"       ] = "코"
 L["honor"   ] = "명예"
-L["arena"   ] = "투기장"
-L["conquest"] = "정복"
-L["jewel"   ] = "보세"
-L["cook"    ] = "요리"
-L["JP"      ] = "정점"
-L["VP"      ] = "용점"
-L["TBC"     ] = "톨바"
-L["MOW"     ] = "징표"
-L["CAM"     ] = true
-L["CRB"     ] = true
-L["DPT"     ] = "다크문"
-L["MOD"     ] = "티끌"
-L["EOC"     ] = "정수"
-L["FS"      ] = "균열석"
 -- Usage
 L["Usage_Character"] = {
     { "|cff00ff00■|r |cffccaa00캐릭터별 정보 키워드|r" },
@@ -114,8 +97,6 @@ L["Usage_Character"] = {
                         , "색지정 시작(RGB)"    , "[색]"            , "색지정 끝"   },
     { " |cffff0000!|r 모든 키워드 끝에 /###### 를 붙여 색 지정 가능",   },
     { "[화폐:이름]"     , "[화폐:ID]"           , "아이콘과 수량"   ,   },
-    { " |cffff0000!|r 용점/정복 표기 방식" ,  "", "[화폐:용맹-3]"   , "|T463447:14:14|t960(4460/9600)"   },
-    { "[화폐:용맹-2]"   , "|T463447:14:14|t960(|cFFFF75755140|r)", "[화폐:용맹-1]"   , "|T463447:14:14|t960(-5140)"   },
 }
 L["Usage_Instance"] = {
     { "|cff00ff00■|r |cffccaa00인스턴스 정보 키워드|r", },
@@ -123,64 +104,6 @@ L["Usage_Instance"] = {
     { "[진행도]"        , "진행 상황(킬 수)"    , "[전체보스]"      , "전체 보스 수"    },
     { "[리셋시간]"      , "리셋까지 남은 시간"  , "[인스턴스ID]"    , "인스턴스 ID"     },
 }
--- Heroic abbr. Cataclysm
-L["H4_Blackrock Caverns"] = "검바"
-L["H4_Throne of the Tides"] = "파도"
-L["H4_Vortex Pinnacle"] = "누각"
-L["H4_The Stonecore"] = "바심"
-L["H4_Lost City of the Tol'vir"] = "톨비르"
-L["H4_Halls of Origination"] = "시초"
-L["H4_Grim Batol"] = "그림"
-L["H4_End Time"] = "시끝"
-L["H4_Well of Eternity"] = "영샘"
-L["H4_Hour of Twilight"] = "황시"
-L["H4_Deadmines"] = "폐광"
-L["H4_Shadowfang Keep"] = "그송"
-L["H4_Zul'Gurub"] = "줄구룹"
-L["H4_Zul'Aman"] = "줄아만"
--- Raid abbr. Cataclysm
-L["R4_Blackwing Descent"] = "검날"
-L["R4_Bastion of Twilight"] = "황요"
-L["R4_Throne of the Four Winds"] = "네바람"
-L["R4_Firelands"] = "불땅"
-L["R4_Dragon Soul"] = "용영"
-L["R4_Baradin Hold"] = "바라딘"
--- Heroic abbr. WotLK
-L["H3_Ahn'kahet: The Old Kingdom"] = "안카"
-L["H3_Azjol-Nerub"] = "아졸"
-L["H3_Drak'Tharon Keep"] = "드락"
-L["H3_Gundrak"] = "군드"
-L["H3_Halls of Lightning"] = "번전"
-L["H3_Halls of Stone"] = "돌전"
-L["H3_Culling of Stratholme"] = "솔름"
-L["H3_The Nexus"] = "마탑"
-L["H3_The Oculus"] = "마눈"
-L["H3_Violet Hold"] = "보요"
-L["H3_Utgarde Keep"] = "성채"
-L["H3_Utgarde Pinnacle"] = "첨탑"
-L["H3_Trial of the Champion"] = "용사"
-L["H3_Halls of Reflection"] = "투영"
-L["H3_Pit of Saron"] = "사론"
-L["H3_Forge of Souls"] = "제련"
--- Raid abbr. WotLK
-L["R3_Naxxramas"] = "낙스"
-L["R3_Obsidian Sanctum"] = "흑요"
-L["R3_Eye of Eternity"] = "영눈"
-L["R3_Ulduar"] = "울두"
-L["R3_Onyxia's Lair"] = "오닉"
-L["R3_Trial of the Crusader"] = "십자군"
-L["R3_Icecrown Citadel"] = "얼왕"
-L["R3_Ruby Sanctum"] = "루비"
-L["R3_Vault of Archavon"] = "아카본"
--- Raid abbr. TBC
-L["R2_Sunwell Plateau"] = "태양샘"
-L["R2_Black Temple"] = "검사"
-L["R2_Battle for Mount Hyjal"] = "하이잘"
-L["R2_Serpentshrine CavernC"] = "불뱀"
-L["R2_The Eye"] = "폭요"
-L["R2_Karazhan"] = "카라잔"
-L["R2_Gruul's Lair"] = "그룰"
-L["R2_Magtheridon's Lair"] = "마그"
 -- Raid abbr. Vanilla
 L["R1_Naxxramas"] = "낙스"
 L["R1_Onyxia's Lair"]  = "오닉"

@@ -58,34 +58,34 @@ local function ResolveCurrency(db, option)
 end
 
 local _Migration = {
-	["%n"] = "["..L["name"      ].."]",
+    ["%n"] = "["..L["name"      ].."]",
     ["%N"] = "["..L["name2"     ].."]",
-	["%Z"] = "["..L["zone"      ].."]",
+    ["%Z"] = "["..L["zone"      ].."]",
     ["%z"] = "["..L["subzone"   ].."]",
-	["%g"] = "["..L["gold"      ].."]",
-	["%s"] = "["..L["silver"    ].."]",
-	["%c"] = "["..L["copper"    ].."]",
-	["%G"] = "",    ["%S"] = "",    ["%C"] = "",
-	["%B"] = "["..L["worldbuff" ].."]",
+    ["%g"] = "["..L["gold"      ].."]",
+    ["%s"] = "["..L["silver"    ].."]",
+    ["%c"] = "["..L["copper"    ].."]",
+    ["%G"] = "",    ["%S"] = "",    ["%C"] = "",
+    ["%B"] = "["..L["worldbuff" ].."]",
     ["%T"] = "["..L["cooldown"  ].."]",
-	["%L"] = "["..L["elapsed"   ].."]",
-	["%l"] = "["..L["level"     ].."]",
-	["%e"] = "["..L["expCur"    ].."]",
+    ["%L"] = "["..L["elapsed"   ].."]",
+    ["%l"] = "["..L["level"     ].."]",
+    ["%e"] = "["..L["expCur"    ].."]",
     ["%E"] = "["..L["expMax"    ].."]",
     ["%p"] = "["..L["exp%"      ].."]",
-	["%R"] = "["..L["expRest"   ].."]",
+    ["%R"] = "["..L["expRest"   ].."]",
     ["%P"] = "["..L["expRest%"  ].."]",
-	-- ["%F"], ["%I"]
+    -- ["%F"], ["%I"]
     ["%f"] = "["..L["color"     ].."]",
     ["%r"] = "|n",
-	["%%"] = "%" ,
-	["!n"] = "["..L["instName"  ].."]",
+    ["%%"] = "%" ,
+    ["!n"] = "["..L["instName"  ].."]",
     ["!d"] = "["..L["difficulty"].."]",
-	["!i"] = "["..L["instID"    ].."]",
+    ["!i"] = "["..L["instID"    ].."]",
     ["!p"] = "["..L["progress"  ].."]",
     ["!P"] = "["..L["bosses"    ].."]",
-	["!t"] = "["..L["time"      ].."]",
-	["!!"] = "!" ,
+    ["!t"] = "["..L["time"      ].."]",
+    ["!!"] = "!" ,
 }
 
 local _TranslationTable = {
@@ -105,9 +105,6 @@ local _TranslationTable = {
     ["gold"     ] = function(db) return ResolveCurrency(db, L["gold"    ]) end,
     ["silver"   ] = function(db) return ResolveCurrency(db, L["silver"  ]) end,
     ["copper"   ] = function(db) return ResolveCurrency(db, L["copper"  ]) end,
-    ["g"        ] = function(db) return ResolveCurrency(db, L["gold"    ]) end,
-    ["s"        ] = function(db) return ResolveCurrency(db, L["silver"  ]) end,
-    ["c"        ] = function(db) return ResolveCurrency(db, L["copper"  ]) end,
     ["name"     ] = "coloredName",
     ["name2"    ] = "name",
     ["zone"     ] = "zone",
@@ -140,9 +137,6 @@ local _TranslationTable = {
         [L["gold"      ] ] = "gold",
         [L["silver"    ] ] = "silver",
         [L["copper"    ] ] = "copper",
-        [L["g"         ] ] = "g",
-        [L["s"         ] ] = "s",
-        [L["c"         ] ] = "c",
         [L["name"      ] ] = "name",
         [L["name2"     ] ] = "name2",
         [L["zone"      ] ] = "zone",
@@ -212,10 +206,8 @@ function SavedClassic:OnInitialize()
     if not self.db.global.version then
         self:ResetWholeDB()
     else
-        if self.db.global.version:match("1.4.") then
+        if not self.db.global.version:match("1.15.6.") then
             self:Migrate()
-            -- p(L["Reset due to update"](self.db.global.version, self.version))
-            -- self:ResetWholeDB()
         end
     end
 
@@ -330,20 +322,20 @@ function SavedClassic:InitPlayerDB()
     playerdb.info1_2 = format("\n[%s:%s/ffee99]", L["currency"], L["gold"])
     playerdb.info2 = true
     playerdb.info2_1 = ""
+    playerdb.info2_2 = ""
 
     if UnitLevel("player") < GetMaxPlayerLevel() then
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s/ffffff]:[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                 L["color"], L["color"], L["level"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
         playerdb.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
                                 L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
-        playerdb.info2_2 = format("[%s/ffffff][%s:%s][%s]",
-                                L["color"], L["currency"], L["JP"], L["color"] )
     else
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                 L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
-        playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
-                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["FS"], L["color"])
-        playerdb.info2_2 = format("[%s/ffffff][%s]/[%s][%s]", L["color"], L["dqCom"], L["dqMax"], L["color"])
+        playerdb.info2_1 = format("   [%s/ffffff][%s][%s]", L["color"], L["worldbuff"], L["color"])
+    end
+    if class == "WARLOCK" then
+        playerdb.info2_2 = format("[%s:%s/cc66cc]", L["item"], "6265")
     end
 
     playerdb.info3 = true
@@ -476,22 +468,22 @@ function SavedClassic:PLAYER_XP_UPDATE()
 end
 
 function SavedClassic:PLAYER_UPDATE_RESTING(...)
-	if IsResting() then
-		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	else
-		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	end
+    if IsResting() then
+        self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    else
+        self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    end
 end
 
 function SavedClassic:COMBAT_LOG_EVENT_UNFILTERED(...)
-	local playerGUID = UnitGUID("player")
-	local _, combatEvent, _, _, _, _, _, destGUID, _, _, _, 
-		spellId = CombatLogGetCurrentEventInfo()
-	if combatEvent == "SPELL_AURA_APPLIED" and destGUID == playerGUID then
-		if self.wb[spellId] then
-			self:SaveWorldBuff()
-		end
-	end
+    local playerGUID = UnitGUID("player")
+    local _, combatEvent, _, _, _, _, _, destGUID, _, _, _, 
+        spellId = CombatLogGetCurrentEventInfo()
+    if combatEvent == "SPELL_AURA_APPLIED" and destGUID == playerGUID then
+        if self.wb[spellId] then
+            self:SaveWorldBuff()
+        end
+    end
 end
 
 function SavedClassic:PLAYER_EQUIPMENT_CHANGED()
@@ -502,28 +494,28 @@ function SavedClassic:PLAYER_EQUIPMENT_CHANGED()
 end
 
 function SavedClassic:SaveWorldBuffs()
-	local db = self.db.realm[player]
-	db.worldBuffs = {}
-	db.chrono = {}
-	for i=1,64 do
-		local _, _, _, _, _, expire, _, _, _, id = UnitBuff("player", i)
-		if id and self.wb[id] then
-			table.insert(db.worldBuffs, { id = id, remain = floor((expire-GetTime())/60) })
-		end
-		if id == 349981 then
-			self:SaveChronoBuff(i)
-		end
-	end
-	table.sort(db.worldBuffs, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
+    local db = self.db.realm[player]
+    db.worldBuffs = {}
+    db.chrono = {}
+    for i=1,64 do
+        local _, _, _, _, _, expire, _, _, _, id = UnitBuff("player", i)
+        if id and self.wb[id] then
+            table.insert(db.worldBuffs, { id = id, remain = floor((expire-GetTime())/60) })
+        end
+        if id == 349981 then
+            self:SaveChronoBuff(i)
+        end
+    end
+    table.sort(db.worldBuffs, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
 end
 
 function SavedClassic:SaveChronoBuff(numBuff)
-	local db = self.db.realm[player]
-	local displacer = { UnitBuff("player", numBuff) }
-	for i=1,#self.cd do
-		table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[16 + i]/60) })
-	end
-	table.sort(db.chrono, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
+    local db = self.db.realm[player]
+    local displacer = { UnitBuff("player", numBuff) }
+    for i=1,#self.cd do
+        table.insert(db.chrono, {id = self.cd[i], remain = floor(displacer[16 + i]/60) })
+    end
+    table.sort(db.chrono, function(a,b) return (a.remain or 0) > (b.remain or 0) end)
 end
 
 function SavedClassic:SaveZone()
@@ -593,21 +585,6 @@ function SavedClassic:PLAYER_MONEY()
 end
 
 function SavedClassic:CurrencyUpdate()
-    -- local db = self.db.realm[player]
-    -- for _, currencyID in pairs(self.currencies.order) do
-    --     local info = SavedClassic_GetCurrencyInfo(currencyID)
-    --     if info then
-    --         db.currencyCount[currencyID] = { quantity = tonumber(info.quantity) }
-    --         if info.useTotalEarnedForMaxQty then
-    --             db.currencyCount[currencyID]["totalEarned"] = info.totalEarned or 0
-    --             --db.currencyCount[currencyID]["maxQuantity"] = info.maxQuantity
-    --             if info.maxQuantity and info.maxQuantity > 0 then
-    --                 self.db.global.maxQty = self.db.global.maxQty or {}
-    --                 self.db.global.maxQty[currencyID] = info.maxQuantity
-    --             end
-    --         end
-    --     end
-    -- end
     self:PLAYER_MONEY()
 end
 
@@ -651,36 +628,35 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     local currentTime = time()
 
     local wbstr = ""
-	if db.worldBuffs then
-		for _,b in ipairs(db.worldBuffs) do
-			if b.id and b.remain then
-				local icon = GetSpellTexture(b.id) or ""
-				wbstr = wbstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
-			end
-		end
-	end
-	wbstr = wbstr.."|T133881:14:14|t"..(db.itemCount[184937] or 0)
-	if db.chrono then
-		local cdstr = ""
-		for i,b in ipairs(db.chrono) do
-			if b.id and b.remain and b.remain > 0 then
-				local icon = GetSpellTexture(b.id) or ""
-				cdstr = cdstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
-			end
-		end
-		if cdstr ~= "" then
-			cdstr = string.sub(cdstr,1,-2)	-- trim trailing space
-			wbstr = wbstr.."("..cdstr..")"
-		end
-	end
+    if db.worldBuffs then
+        for _,b in ipairs(db.worldBuffs) do
+            if b.id and b.remain then
+                local icon = GetSpellTexture(b.id) or ""
+                wbstr = wbstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
+            end
+        end
+    end
+    wbstr = wbstr.."|T133881:14:14|t"..(db.itemCount[184937] or 0)
+    if db.chrono then
+        local cdstr = ""
+        for i,b in ipairs(db.chrono) do
+            if b.id and b.remain and b.remain > 0 then
+                local icon = GetSpellTexture(b.id) or ""
+                cdstr = cdstr .. "|T".. icon ..":14:14|t".. b.remain ..L["minites"].." "
+            end
+        end
+        if cdstr ~= "" then
+            cdstr = string.sub(cdstr,1,-2)    -- trim trailing space
+            wbstr = wbstr.."("..cdstr..")"
+        end
+    end
+    db.wbstr = wbstr
 
     local tsstr = ""
-    local ts_icon, ts_cooldown = "", "" -- for Tailoring cooldowns integration
     if db.tradeSkills then
         for id, cooldown in pairs(db.tradeSkills) do
             local ts = self.ts[id]
             if ts and cooldown and cooldown.ends then
-                --if ts.share then ts = self.ts[ts.share] end
                 local remain = cooldown.ends - currentTime
                 if remain > 0 then
                     local hh, mm = floor(remain / 3600), floor(remain % 3600 / 60)
@@ -690,12 +666,6 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                     else
                         cooldown_str = format("%02d:%02d", hh, mm)
                     end
-                    if ts.tailoring then
-                        ts_icon = ts_icon..(ts.icon or ts.altName or "")
-                        ts_cooldown = cooldown_str
-                    else
-                        tsstr = tsstr..(ts.icon or ts.altName or "")..cooldown_str
-                    end
                 else
                     db.tradeSkills[id] = nil
                 end
@@ -704,7 +674,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             end
         end
     end
-    db.tsstr = tsstr..ts_icon..ts_cooldown
+    db.tsstr = tsstr
 
     if db.dqResetReal and currentTime > db.dqResetReal then
         db.dqComplete = 0
@@ -767,35 +737,6 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             end
         end
     end
---[[
-    db.heroics = db.heroics or {}
-    if db.info4 then
-        if db.info4oneline then
-            local oneline = ""
-            for i = 1, #db.heroics do
-                local instance = db.heroics[i]
-                local remain = SecondsToTime(instance.reset - time())
-                if remain and ( remain ~= "" ) then
-                    oneline = oneline.." "..(self.abbr.heroic[instance.name] or instance.name)
-                end
-            end
-            if oneline ~= "" then
-                oneline = oneline:gsub("^ ","") -- trim leading space
-                tooltip:AddLine("|cffffff99   "..oneline.."|r")
-            end
-        else
-            for i = 1, #db.heroics do
-                local instance = db.heroics[i]
-                local remain = SecondsToTime(instance.reset - time())
-                if remain and ( remain ~= "" ) then
-                    local line4_1 = self:TranslateInstance(db.info4_1, instance)
-                    local line4_2 = self:TranslateInstance(db.info4_2, instance)
-                    tooltip:AddDoubleLine(line4_1, line4_2)
-                end
-            end
-        end
-    end
-    --]]
 end
 
 function SavedClassic:TranslateCharacter(line, db)
@@ -1427,9 +1368,6 @@ function SavedClassic:BuildOptions()
                     tdb.info3 = rdb[ch].info3
                     tdb.info3_1 = rdb[ch].info3_1
                     tdb.info3_2 = rdb[ch].info3_2
-                    tdb.info4 = rdb[ch].info4
-                    tdb.info4_1 = rdb[ch].info4_1
-                    tdb.info4_2 = rdb[ch].info4_2
                 end,
                 confirm = function() return L["Confirm copy"] end,
                 order = 92

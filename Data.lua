@@ -3,36 +3,36 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "1.15.6.1"
+SavedClassic.version = "1.15.6.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-SavedClassic.wb = {	-- World buffs and Flasks
-	[23768] = { },	-- DF damage 세이지 공격력
-	[23766] = { },	-- DF int 세이지 지능
-	[22817] = { },	-- DM1 펜구스의 흉포
-	[22818] = { },	-- DM2 몰다르의 투지
-	[22820] = { },	-- DM3 슬립킥의 손재주
-	[15366] = { },	-- SF 노래꽃의 세레나데
-	[22888] = { }, [355363] = { },	-- Ony, Nef 용사냥꾼 재집결의 외침
-	[24425] = { }, [355365] = { },	-- Zul'gurub 잔달라의 기백
-	[16609] = { }, [355366] = { },	-- BoW 대족장의 축복
-	[24382] = { }, 	-- Zanza 잔자의 기백
-	[17626] = { },	-- Titan 티탄
-	[17627] = { },	-- Distilled Wisdom 순지
-	[17628] = { },	-- Supreme Power 강마
+SavedClassic.wb = { -- World buffs and Flasks
+    [23768] = { },  -- DF damage 세이지 공격력
+    [23766] = { },  -- DF int 세이지 지능
+    [22817] = { },  -- DM1 펜구스의 흉포
+    [22818] = { },  -- DM2 몰다르의 투지
+    [22820] = { },  -- DM3 슬립킥의 손재주
+    [15366] = { },  -- SF 노래꽃의 세레나데
+    [22888] = { }, [355363] = { },  -- Ony, Nef 용사냥꾼 재집결의 외침
+    [24425] = { }, [355365] = { },  -- Zul'gurub 잔달라의 기백
+    [16609] = { }, [355366] = { },  -- BoW 대족장의 축복
+    [24382] = { },  -- Zanza 잔자의 기백
+    [17626] = { },  -- Titan 티탄
+    [17627] = { },  -- Distilled Wisdom 순지
+    [17628] = { },  -- Supreme Power 강마
 }
-SavedClassic.cd = {	-- for Chronoboon Displacer
-	22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768, 23766
+SavedClassic.cd = { -- for Chronoboon Displacer
+    22817, 22818, 22820, 22888, 16609, 24425, 15366, 23768, 23766
 }
-SavedClassic.ts = {	-- Tradeskills of long cooldowns
-	[17187] = { icon = "|TInterface/Icons/INT_MISC_STONETABLET_05:14:14|t"  },  -- Transmute(Arcanite) - 24H
-	[18560] = { icon = "|TInterface/Icons/INV_FABRIC_MOONRAG:14:14|t"       },  -- Mooncloth - 96H
-	[19566] = { icon = "|TInterface/Icons/INV_EGG_05:14:14|t"               },  -- Salt Shaker - 72H
+SavedClassic.ts = { -- Tradeskills of long cooldowns
+    [17187] = { icon = "|TInterface/Icons/INT_MISC_STONETABLET_05:14:14|t"  },  -- Transmute(Arcanite) - 24H
+    [18560] = { icon = "|TInterface/Icons/INV_FABRIC_MOONRAG:14:14|t"       },  -- Mooncloth - 96H
+    [19566] = { icon = "|TInterface/Icons/INV_EGG_05:14:14|t"               },  -- Salt Shaker - 72H
 }
-SavedClassic.items = {	-- Items to count always
-	[6265] = { },	-- Soulshard
-	[184937] = { },	-- Chronoboon Displacer
+SavedClassic.items = {  -- Items to count always
+    [6265] = { },   -- Soulshard
+    [184937] = { }, -- Chronoboon Displacer
 }
 
 SavedClassic.currencies = {
