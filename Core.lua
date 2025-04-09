@@ -417,6 +417,8 @@ function SavedClassic:SaveInfo()
     self:CurrencyUpdate()
     self:SaveZone()
     self:SaveTSCooldowns()
+    self:QUEST_TURNED_IN()
+    self:BAG_UPDATE_DELAYED()
 end
 
 function SavedClassic:QUEST_TURNED_IN()
@@ -547,16 +549,13 @@ function SavedClassic:ShowInfoTooltip(tooltip)
         self.ui.noticed = true
     end
 
+    self:SaveInfo()
+
     local totalGold = ""
     if db.showTotalGold then
         totalGold = floor((self.totalMoney + db.currencyCount[0].quantity) / 10000).. self.currencies[1].icon
     end
     tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold)
-
-    self:SaveZone()
-    self:QUEST_TURNED_IN()
-    self:BAG_UPDATE_DELAYED()
-    self:CurrencyUpdate()
 
     if db.showInfoPer == "realm" then
         for _, v in ipairs(self.order) do
