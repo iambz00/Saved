@@ -120,3 +120,6 @@ SavedClassic.abbr.raid = {
     [C_Map.GetAreaInfo(2677)] = { order = -102, name = L["R1_Blackwing Lair"],          color = "FF795C34" },
     [C_Map.GetAreaInfo(2717)] = { order = -101, name = L["R1_Molten Core"],             color = "FF9A7B4F" },
 }
+
+setmetatable(SavedClassic.abbr.raid, { __index =
+        function(t, k) return { order = 0, name = k, color = "FFFFFF99" } end })
