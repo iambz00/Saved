@@ -124,6 +124,8 @@ local _TranslationTable = {
     ["ilvl_equip"] = "gearEquippedLevel",
     ["ilvl_avg" ] = "gearAvgLevel",
     ["ilvl"     ] = function(db) return db.gearEquippedLevel.."/"..db.gearAvgLevel end,
+    ["playedtotal"] = function(db) return SecondsToTime(db.played_total or 0) end,
+    ["playedlevel"] = function(db) return SecondsToTime(db.played_level or 0) end,
     ["instName" ] = "name",
     ["instID"   ] = "id",
     ["difficulty"]= "difficultyName",
@@ -156,6 +158,8 @@ local _TranslationTable = {
         [L["ilvl"      ] ] = "ilvl",
         [L["ilvl_equip"] ] = "ilvl_equip",
         [L["ilvl_avg"  ] ] = "ilvl_avg",
+        [L["playedtotal"] ]= "playedtotal",
+        [L["playedlevel"] ]= "playedlevel",
         [L["instName"  ] ] = "instName",
         [L["instID"    ] ] = "instID",
         [L["difficulty"] ] = "difficulty",
@@ -247,6 +251,14 @@ function SavedClassic:OnInitialize()
     self:RegisterEvent("QUEST_TURNED_IN")
 
     self:RegisterEvent("CHAT_MSG_COMBAT_HONOR_GAIN", "CurrencyUpdate")
+
+    self:RegisterEvent("TIME_PLAYED_MSG")
+    ChatFrame_DisplayTimePlayed_Original = ChatFrame_DisplayTimePlayed
+    ChatFrame_DisplayTimePlayed = function(...)
+        if not SavedClassic.requestTimePlayed then
+            ChatFrame_DisplayTimePlayed_Original(...)
+        end
+    end
 
     self.totalMoney = 0 -- Total money except current character
     for character, saved in pairs(self.db.realm) do
@@ -438,6 +450,7 @@ function SavedClassic:SaveInfo()
     self:SaveZone()
     self:SaveWorldBuffs()
     self:SaveTSCooldowns()
+    self:RequestTimePlayed()
 end
 
 function SavedClassic:QUEST_TURNED_IN()
@@ -452,6 +465,20 @@ function SavedClassic:QUEST_TURNED_IN()
     end
     db.dqMax = GetMaxDailyQuests() or 0
     db.dqResetReal = time() + (GetQuestResetTime() or 0)    -- resolve game time to real time
+end
+
+function SavedClassic:RequestTimePlayed()
+    self.requestTimePlayed = true
+    RequestTimePlayed()
+end
+
+function SavedClassic:TIME_PLAYED_MSG(_, played_total, played_level)
+    local db = self.db.realm[player]
+    db.played_total = played_total
+    db.played_level = played_level
+    C_Timer.After(1, function()
+        self.requestTimePlayed = false
+    end)
 end
 
 function SavedClassic:PLAYER_XP_UPDATE()

@@ -78,6 +78,8 @@ L["difficulty"] = true
 L["progress"  ] = true
 L["bosses"    ] = true
 L["time"      ] = true
+L["playedtotal"] = true
+L["playedlevel"] = true
 -- Localized Currency Name
 L["gold"    ] = true
 L["silver"  ] = true
@@ -91,8 +93,8 @@ L["Usage_Character"] = {
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "Прошедшее время после последнего обновления", "[cooldown]"     , "Перезарядка навыков профессии"    },
     { "[item:aимя]"     , "[item:name]"     , "значок и количество",            },
-    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       ,               },
-    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,               },
+    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       , "[playedtotal]"   },
+    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    , "[playedlevel]"   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "Цвет начала(RGB кодировка)", "[color]"         , "Цвет окончания"   },
     { " |cffff0000!|r Цвет, добавляя /###### в конец",             },

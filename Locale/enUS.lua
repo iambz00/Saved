@@ -78,6 +78,8 @@ L["difficulty"] = true
 L["progress"  ] = true
 L["bosses"    ] = true
 L["time"      ] = true
+L["playedtotal"] = true
+L["playedlevel"] = true
 -- Localized Currency Name
 L["gold"    ] = true
 L["silver"  ] = true
@@ -91,8 +93,8 @@ L["Usage_Character"] = {
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "After last update", "[cooldown]"     , "Tradeskill cooldowns"    },
     { "[item:name]"     , "[item:name]"     , "Item Icon and Count",            },
-    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       ,               },
-    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,               },
+    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       , "[playedtotal]"   },
+    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    , "[playedlevel]"   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "Color start(RGB)", "[color]"         , "Color end"   },
     { "! attach /###### to any keyword to apply color",             },
