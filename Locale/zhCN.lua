@@ -77,6 +77,8 @@ L["difficulty"] = true
 L["progress"  ] = true
 L["bosses"    ] = true
 L["time"      ] = true
+L["playedtotal"] = true
+L["playedlevel"] = true
 -- Localized Currency Name
 L["gold"    ] = true
 L["silver"  ] = true
@@ -105,8 +107,8 @@ L["Usage_Character"] = {
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "自上次更新经过的时间", "[cooldown]"     , "专业技能冷却时间"    },
     { "[item:name]"     , "[item:name]"     , "图标和价格",            },
-    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       ,               },
-    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,               },
+    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       , "[playedtotal]" },
+    { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    , "[playedlevel]" },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "颜色开始(RGB 代码)", "[color]"         , "颜色结束"   },
     { " |cffff0000!|r 通過在末尾添加 /###### 著色",             },
