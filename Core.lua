@@ -179,40 +179,12 @@ local function SavedClassic_GetCurrencyInfo(id)
     end
 end
 
-function SavedClassic:Migrate()
-    local function _Migrate(str)
-        return str:gsub("%%%w", _Migration):gsub("%%F(......)", "["..L["color"].."/%1]")
-                :gsub("%%I{([^}]+)}", "["..L["item"]..":%1]"):gsub("%%I%[([^]]+)%]", "["..L["item"]..":%1]")
-    end
-    for _, charDB in pairs(self.db.realm) do
-        charDB.currencyCount = {
-            [0] = { quantity = charDB.gold * 10000 + charDB.silver * 100 + charDB.copper },
-            [1] = { quantity = charDB.gold },
-            [2] = { quantity = charDB.silver },
-            [3] = { quantity = charDB.copper },
-        }
-        charDB.gold    = nil
-        charDB.silver  = nil
-        charDB.copper  = nil
-        charDB.info1_1 = _Migrate(charDB.info1_1)
-        charDB.info1_2 = _Migrate(charDB.info1_2)
-        charDB.info2_1 = _Migrate(charDB.info2_1)
-        charDB.info2_2 = _Migrate(charDB.info2_2)
-        charDB.info3_1 = _Migrate(charDB.info3_1)
-        charDB.info3_2 = _Migrate(charDB.info3_2)
-    end
-end
-
 function SavedClassic:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
 
     -- Reset old db
     if not self.db.global.version then
         self:ResetWholeDB()
-    else
-        if not self.db.global.version:match("1.15.6.") then
-            self:Migrate()
-        end
     end
 
     self.db.global.version = self.version
