@@ -1,13 +1,13 @@
-## Interface: 40402
+## Interface: 50500
 ## Title: Saved! Classic
-## Version: 4.4.2.3
+## Version: 5.5.0.1
 ## X-Curse-Project-ID: 357612
 
 ## Notes-koKR: 인스턴스 귀속 정보 및 골드, 경험치 한눈에 보기
 ## Notes: List instances, money, exps and customizable
 ## Notes-zhCN: 列出角色，副本，金币，经验和其他信息
 ## SavedVariables: SavedClassicDB
-## OptionalDeps: CallbackHandler-1.0, Ace3, LibGearScore
+## OptionalDeps: CallbackHandler-1.0, Ace3
 ## DefaultState: enabled
 
 Libs\LibStub\LibStub.lua
