@@ -498,10 +498,10 @@ function SavedClassic:SaveTSCooldowns()
     db.tradeSkills = db.tradeSkills or {}
 
     for id, ts in pairs(self.ts) do
-        local start, duration = GetSpellCooldown(id)
-        if duration > 0 then
-            local remain =  start + duration - GetTime()
-            if remain > 0 and remain < duration+100 then
+        local info = C_Spell.GetSpellCooldown(id)
+        if info.duration > 0 then
+            local remain =  info.startTime + info.duration - GetTime()
+            if remain > 0 and remain < info.duration + 100 then
                 local ends = currentTime + remain   -- Resolve game time to real time
                 id = ts.share or id
                 db.tradeSkills[id] = db.tradeSkills[id] or {}
@@ -602,7 +602,6 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     local currentTime = time()
 
     local tsstr = ""
-    local ts_icon, ts_cooldown = "", "" -- for Tailoring cooldowns integration
     if db.tradeSkills then
         for id, cooldown in pairs(db.tradeSkills) do
             local ts = self.ts[id]
@@ -617,12 +616,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                     else
                         cooldown_str = format("%02d:%02d", hh, mm)
                     end
-                    if ts.tailoring then
-                        ts_icon = ts_icon..(ts.icon or ts.altName or "")
-                        ts_cooldown = cooldown_str
-                    else
-                        tsstr = tsstr..(ts.icon or ts.altName or "")..cooldown_str
-                    end
+                    tsstr = tsstr..(ts.icon or ts.altName or "")..cooldown_str
                 else
                     db.tradeSkills[id] = nil
                 end
@@ -631,7 +625,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             end
         end
     end
-    db.tsstr = tsstr..ts_icon..ts_cooldown
+    db.tsstr = tsstr
 
     if db.dqResetReal and currentTime > db.dqResetReal then
         db.dqComplete = 0

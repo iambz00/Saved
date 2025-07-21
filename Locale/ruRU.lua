@@ -84,21 +84,19 @@ L["gold"    ] = true
 L["silver"  ] = true
 L["copper"  ] = true
 L["honor"   ] = true
-L["arena"   ] = true
 L["conquest"] = true
-L["jewel"   ] = true
-L["cook"    ] = true
 L["JP"      ] = true
 L["VP"      ] = true
-L["TBC"     ] = true
-L["MOW"     ] = true
-L["CAM"     ] = true
-L["CRB"     ] = true
-L["DPT"     ] = true
-L["MOD"     ] = true
-L["EOC"     ] = true
-L["FS"      ] = true
-L["OF"      ] = true
+L["Darkmoon"] = true
+-- MoP
+L["Elder"   ] = true
+L["Lesser"  ] = true
+L["Mogu"    ] = true
+L["Seal"    ] = true
+L["Timeless"] = true
+L["August"  ] = true
+L["Ironpaw" ] = true
+L["Bloody"  ] = true
 -- Usage
 L["Usage_Character"] = {
     { "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r" },
@@ -122,6 +120,22 @@ L["Usage_Instance"] = {
     { "[progress]"      , "Количество убитых боссов", "[bosses]"        , "Количество боссов"       },
     { "[time]"          , "Время сброса"   , "[instID]"        , "ID подземелья" },
 }
+-- Heroic abbr. MoP
+L["H5_Shado-pan Monastery"] = "SPM"
+L["H5_Temple of the Jade Serpent"] = "TJS"
+L["H5_Stormstout Brewery"] = "SSB"
+L["H5_Gate of the Setting Sun"] = "GSS"
+L["H5_Mogu'shan Palace"] = "MsP"
+L["H5_Scarlet Halls"] = "ScH"
+L["H5_Scarlet Monastery"] = "ScM"
+L["H5_Scholomance"] = "Sch"
+L["H5_Siege of Niuzao Temple"] = "SNT"
+-- Raid abbr. MoP
+L["R5_Mogu'shan Vaults"] = "MsV"
+L["R5_Heart of Fear"] = "HoF"
+L["R5_Terrace of Endless Spring"] = "TES"
+L["R5_Throne of Thunder"] = "ToT"
+L["R5_Siege of Orgrimmar"] = "SoO"
 -- Heroic abbr. Cataclysm
 L["H4_Blackrock Caverns"] = "BRC"
 L["H4_Throne of the Tides"] = "ToT"

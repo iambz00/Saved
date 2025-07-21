@@ -84,21 +84,19 @@ L["gold"    ] = "골드"
 L["silver"  ] = "실버"
 L["copper"  ] = "코퍼"
 L["honor"   ] = "명예"
-L["arena"   ] = "투기장"
 L["conquest"] = "정복"
-L["jewel"   ] = "보세"
-L["cook"    ] = "요리"
 L["JP"      ] = "정점"
 L["VP"      ] = "용점"
-L["TBC"     ] = "톨바"
-L["MOW"     ] = "징표"
-L["CAM"     ] = true
-L["CRB"     ] = true
-L["DPT"     ] = "다크문"
-L["MOD"     ] = "티끌"
-L["EOC"     ] = "정수"
-L["FS"      ] = "균열석"
-L["OF"      ] = "흑요석"
+L["Darkmoon"] = "다크문"
+-- MoP
+L["Elder"   ] = "장로부적"
+L["Lesser"  ] = "하급부적"
+L["Mogu"    ] = "모구룬"
+L["Seal"    ] = "전벼"
+L["Timeless"] = "영원"
+L["August"  ] = "천신"
+L["Ironpaw" ] = "아이언"
+L["Bloody"  ] = "피투성이"
 -- Usage
 L["Usage_Character"] = {
     { "|cff00ff00■|r |cffccaa00캐릭터별 정보 키워드|r" },
@@ -122,6 +120,22 @@ L["Usage_Instance"] = {
     { "[진행도]"        , "진행 상황(킬 수)"    , "[전체보스]"      , "전체 보스 수"    },
     { "[리셋시간]"      , "리셋까지 남은 시간"  , "[인스턴스ID]"    , "인스턴스 ID"     },
 }
+-- Heroic abbr. MoP
+L["H5_Shado-pan Monastery"] = "음영파"
+L["H5_Temple of the Jade Serpent"] = "옥룡사"
+L["H5_Stormstout Brewery"] = "양조장"
+L["H5_Gate of the Setting Sun"] = "석양문"
+L["H5_Mogu'shan Palace"] = "궁전"
+L["H5_Scarlet Halls"] = "전당"
+L["H5_Scarlet Monastery"] = "수도원"
+L["H5_Scholomance"] = "스칼"
+L["H5_Siege of Niuzao Temple"] = "니우"
+-- Raid abbr. MoP
+L["R5_Mogu'shan Vaults"] = "금고"
+L["R5_Heart of Fear"] = "공심"
+L["R5_Terrace of Endless Spring"] = "영봄"
+L["R5_Throne of Thunder"] = "천둥"
+L["R5_Siege of Orgrimmar"] = "오공"
 -- Heroic abbr. Cataclysm
 L["H4_Blackrock Caverns"] = "검바"
 L["H4_Throne of the Tides"] = "파도"

@@ -3,57 +3,61 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "5.5.0.1"
+SavedClassic.version = "5.5.1.1"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
-SavedClassic.ts = { -- Tradeskills of long cooldowns
-    [80243] = { icon = "|T466847:14:14|t" }, -- (Alchemy) Transmute: Truegold
-    [73478] = { icon = "|T134128:14:14|t" }, -- (Jewelcraft) Fire Prism
-    [86654] = { icon = "|T237446:14:14|t" }, -- (Inscription) Forged documents(Horde)
-    [89244] = { icon = "|T237446:14:14|t" }, -- (Inscription) Forged documents(Alliance)
-    -- Tailoring Recipes have same cooldowns
-    [75141] = { icon = "|T463565:14:14|t", tailoring = true }, -- (Tailoring) Dream of Skywall (Air)
-    [75142] = { icon = "|T463566:14:14|t", tailoring = true }, -- (Tailoring) Dream of Deepholm (Earth)
-    [75144] = { icon = "|T468265:14:14|t", tailoring = true }, -- (Tailoring) Dream of Hyjal (Life)
-    [75145] = { icon = "|T463567:14:14|t", tailoring = true }, -- (Tailoring) Dream of Ragnaros (Fire)
-    [75146] = { icon = "|T463570:14:14|t", tailoring = true }, -- (Tailoring) Dream of Azshara (Water)
+SavedClassic.ts = {
+    [114780] = { icon = "|T612100:14:14|t" }, -- (Alchemy) Transmute: Living Steel
+    [131686] = { icon = "|T629526:14:14|t" }, -- (Jewelcrafting) Red
+    [131691] = { icon = "|T629525:14:14|t" }, --    Purple
+    [131593] = { icon = "|T629522:14:14|t" }, --    Blue
+    [131695] = { icon = "|T629527:14:14|t" }, --    Yellow
+    [131688] = { icon = "|T629523:14:14|t" }, --    Green
+    [131690] = { icon = "|T629524:14:14|t" }, --    Orange
+    [116499] = { icon = "|T463518:14:14|t" }, -- (Enchanting) Sha Crystal
+    [112996] = { icon = "|T632822:14:14|t" }, -- (Inscription) Scroll of Wisdom
+    [138646] = { icon = "|T576649:14:14|t" }, -- (Blacksmithing) Lightning Steel Ingot
+    [140040] = { icon = "|T642725:14:14|t" }, -- (Leatherworking) Magnificence of Leather -- inv_misc_pelt_08
+    [140041] = { icon = "|T642723:14:14|t" }, --    Magnificence of Scales
+    [142976] = { icon = "|T878263:14:14|t" }, --    Hardened Magnificent Hide
+    [125557] = { icon = "|T629936:14:14|t" }, -- (Tailoring) Imperial Silk
 }
 
 SavedClassic.items = {  -- Items to count always
 }
 SavedClassic.currencies = {
-    [1]   = { altName = L["gold"    ], icon = "|TInterface/MoneyFrame/UI-GoldIcon:14:14:2:0|t"},   -- Gold
-    [2]   = { altName = L["silver"  ], icon = "|TInterface/MoneyFrame/UI-SilverIcon:14:14:2:0|t" },   -- Silver
-    [3]   = { altName = L["copper"  ], icon = "|TInterface/MoneyFrame/UI-CopperIcon:14:14:2:0|t" },   -- Copper
-    [1901]= { altName = L["honor"   ] }, -- Honor point
-    -- Cataclysm
+    [1]   = { altName = L["gold"    ]:lower(), icon = "|T237618:14:14:2:0|t" }, -- Gold
+    [2]   = { altName = L["silver"  ]:lower(), icon = "|T237620:14:14:2:0|t" }, -- Silver
+    [3]   = { altName = L["copper"  ]:lower(), icon = "|T237617:14:14:2:0|t" }, -- Copper
+    [1901]= { altName = L["honor"   ]:lower() }, -- Honor point
     -- [Currency:Name]   : Adaptive output between Type-0 and Type-2
     -- Type-0 = [Currency:Name-0] : [Icon][Quantity]
     -- Type-1 = [Currency:Name-1] : [Icon][Quantity]([Earnable])  -- Earnable in minus value
     -- Type-2 = [Currency:Name-2] : [Icon][Quantity]([Earnable])  -- Earnable in red font
     -- Type-3 = [Currency:Name-3] : [Icon][Quantity]([Earned]/[MaxQuantity])
-    [395] = { altName = L["JP"      ] }, -- 4.0.1 Hidden      Justice Points
-    [396] = { altName = L["VP"      ] }, -- 4.0.1 Hidden      Valor Points
-    [390] = { altName = L["conquest"] }, -- 4.0.1 PvP         Conquest Point
-    [614] = { altName = L["MOD"     ] }, -- 4.3.4 Cataclysm   Mote of Darkness
-    [615] = { altName = L["EOC"     ] }, -- 4.3.4 Cataclysm   Essence of Corrupted Deathwing
-    [3148]= { altName = L["FS"      ] }, -- 4.4.1 Cataclysm   Elemental Rune Dungeon - Protocol Inferno
-    [3281]= { altName = L["OF"      ] }, -- 4.4.2 Cataclysm   Elemental Rune Dungeon - Protocol Twilight
-    [416] = { altName = L["MOW"     ] }, -- 4.3.4 Cataclysm   Mark of the World Tree
-    [361] = { altName = L["jewel"   ] }, -- 4.0.1 Cataclysm   Illustrious Jewelcrafter's Token
-    [402] = { altName = L["cook"    ] }, -- 4.3.4 Misc.       Chef's Award
-    [391] = { altName = L["TBC"     ] }, -- 4.0.1 PvP         Tol Barad Commendation
-    [515] = { altName = L["DPT"     ] }, -- 4.3.4 Misc.       Darkmoon Prize Ticket
+    [395] = { altName = L["JP"      ]:lower() }, -- Justice Points
+    [396] = { altName = L["VP"      ]:lower() }, -- Valor Points
+    [390] = { altName = L["conquest"]:lower() }, -- Conquest Point
+    [515] = { altName = L["Darkmoon"]:lower() }, -- Darkmoon Prize Ticket
+    -- Mists of Pandaria
+    [697] = { altName = L["Elder"   ]:lower() }, -- Elder Charm of Good Fortune 행운의 장로 부적
+    [738] = { altName = L["Lesser"  ]:lower() }, -- Lesser Charm of Good Fortune 행운의 하급 부적
+    [752] = { altName = L["Mogu"    ]:lower() }, -- Mogu Rune of Fate 운명의 모구 룬
+    [776] = { altName = L["Seal"    ]:lower() }, -- Warforged Seal 전쟁벼림 인장
+    [777] = { altName = L["Timeless"]:lower() }, -- Timeless Coin 영원의 주화
+    [3350]= { altName = L["August"  ]:lower() }, -- August Stone Fragment 천신석 파편
+    [402] = { altName = L["Ironpaw" ]:lower() }, -- Ironpaw Token 아이언포우 징표
+    [789] = { altName = L["Bloody"  ]:lower() }, -- Bloody Coin 피투성이 동전
+
     order = {
         1,2,3,          -- Gold, Silver, Copper
         396,395,        -- [Valor], Justice
         390,1901,       -- [Conquest], Honor
-        614,615,        -- Raid Rewards
-        3281,3148,      -- Elemental Rune Dungeon
-        416,            -- Daily Quest
-        361,402,        -- Jewelcraft, Cooking
-        391,            -- Tol Barad
+        697,738,752,776,777, -- Raid related
+        3350,           -- Elemental Rune Dungeon
+        402,            -- Cooking
+        789,            -- PvP
         515,            -- Darkmoon
     }
 }
@@ -70,7 +74,7 @@ setmetatable(SavedClassic.currencies, { __index =
 )
 
 SavedClassic.abbr = {}
-SavedClassic.abbr.heroic = {
+SavedClassic.abbr.heroic_cata = {
     [C_Map.GetAreaInfo(4926)] = L["H4_Blackrock Caverns"],
     [C_Map.GetAreaInfo(5004)] = L["H4_Throne of the Tides"],
     [C_Map.GetAreaInfo(5035)] = L["H4_Vortex Pinnacle"],
@@ -86,8 +90,25 @@ SavedClassic.abbr.heroic = {
     [C_Map.GetAreaInfo(1977)] = L["H4_Zul'Gurub"],
     [C_Map.GetAreaInfo(3805)] = L["H4_Zul'Aman"],
 }
+SavedClassic.abbr.heroic = {
+    [C_Map.GetAreaInfo(5918)] = L["H5_Shado-pan Monastery"],
+    [C_Map.GetAreaInfo(5956)] = L["H5_Temple of the Jade Serpent"],
+    [C_Map.GetAreaInfo(5963)] = L["H5_Stormstout Brewery"],
+    [C_Map.GetAreaInfo(5976)] = L["H5_Gate of the Setting Sun"],
+    [C_Map.GetAreaInfo(6182)] = L["H5_Mogu'shan Palace"],
+    [C_Map.GetAreaInfo(6052)] = L["H5_Scarlet Halls"],
+    [C_Map.GetAreaInfo(6109)] = L["H5_Scarlet Monastery"],
+    [C_Map.GetAreaInfo(6066)] = L["H5_Scholomance"],
+    [C_Map.GetAreaInfo(6214)] = L["H5_Siege of Niuzao Temple"],
+}
 
 SavedClassic.abbr.raid = {
+    -- MoP Raid
+    [C_Map.GetAreaInfo(6125)] = { order = -505, name = L["R5_Mogu'shan Vaults"],        color = "FF007C48" },
+    [C_Map.GetAreaInfo(6297)] = { order = -504, name = L["R5_Heart of Fear"],           color = "FF00B368" },
+    [C_Map.GetAreaInfo(6067)] = { order = -503, name = L["R5_Terrace of Endless Spring"],color= "FF00BE6F" },
+    [C_Map.GetAreaInfo(6622)] = { order = -502, name = L["R5_Throne of Thunder"],       color = "FF08DD84" },
+    [C_Map.GetAreaInfo(6738)] = { order = -501, name = L["R5_Siege of Orgrimmar"],      color = "FF00FF95" },
     -- Cataclysm Raid
     [C_Map.GetAreaInfo(5892)] = { order = -406, name = L["R4_Dragon Soul"],             color = "FFB3001B" },
     [C_Map.GetAreaInfo(5723)] = { order = -405, name = L["R4_Firelands"],               color = "FFDE0A26" },
