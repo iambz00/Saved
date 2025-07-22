@@ -3,7 +3,7 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "5.5.1.1"
+SavedClassic.version = "5.5.1.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -52,10 +52,11 @@ SavedClassic.currencies = {
 
     order = {
         1,2,3,          -- Gold, Silver, Copper
-        396,395,        -- [Valor], Justice
-        390,1901,       -- [Conquest], Honor
-        697,738,752,776,777, -- Raid related
+        396,395,        -- Valor, Justice
+        390,1901,       -- Conquest, Honor
+        697,738,752,776, -- Raid related
         3350,           -- Elemental Rune Dungeon
+        777,            -- Timeless Isle
         402,            -- Cooking
         789,            -- PvP
         515,            -- Darkmoon
@@ -74,22 +75,6 @@ setmetatable(SavedClassic.currencies, { __index =
 )
 
 SavedClassic.abbr = {}
-SavedClassic.abbr.heroic_cata = {
-    [C_Map.GetAreaInfo(4926)] = L["H4_Blackrock Caverns"],
-    [C_Map.GetAreaInfo(5004)] = L["H4_Throne of the Tides"],
-    [C_Map.GetAreaInfo(5035)] = L["H4_Vortex Pinnacle"],
-    [C_Map.GetAreaInfo(5088)] = L["H4_The Stonecore"],
-    [C_Map.GetAreaInfo(5396)] = L["H4_Lost City of the Tol'vir"],
-    [C_Map.GetAreaInfo(4945)] = L["H4_Halls of Origination"],
-    [C_Map.GetAreaInfo(4950)] = L["H4_Grim Batol"],
-    [C_Map.GetAreaInfo(5789)] = L["H4_End Time"],
-    [C_Map.GetAreaInfo(5788)] = L["H4_Well of Eternity"],
-    [C_Map.GetAreaInfo(5844)] = L["H4_Hour of Twilight"],
-    [C_Map.GetAreaInfo(1581)] = L["H4_Deadmines"],
-    [C_Map.GetAreaInfo( 209)] = L["H4_Shadowfang Keep"],
-    [C_Map.GetAreaInfo(1977)] = L["H4_Zul'Gurub"],
-    [C_Map.GetAreaInfo(3805)] = L["H4_Zul'Aman"],
-}
 SavedClassic.abbr.heroic = {
     [C_Map.GetAreaInfo(5918)] = L["H5_Shado-pan Monastery"],
     [C_Map.GetAreaInfo(5956)] = L["H5_Temple of the Jade Serpent"],
@@ -104,11 +89,11 @@ SavedClassic.abbr.heroic = {
 
 SavedClassic.abbr.raid = {
     -- MoP Raid
-    [C_Map.GetAreaInfo(6125)] = { order = -505, name = L["R5_Mogu'shan Vaults"],        color = "FF007C48" },
-    [C_Map.GetAreaInfo(6297)] = { order = -504, name = L["R5_Heart of Fear"],           color = "FF00B368" },
-    [C_Map.GetAreaInfo(6067)] = { order = -503, name = L["R5_Terrace of Endless Spring"],color= "FF00BE6F" },
-    [C_Map.GetAreaInfo(6622)] = { order = -502, name = L["R5_Throne of Thunder"],       color = "FF08DD84" },
-    [C_Map.GetAreaInfo(6738)] = { order = -501, name = L["R5_Siege of Orgrimmar"],      color = "FF00FF95" },
+    [C_Map.GetAreaInfo(6125)] = { order = -505, name = L["R5_Mogu'shan Vaults"],        color = "FF12A769" },
+    [C_Map.GetAreaInfo(6297)] = { order = -504, name = L["R5_Heart of Fear"],           color = "FF05BB6F" },
+    [C_Map.GetAreaInfo(6067)] = { order = -503, name = L["R5_Terrace of Endless Spring"],color= "FF00D6B2" },
+    [C_Map.GetAreaInfo(6622)] = { order = -502, name = L["R5_Throne of Thunder"],       color = "FF00E284" },
+    [C_Map.GetAreaInfo(6738)] = { order = -501, name = L["R5_Siege of Orgrimmar"],      color = "FF0FFFBB" },
     -- Cataclysm Raid
     [C_Map.GetAreaInfo(5892)] = { order = -406, name = L["R4_Dragon Soul"],             color = "FFB3001B" },
     [C_Map.GetAreaInfo(5723)] = { order = -405, name = L["R4_Firelands"],               color = "FFDE0A26" },
@@ -143,4 +128,4 @@ SavedClassic.abbr.raid = {
 }
 
 setmetatable(SavedClassic.abbr.raid, { __index =
-        function(t, k) return { order = 0, name = k, color = "FFFFFF99" } end })
+        function(_, k) return { order = 0, name = k, color = "FFFFFF99" } end })

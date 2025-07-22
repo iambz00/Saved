@@ -54,6 +54,9 @@ local _TranslationTable = {
                         local currency_type
                         option:gsub("([^-]*)-(.*)", function(a, b) -- Dash-Separated option
                             option = a
+                            if type(option) == "string" then
+                                option = option:lower()
+                            end
                             currency_type = b
                         end)
                         local id = tonumber(option)
@@ -326,8 +329,8 @@ function SavedClassic:InitPlayerDB()
     else
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                 L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
-        playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
-                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["OF"], L["color"])
+        playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
+                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["Elder"], L["currency"], L["Lesser"], L["currency"], L["Ironpaw"], L["currency"], L["August"], L["color"])
         playerdb.info2_2 = format("[%s/ffffff][%s]/[%s][%s]", L["color"], L["dqCom"], L["dqMax"], L["color"])
     end
 
