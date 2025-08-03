@@ -105,7 +105,7 @@ L["Usage_Character"] = {
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "Прошедшее время после последнего обновления", "[cooldown]"     , "Перезарядка навыков профессии"    },
     { "[item:aимя]"     , "[item:name]"     , "значок и количество",            },
-    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       , "[playedtotal]" },
+    { "[dqCom]"         , ""                , "[dqReset]"       , "[playedtotal]" },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    , "[playedlevel]" },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "Цвет начала(RGB кодировка)", "[color]"         , "Цвет окончания"   },
@@ -120,6 +120,10 @@ L["Usage_Instance"] = {
     { "[progress]"      , "Количество убитых боссов", "[bosses]"        , "Количество боссов"       },
     { "[time]"          , "Время сброса"   , "[instID]"        , "ID подземелья" },
 }
+-- World Boss
+L["World Boss"]     = true
+L["Galleon"]        = "G"
+L["Sha of Anger"]   = "S"
 -- Heroic - MoP
 L["H5_Shado-pan Monastery"]     = "SPM"
 L["H5_Temple of the Jade Serpent"]  = "TJS"

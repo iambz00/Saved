@@ -3,18 +3,13 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "5.5.1.2"
+SavedClassic.version = "5.5.1.3"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
 SavedClassic.ts = {
     [114780] = { icon = "|T612100:14:14|t" }, -- (Alchemy) Transmute: Living Steel
-    [131686] = { icon = "|T629526:14:14|t" }, -- (Jewelcrafting) Red
-    [131691] = { icon = "|T629525:14:14|t" }, --    Purple
-    [131593] = { icon = "|T629522:14:14|t" }, --    Blue
-    [131695] = { icon = "|T629527:14:14|t" }, --    Yellow
-    [131688] = { icon = "|T629523:14:14|t" }, --    Green
-    [131690] = { icon = "|T629524:14:14|t" }, --    Orange
+    [131686] = { icon = "|T134139:14:14|t" }, -- (Jewelcrafting) Shared Cooldown
     [116499] = { icon = "|T463518:14:14|t" }, -- (Enchanting) Sha Crystal
     [112996] = { icon = "|T632822:14:14|t" }, -- (Inscription) Scroll of Wisdom
     [138646] = { icon = "|T576649:14:14|t" }, -- (Blacksmithing) Lightning Steel Ingot
@@ -74,6 +69,11 @@ setmetatable(SavedClassic.currencies, { __index =
         end }
 )
 
+SavedClassic.worldBoss = {
+    [32098] = L["Galleon"],
+    [32099] = L["Sha of Anger"],
+}
+
 SavedClassic.abbr = {}
 SavedClassic.abbr.heroic = {
     [C_Map.GetAreaInfo(5918)] = L["H5_Shado-pan Monastery"],
@@ -94,6 +94,7 @@ SavedClassic.abbr.raid = {
     [C_Map.GetAreaInfo(6067)] = { order = -503, name = L["R5_Terrace of Endless Spring"],color= "FF00D6B2" },
     [C_Map.GetAreaInfo(6622)] = { order = -502, name = L["R5_Throne of Thunder"],       color = "FF00E284" },
     [C_Map.GetAreaInfo(6738)] = { order = -501, name = L["R5_Siege of Orgrimmar"],      color = "FF0FFFBB" },
+    [L["World Boss"]        ] = { order = -500,                                         color = "FF8DFFC0" },
     -- Cataclysm Raid
     [C_Map.GetAreaInfo(5892)] = { order = -406, name = L["R4_Dragon Soul"],             color = "FFB3001B" },
     [C_Map.GetAreaInfo(5723)] = { order = -405, name = L["R4_Firelands"],               color = "FFDE0A26" },

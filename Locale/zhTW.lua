@@ -105,7 +105,7 @@ L["Usage_Character"] = {
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "自上次更新經過的時間", "[cooldown]"     , "專業技能冷卻時間"    },
     { "[item:name]"     , "[item:name]"     , "物品圖標和數量"  ,               },
-    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       , "[playedtotal]" },
+    { "[dqCom]"         , ""                , "[dqReset]"       , "[playedtotal]" },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    , "[playedlevel]" },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "顏色開始(RGB 代碼)", "[color]"         , "顏色結束"  },
@@ -120,6 +120,10 @@ L["Usage_Instance"] = {
     { "[progress]"      , "BOSS擊殺數量"    , "[bosses]"        , "BOSS數量"       },
     { "[time]"          , "重置時間"        , "[instID]"        , "副本 ID" },
 }
+-- World Boss
+L["World Boss"]     = true
+L["Galleon"]        = "G"
+L["Sha of Anger"]   = "S"
 -- Heroic - MoP
 L["H5_Shado-pan Monastery"]     = "SPM"
 L["H5_Temple of the Jade Serpent"]  = "TJS"

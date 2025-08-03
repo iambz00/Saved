@@ -80,7 +80,6 @@ L["time"      ] = true
 L["playedtotal"] = true
 L["playedlevel"] = true
 -- Localized Currency Name
--- Localized Currency Name
 L["gold"    ] = true
 L["silver"  ] = true
 L["copper"  ] = true
@@ -106,7 +105,7 @@ L["Usage_Character"] = {
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "自上次更新经过的时间", "[cooldown]"     , "专业技能冷却时间"    },
     { "[item:name]"     , "[item:name]"     , "图标和价格",            },
-    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       , "[playedtotal]" },
+    { "[dqCom]"         , ""                , "[dqReset]"       , "[playedtotal]" },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    , "[playedlevel]" },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "颜色开始(RGB 代码)", "[color]"         , "颜色结束"   },
@@ -121,6 +120,10 @@ L["Usage_Instance"] = {
     { "[progress]"      , "BOSS击杀数量"    , "[bosses]"        , "BOSS数量"    },
     { "[time]"          , "重置时间"        , "[instID]"        , "副本 ID"     },
 }
+-- World Boss
+L["World Boss"]     = true
+L["Galleon"]        = "G"
+L["Sha of Anger"]   = "S"
 -- Heroic - MoP
 L["H5_Shado-pan Monastery"]     = "SPM"
 L["H5_Temple of the Jade Serpent"]  = "TJS"

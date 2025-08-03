@@ -105,7 +105,7 @@ L["Usage_Character"] = {
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "After last update", "[cooldown]"     , "Tradeskill cooldowns"    },
     { "[item:name]"     , "[item:name]"     , "Item Icon and Count",            },
-    { "[dqCom]"         , "[dqMax]"         , "[dqReset]"       , "[playedtotal]" },
+    { "[dqCom]"         , ""                , "[dqReset]"       , "[playedtotal]" },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    , "[playedlevel]" },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "Color start(RGB)", "[color]"         , "Color end"   },
@@ -120,6 +120,10 @@ L["Usage_Instance"] = {
     { "[progress]"      , "Killed"          , "[bosses]"        , "Total"       },
     { "[time]"          , "Time to reset"   , "[instID]"        , "Instance ID" },
 }
+-- World Boss
+L["World Boss"]     = true
+L["Galleon"]        = "G"
+L["Sha of Anger"]   = "S"
 -- Heroic - MoP
 L["H5_Shado-pan Monastery"]     = "SPM"
 L["H5_Temple of the Jade Serpent"]  = "TJS"

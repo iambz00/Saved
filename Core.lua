@@ -110,7 +110,6 @@ local _TranslationTable = {
     ["expRest"  ] = "restXP",
     ["expRest%" ] = "restPercent",
     ["dqCom"    ] = "dqComplete",
-    ["dqMax"    ] = "dqMax",
     ["dqReset"  ] = "dqReset",
     ["ilvl_equip"] = "gearEquippedLevel",
     ["ilvl_avg" ] = "gearAvgLevel",
@@ -140,13 +139,13 @@ local _TranslationTable = {
         [L["expRest"   ] ] = "expRest",
         [L["expRest%"  ] ] = "expRest%",
         [L["dqCom"     ] ] = "dqCom",
-        [L["dqMax"     ] ] = "dqMax",
         [L["dqReset"   ] ] = "dqReset",
         [L["ilvl"      ] ] = "ilvl",
         [L["ilvl_equip"] ] = "ilvl_equip",
         [L["ilvl_avg"  ] ] = "ilvl_avg",
         [L["playedtotal"] ]= "playedtotal",
         [L["playedlevel"] ]= "playedlevel",
+        [L["worldboss" ] ] = "worldboss",
         [L["instName"  ] ] = "instName",
         [L["instID"    ] ] = "instID",
         [L["difficulty"] ] = "difficulty",
@@ -324,14 +323,14 @@ function SavedClassic:InitPlayerDB()
                                 L["color"], L["color"], L["level"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
         playerdb.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
                                 L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
-        playerdb.info2_2 = format("[%s/ffffff][%s:%s][%s]",
-                                L["color"], L["currency"], L["JP"], L["color"] )
+        playerdb.info2_2 = format("[%s/ffffff][%s:%s] [%s][%s]",
+                                L["color"], L["currency"], L["JP"], L["worldboss"], L["color"] )
     else
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                 L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
         playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
                                 L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["Elder"], L["currency"], L["Lesser"], L["currency"], L["Ironpaw"], L["currency"], L["August"], L["color"])
-        playerdb.info2_2 = format("[%s/ffffff][%s]/[%s][%s]", L["color"], L["dqCom"], L["dqMax"], L["color"])
+        playerdb.info2_2 = ""
     end
 
     playerdb.info3 = true
@@ -389,7 +388,7 @@ function SavedClassic:SaveInfo()
     local db = self.db.realm[player]
     local classColor = RAID_CLASS_COLORS[class]
     db.coloredName = classColor:WrapTextInColorCode(player)
-
+    local quests = GetQuestsCompleted()
     local raids, heroics = { }, { }
     local currentTime = time()
 
@@ -426,6 +425,19 @@ function SavedClassic:SaveInfo()
 
     db.raids = raids
     db.heroics = heroics
+
+    -- World Boss
+    local worldboss = {}
+    local seconds_to_weekly_reset = C_DateAndTime.GetSecondsUntilWeeklyReset()
+    for id, name in pairs(self.worldBoss) do
+        local boss = {}
+        if quests[id] then
+            boss.name = name
+            boss.reset = currentTime + seconds_to_weekly_reset
+            worldboss[id] = boss
+        end
+    end
+    db.worldboss = worldboss
 
     self:PLAYER_XP_UPDATE()
     self:PLAYER_EQUIPMENT_CHANGED()
@@ -650,6 +662,16 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
         tooltip:AddDoubleLine(line2_1, line2_2)
     end
 
+    local worldboss = ""
+    if db.worldboss then
+        for _, boss in pairs(db.worldboss) do
+            local remain = SecondsToTime(boss.reset - time())
+            if remain and ( remain ~= "" ) then
+                local name = boss.name
+                worldboss = worldboss..name.." "
+            end
+        end
+    end
     db.raids = db.raids or {}
     if db.info3 then
         if db.info3oneline then
@@ -676,8 +698,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
             for _, li in ipairs(lit) do
                 oneline = oneline..li.name.."("..li.size..") "
             end
-            if oneline ~= "" then
-                tooltip:AddLine("   "..oneline)
+            if oneline ~= "" or worldboss ~= "" then
+                tooltip:AddLine("   "..oneline..worldboss)
             end
         else
             for i = 1, #db.raids do
@@ -688,6 +710,9 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                     local line3_2 = self:TranslateInstance(db.info3_2, instance)
                     tooltip:AddDoubleLine(line3_1, line3_2)
                 end
+            end
+            if worldboss ~= "" then
+                tooltip:AddDoubleLine("   "..worldboss, SecondsToTime(C_DateAndTime.GetSecondsUntilWeeklyReset()))
             end
         end
     end
@@ -894,6 +919,17 @@ function SavedClassic:ToggleRaidTable()
                         locked[instance.name] = locked[instance.name].."/"..size
                     end
                 end
+            end
+            local worldboss = ""
+            for _, boss in pairs(db.worldboss) do
+                local remain = SecondsToTime(boss.reset - time())
+                if remain and ( remain ~= "" ) then
+                    local bossname = boss.name
+                    worldboss = worldboss..bossname.." "
+                end
+            end
+            if worldboss ~= "" then
+                locked[L["World Boss"]] = worldboss
             end
             table.insert(ilt, { name = name, locked = locked })
         end
