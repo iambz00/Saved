@@ -3,7 +3,7 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "5.5.1.4"
+SavedClassic.version = "5.5.1.5"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -72,6 +72,8 @@ setmetatable(SavedClassic.currencies, { __index =
 SavedClassic.worldBoss = {
     [32098] = L["Galleon"],
     [32099] = L["Sha of Anger"],
+    [32518] = L["Nalak"],
+    [32519] = L["Oondasta"],
 }
 
 SavedClassic.abbr = {}

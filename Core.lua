@@ -313,7 +313,7 @@ function SavedClassic:InitPlayerDB()
                                 L["color"], L["color"], L["level"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
         playerdb.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
                                 L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
-        playerdb.info2_2 = format("[%s/ffffff][%s:%s] [%s][%s]",
+        playerdb.info2_2 = format("[%s/ffffff][%s:%s] [%s]",
                                 L["color"], L["currency"], L["JP"], L["color"] )
     else
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
@@ -750,6 +750,9 @@ function SavedClassic:TranslateCharacterWord(db, strBefore, keyword, option, col
             result, wrapColor = tKeyword(db, option, color)    -- arg color is only for [color] keyword
         else
             result = db[tKeyword] or strBefore
+            if type(result) == "table" then
+                result = strBefore
+            end
         end
         if wrapColor and color and color ~= "" then
             result = "|cff"..color..result.."|r"
@@ -988,8 +991,8 @@ function SavedClassic:InitUsageTable()
         { SetPoint = { "TOPLEFT", uc, "BOTTOMLEFT" }, SetClampedToScreen = true }
     )
     ui:SetCallback({
-        OnMouseDown = uc.StartMoving,
-        OnMouseUp   = uc.StopMovingOrSizing,
+        OnMouseDown = function() uc:StartMoving() end,
+        OnMouseUp   = function() uc:StopMovingOrSizing() end,
         OnShow      = function()
                         if not self.usage_character.loaded then
                             self:BuildUsageTable()
