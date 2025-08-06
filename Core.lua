@@ -145,7 +145,6 @@ local _TranslationTable = {
         [L["ilvl_avg"  ] ] = "ilvl_avg",
         [L["playedtotal"] ]= "playedtotal",
         [L["playedlevel"] ]= "playedlevel",
-        [L["worldboss" ] ] = "worldboss",
         [L["instName"  ] ] = "instName",
         [L["instID"    ] ] = "instID",
         [L["difficulty"] ] = "difficulty",
@@ -188,15 +187,6 @@ function SavedClassic:OnInitialize()
                     currency.maxQuantity = nil
                 end
             end
-        end
-    end
-    if self.db.global.version < "4.4.2.1" then
-        -- Protocol Inferno(Fissure Stone) -> Protocol Twilight(Obsidian Fragment)
-        for _, saved in pairs(self.db.realm) do
-            saved.info1_1 = saved.info1_1:gsub(L["FS"], L["OF"])
-            saved.info1_2 = saved.info1_2:gsub(L["FS"], L["OF"])
-            saved.info2_1 = saved.info2_1:gsub(L["FS"], L["OF"])
-            saved.info2_2 = saved.info2_2:gsub(L["FS"], L["OF"])
         end
     end
 
@@ -324,7 +314,7 @@ function SavedClassic:InitPlayerDB()
         playerdb.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
                                 L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
         playerdb.info2_2 = format("[%s/ffffff][%s:%s] [%s][%s]",
-                                L["color"], L["currency"], L["JP"], L["worldboss"], L["color"] )
+                                L["color"], L["currency"], L["JP"], L["color"] )
     else
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                 L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])

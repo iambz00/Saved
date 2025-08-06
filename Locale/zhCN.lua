@@ -66,7 +66,6 @@ L["exp%"      ] = true
 L["expRest"   ] = true
 L["expRest%"  ] = true
 L["dqCom"     ] = true
-L["dqMax"     ] = true
 L["dqReset"   ] = true
 L["ilvl"      ] = true
 L["ilvl_avg"  ] = true
