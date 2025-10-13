@@ -3,7 +3,7 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "5.5.1.6"
+SavedClassic.version = "5.5.1.7"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -91,44 +91,77 @@ SavedClassic.abbr.heroic = {
 
 SavedClassic.abbr.raid = {
     -- MoP Raid
-    [C_Map.GetAreaInfo(6125)] = { order = -505, name = L["R5_Mogu'shan Vaults"],        color = "FF12A769" },
-    [C_Map.GetAreaInfo(6297)] = { order = -504, name = L["R5_Heart of Fear"],           color = "FF05BB6F" },
-    [C_Map.GetAreaInfo(6067)] = { order = -503, name = L["R5_Terrace of Endless Spring"],color= "FF00D6B2" },
-    [C_Map.GetAreaInfo(6622)] = { order = -502, name = L["R5_Throne of Thunder"],       color = "FF00E284" },
-    [C_Map.GetAreaInfo(6738)] = { order = -501, name = L["R5_Siege of Orgrimmar"],      color = "FF0FFFBB" },
-    [L["World Boss"]        ] = { order = -500,                                         color = "FF8DFFC0" },
+    [L["Mogu'shan Vaults"]          ] = { order = -505, name = L["R5_Mogu'shan Vaults"],        color = "FF12A769" },
+    [L["Heart of Fear"]             ] = { order = -504, name = L["R5_Heart of Fear"],           color = "FF05BB6F" },
+    [L["Terrace of Endless Spring"] ] = { order = -503, name = L["R5_Terrace of Endless Spring"],color= "FF00D6B2" },
+    [L["Throne of Thunder"]         ] = { order = -502, name = L["R5_Throne of Thunder"],       color = "FF00E284" },
+    [L["Siege of Orgrimmar"]        ] = { order = -501, name = L["R5_Siege of Orgrimmar"],      color = "FF0FFFBB" },
+    [L["World Boss"]                ] = { order = -500,                                         color = "FF8DFFC0" },
     -- Cataclysm Raid
-    [C_Map.GetAreaInfo(5892)] = { order = -406, name = L["R4_Dragon Soul"],             color = "FFB3001B" },
-    [C_Map.GetAreaInfo(5723)] = { order = -405, name = L["R4_Firelands"],               color = "FFDE0A26" },
-    [C_Map.GetAreaInfo(5638)] = { order = -404, name = L["R4_Throne of the Four Winds"],color = "FFF01E2C" },
-    [C_Map.GetAreaInfo(5094)] = { order = -403, name = L["R4_Blackwing Descent"],       color = "FFFF2C2C" },
-    [C_Map.GetAreaInfo(5334)] = { order = -402, name = L["R4_Bastion of Twilight"],     color = "FFF94449" },
-    [C_Map.GetAreaInfo(5600)] = { order = -401, name = L["R4_Baradin Hold"],            color = "FFEE6B6E" },
-    -- WotLK Raid 
-    [C_Map.GetAreaInfo(4812)] = { order = -309, name = L["R3_Icecrown Citadel"],        color = "FFA8DAF9" },
-    [C_Map.GetAreaInfo(4722)] = { order = -308, name = L["R3_Ruby Sanctum"],            color = "FF2A9DF4" },
-    [C_Map.GetAreaInfo(4273)] = { order = -307, name = L["R3_Trial of the Crusader"],   color = "FF2A9DF4" },
-    [C_Map.GetAreaInfo(3456)] = { order = -306, name = L["R3_Ulduar"],                  color = "FF187BCD" },
-    [C_Map.GetAreaInfo(4987)] = { order = -305, name = L["R3_Naxxramas"],               color = "FFA8DAF9" },
-    [C_Map.GetAreaInfo(2159)] = { order = -304, name = L["R3_Obsidian Sanctum"],        color = "FF2A9DF4" },
-    [C_Map.GetAreaInfo(4500)] = { order = -303, name = L["R3_Eye of Eternity"],         color = "FF187BCD" },
-    [C_Map.GetAreaInfo(4493)] = { order = -302, name = L["R3_Onyxia's Lair"],           color = "FF187BCD" },
-    [C_Map.GetAreaInfo(4603)] = { order = -301, name = L["R3_Vault of Archavon"],       color = "FF1167B1" },
+    [L["Dragon Soul"]               ] = { order = -406, name = L["R4_Dragon Soul"],             color = "FFB3001B" },
+    [L["Firelands"]                 ] = { order = -405, name = L["R4_Firelands"],               color = "FFDE0A26" },
+    [L["Throne of the Four Winds"]  ] = { order = -404, name = L["R4_Throne of the Four Winds"],color = "FFF01E2C" },
+    [L["Blackwing Descent"]         ] = { order = -403, name = L["R4_Blackwing Descent"],       color = "FFFF2C2C" },
+    [L["The Bastion of Twilight"]   ] = { order = -402, name = L["R4_Bastion of Twilight"],     color = "FFF94449" },
+    [L["Baradin Hold"]              ] = { order = -401, name = L["R4_Baradin Hold"],            color = "FFEE6B6E" },
+    -- WotLK Raid
+    [L["Icecrown Citadel"]          ] = { order = -309, name = L["R3_Icecrown Citadel"],        color = "FFA8DAF9" },
+    [L["The Ruby Sanctum"]          ] = { order = -308, name = L["R3_Ruby Sanctum"],            color = "FF2A9DF4" },
+    [L["Trial of the Crusader"]     ] = { order = -307, name = L["R3_Trial of the Crusader"],   color = "FF2A9DF4" },
+    [L["Ulduar"]                    ] = { order = -306, name = L["R3_Ulduar"],                  color = "FF187BCD" },
+    [L["Naxxramas"]                 ] = { order = -305, name = L["R3_Naxxramas"],               color = "FFA8DAF9" },
+    [L["The Eye of Eternity"]       ] = { order = -304, name = L["R3_Obsidian Sanctum"],        color = "FF2A9DF4" },
+    [L["The Obsidian Sanctum"]      ] = { order = -303, name = L["R3_Eye of Eternity"],         color = "FF187BCD" },
+    [L["Onyxia's Lair"]             ] = { order = -302, name = L["R3_Onyxia's Lair"],           color = "FF187BCD" },
+    [L["Vault of Archavon"]         ] = { order = -301, name = L["R3_Vault of Archavon"],       color = "FF1167B1" },
     -- TBC Raid
-    [C_Map.GetAreaInfo(4075)] = { order = -209, name = L["R2_Sunwell Plateau"],         color = "FF005C29" },
-    [C_Map.GetAreaInfo(3959)] = { order = -207, name = L["R2_Black Temple"],            color = "FF138808" },
-    [C_Map.GetAreaInfo(3606)] = { order = -206, name = L["R2_Battle for Mount Hyjal"],  color = "FF228C22" },
-    [C_Map.GetAreaInfo(3607)] = { order = -205, name = L["R2_Serpentshrine CavernC"],   color = "FF299617" },
-    [C_Map.GetAreaInfo(3845)] = { order = -204, name = L["R2_The Eye"],                 color = "FF32AB32" },
-    [C_Map.GetAreaInfo(3457)] = { order = -203, name = L["R2_Karazhan"],                color = "FF8FD400" },
-    [C_Map.GetAreaInfo(3923)] = { order = -202, name = L["R2_Gruul's Lair"],            color = "FF98FF98" },
-    [C_Map.GetAreaInfo(3836)] = { order = -201, name = L["R2_Magtheridon's Lair"],      color = "FF90EE90" },
+    [L["The Sunwell"]               ] = { order = -209, name = L["R2_Sunwell Plateau"],         color = "FF005C29" },
+    [L["Black Temple"]              ] = { order = -207, name = L["R2_Black Temple"],            color = "FF138808" },
+    [L["-Hyjal"]                    ] = { order = -206, name = L["R2_Battle for Mount Hyjal"],  color = "FF228C22" },
+    [L["-Serpentshrine Cavern"]     ] = { order = -205, name = L["R2_Serpentshrine Cavern"],    color = "FF299617" },
+    [L["Tempest Keep"]              ] = { order = -204, name = L["R2_Tempest Keep"],            color = "FF32AB32" },
+    [L["Karazhan"]                  ] = { order = -203, name = L["R2_Karazhan"],                color = "FF8FD400" },
+    [L["Gruul's Lair"]              ] = { order = -202, name = L["R2_Gruul's Lair"],            color = "FF98FF98" },
+    [L["Magtheridon's Lair"]        ] = { order = -201, name = L["R2_Magtheridon's Lair"],      color = "FF90EE90" },
     -- Vanilla Raid                                                                   
-    [C_Map.GetAreaInfo(3428)] = { order = -105, name = L["R1_Temple of Ahn'Qiraj"],     color = "FF65350F" },
-    [C_Map.GetAreaInfo(3429)] = { order = -104, name = L["R1_Ruins of Ahn'Qiraj"],      color = "FF80471C" },
-    [C_Map.GetAreaInfo(2677)] = { order = -102, name = L["R1_Blackwing Lair"],          color = "FF795C34" },
-    [C_Map.GetAreaInfo(2717)] = { order = -101, name = L["R1_Molten Core"],             color = "FF9A7B4F" },
+    [L["Ahn'Qiraj Temple"]          ] = { order = -105, name = L["R1_Temple of Ahn'Qiraj"],     color = "FF65350F" },
+    [L["Ruins of Ahn'Qiraj"]        ] = { order = -104, name = L["R1_Ruins of Ahn'Qiraj"],      color = "FF80471C" },
+    [L["Blackwing Lair"]            ] = { order = -102, name = L["R1_Blackwing Lair"],          color = "FF795C34" },
+    [L["Molten Core"]               ] = { order = -101, name = L["R1_Molten Core"],             color = "FF9A7B4F" },
 }
+
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(6125)] = SavedClassic.abbr.raid[L["Mogu'shan Vaults"]          ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(6297)] = SavedClassic.abbr.raid[L["Heart of Fear"]             ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(6067)] = SavedClassic.abbr.raid[L["Terrace of Endless Spring"] ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(6622)] = SavedClassic.abbr.raid[L["Throne of Thunder"]         ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(6738)] = SavedClassic.abbr.raid[L["Siege of Orgrimmar"]        ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(5892)] = SavedClassic.abbr.raid[L["Dragon Soul"]               ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(5723)] = SavedClassic.abbr.raid[L["Firelands"]                 ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(5638)] = SavedClassic.abbr.raid[L["Throne of the Four Winds"]  ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(5094)] = SavedClassic.abbr.raid[L["Blackwing Descent"]         ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(5334)] = SavedClassic.abbr.raid[L["The Bastion of Twilight"]   ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(5600)] = SavedClassic.abbr.raid[L["Baradin Hold"]              ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(4812)] = SavedClassic.abbr.raid[L["Icecrown Citadel"]          ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(4722)] = SavedClassic.abbr.raid[L["The Ruby Sanctum"]          ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(4273)] = SavedClassic.abbr.raid[L["Trial of the Crusader"]     ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3456)] = SavedClassic.abbr.raid[L["Ulduar"]                    ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(4987)] = SavedClassic.abbr.raid[L["Naxxramas"]                 ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(2159)] = SavedClassic.abbr.raid[L["The Eye of Eternity"]       ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(4500)] = SavedClassic.abbr.raid[L["The Obsidian Sanctum"]      ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(4493)] = SavedClassic.abbr.raid[L["Onyxia's Lair"]             ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(4603)] = SavedClassic.abbr.raid[L["Vault of Archavon"]         ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(4075)] = SavedClassic.abbr.raid[L["The Sunwell"]               ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3959)] = SavedClassic.abbr.raid[L["Black Temple"]              ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3606)] = SavedClassic.abbr.raid[L["-Hyjal"]                    ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3607)] = SavedClassic.abbr.raid[L["-Serpentshrine Cavern"]     ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3845)] = SavedClassic.abbr.raid[L["Tempest Keep"]              ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3457)] = SavedClassic.abbr.raid[L["Karazhan"]                  ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3923)] = SavedClassic.abbr.raid[L["Gruul's Lair"]              ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3836)] = SavedClassic.abbr.raid[L["Magtheridon's Lair"]        ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3428)] = SavedClassic.abbr.raid[L["Ahn'Qiraj Temple"]          ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(3429)] = SavedClassic.abbr.raid[L["Ruins of Ahn'Qiraj"]        ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(2677)] = SavedClassic.abbr.raid[L["Blackwing Lair"]            ]
+SavedClassic.abbr.raid[C_Map.GetAreaInfo(2717)] = SavedClassic.abbr.raid[L["Molten Core"]               ]
 
 setmetatable(SavedClassic.abbr.raid, { __index =
         function(_, k) return { order = 0, name = k, color = "FFFFFF99" } end })

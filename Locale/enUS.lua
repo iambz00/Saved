@@ -120,56 +120,85 @@ L["Usage_Instance"] = {
     { "[time]"          , "Time to reset"   , "[instID]"        , "Instance ID" },
 }
 -- World Boss
-L["World Boss"]     = true
-L["Galleon"]        = "G"
-L["Sha of Anger"]   = "S"
-L["Nalak"]          = "N"
-L["Oondasta"]       = "O"
--- Heroic - MoP
-L["H5_Shado-pan Monastery"]     = "SPM"
-L["H5_Temple of the Jade Serpent"]  = "TJS"
-L["H5_Stormstout Brewery"]      = "SSB"
-L["H5_Gate of the Setting Sun"] = "GSS"
-L["H5_Mogu'shan Palace"]        = "MsP"
-L["H5_Scarlet Halls"]           = "SH"
-L["H5_Scarlet Monastery"]       = "SM"
-L["H5_Scholomance"]             = "Sch"
-L["H5_Siege of Niuzao Temple"]  = "SNT"
--- Raid - MoP
-L["R5_Mogu'shan Vaults"]        = "MsV"
-L["R5_Heart of Fear"]           = "HoF"
-L["R5_Terrace of Endless Spring"]   = "TES"
-L["R5_Throne of Thunder"]       = "ToT"
-L["R5_Siege of Orgrimmar"]      = "SoO"
--- Raid - Cataclysm
-L["R4_Blackwing Descent"]       = "BWD"
-L["R4_Bastion of Twilight"]     = "BoT"
-L["R4_Throne of the Four Winds"]    = "T4W"
-L["R4_Firelands"]               = "FL"
-L["R4_Dragon Soul"]             = "DS"
-L["R4_Baradin Hold"]            = "BH"
--- Raid - WotLK
-L["R3_Naxxramas"]               = "Naxx"
-L["R3_Obsidian Sanctum"]        = "OS"
-L["R3_Eye of Eternity"]         = "EoE"
-L["R3_Ulduar"]                  = "ULD"
-L["R3_Onyxia's Lair"]           = "Ony"
-L["R3_Trial of the Crusader"]   = "CC"
-L["R3_Icecrown Citadel"]        = "IC"
-L["R3_Ruby Sanctum"]            = "RS"
-L["R3_Vault of Archavon"]       = "VoA"
--- Raid - TBC
-L["R2_Sunwell Plateau"]         = "SP"
-L["R2_Black Temple"]            = "BT"
-L["R2_Battle for Mount Hyjal"]  = "Hyjal"
-L["R2_Serpentshrine CavernC"]   = "SSC"
-L["R2_The Eye"]                 = "TK"  -- Tempest Keep
-L["R2_Karazhan"]                = "KZ"
-L["R2_Gruul's Lair"]            = "Gruul"
-L["R2_Magtheridon's Lair"]      = "Mag"
--- Raid - Vanilla
-L["R1_Temple of Ahn'Qiraj"]     = "TAQ"
-L["R1_Ruins of Ahn'Qiraj"]      = "RAQ"
-L["R1_Blackwing Lair"]          = "BW"
-L["R1_Molten Core"]             = "MC"
+L["World Boss"    ] = true
+L["Galleon"       ] = "G"
+L["Sha of Anger"  ] = "S"
+L["Nalak"         ] = "N"
+L["Oondasta"      ] = "O"
+-- Abbreviation
+L["H5_Shado-pan Monastery"      ] = "SPM"
+L["H5_Temple of the Jade Serpent"   ] = "TJS"
+L["H5_Stormstout Brewery"       ]= "SSB"
+L["H5_Gate of the Setting Sun"  ] = "GSS"
+L["H5_Mogu'shan Palace"         ] = "MsP"
+L["H5_Scarlet Halls"            ] = "SH"
+L["H5_Scarlet Monastery"        ] = "SM"
+L["H5_Scholomance"              ] = "Sch"
+L["H5_Siege of Niuzao Temple"   ] = "SNT"
+L["R5_Mogu'shan Vaults"         ] = "MsV"
+L["R5_Heart of Fear"            ] = "HoF"
+L["R5_Terrace of Endless Spring"] = "TES"
+L["R5_Throne of Thunder"        ] = "ToT"
+L["R5_Siege of Orgrimmar"       ] = "SoO"
+L["R4_Blackwing Descent"        ] = "BWD"
+L["R4_Bastion of Twilight"      ] = "BoT"
+L["R4_Throne of the Four Winds" ] = "T4W"
+L["R4_Firelands"                ] = "FL"
+L["R4_Dragon Soul"              ] = "DS"
+L["R4_Baradin Hold"             ] = "BH"
+L["R3_Naxxramas"                ] = "Naxx"
+L["R3_Obsidian Sanctum"         ] = "OS"
+L["R3_Eye of Eternity"          ] = "EoE"
+L["R3_Ulduar"                   ] = "ULD"
+L["R3_Onyxia's Lair"            ] = "Ony"
+L["R3_Trial of the Crusader"    ] = "CC"
+L["R3_Icecrown Citadel"         ] = "IC"
+L["R3_Ruby Sanctum"             ] = "RS"
+L["R3_Vault of Archavon"        ] = "VoA"
+L["R2_Sunwell Plateau"          ] = "SP"
+L["R2_Black Temple"             ] = "BT"
+L["R2_Battle for Mount Hyjal"   ] = "Hyjal"
+L["R2_Serpentshrine Cavern"     ] = "SSC"
+L["R2_Tempest Keep"             ] = "TK"
+L["R2_Karazhan"                 ] = "KZ"
+L["R2_Gruul's Lair"             ] = "Gruul"
+L["R2_Magtheridon's Lair"       ] = "Mag"
+L["R1_Temple of Ahn'Qiraj"      ] = "TAQ"
+L["R1_Ruins of Ahn'Qiraj"       ] = "RAQ"
+L["R1_Blackwing Lair"           ] = "BW"
+L["R1_Molten Core"              ] = "MC"
+-- Full Name
+L["Mogu'shan Vaults"            ] = true
+L["Heart of Fear"               ] = true
+L["Terrace of Endless Spring"   ] = true
+L["Throne of Thunder"           ] = true
+L["Siege of Orgrimmar"          ] = true
+L["Dragon Soul"                 ] = true
+L["Firelands"                   ] = true
+L["Throne of the Four Winds"    ] = true
+L["Blackwing Descent"           ] = true
+L["The Bastion of Twilight"     ] = true
+L["Baradin Hold"                ] = true
+L["Icecrown Citadel"            ] = true
+L["The Ruby Sanctum"            ] = true
+L["Trial of the Crusader"       ] = true
+L["Ulduar"                      ] = true
+L["Naxxramas"                   ] = true
+L["The Eye of Eternity"         ] = true
+L["The Obsidian Sanctum"        ] = true
+L["Onyxia's Lair"               ] = true
+L["Vault of Archavon"           ] = true
+L["The Sunwell"                 ] = true
+L["Black Temple"                ] = true
+L["-Hyjal"                      ] = "The Battle for Mount Hyjal"
+L["-Serpentshrine Cavern"       ] = "Coilfang: Serpentshrine Cavern"
+L["Tempest Keep"                ] = true
+L["Karazhan"                    ] = true
+L["Gruul's Lair"                ] = true
+L["Magtheridon's Lair"          ] = true
+L["Ahn'Qiraj Temple"            ] = true
+L["Ruins of Ahn'Qiraj"          ] = true
+L["Blackwing Lair"              ] = true
+L["Molten Core"                 ] = true
+
 end
