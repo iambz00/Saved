@@ -820,6 +820,7 @@ function SavedClassic:InitUI()
             GameTooltip:SetPoint("BOTTOM", s , "TOP")
         end
         self:ShowInfoTooltip(GameTooltip)
+        GameTooltip:SetScale((self.db.global.scale or 100) / 100)
         GameTooltip:Show()
     end)
     ui:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -863,7 +864,10 @@ function SavedClassic:InitDBIcon()
                 self:ToggleConfig()
             end
         end,
-        OnTooltipShow = function(tooltip) self:ShowInfoTooltip(tooltip) end,
+        OnTooltipShow = function(tooltip)
+            self:ShowInfoTooltip(tooltip)
+            tooltip:SetScale((self.db.global.scale or 100) / 100)
+        end,
     })
     self.icon:Register(self.name, self.iconLDB, self.db.realm[player].minimapIcon)
 end
@@ -1109,6 +1113,23 @@ function SavedClassic:BuildOptions()
                 get = function(info) return db[info[#info]] end,
                 set = function(info, value) db[info[#info]] = value end,
                 args = {
+                    scale = {
+                        name = L["(Global) Set tooltip scale"],
+                        type = "range",
+                        min = 60,
+                        max = 150,
+                        step = 5,
+                        order = 51,
+                        get = function(info) return self.db.global.scale or 100 end,
+                        set = function(info, value)
+                            self.db.global.scale = value
+                        end,
+                    },
+                    blank1 = {
+                        name = "",
+                        type = "description",
+                        order = 52,
+                    },
                     frameShow = {
                         name = L["Show floating UI frame"],
                         type = "toggle",

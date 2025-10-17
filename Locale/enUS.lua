@@ -14,6 +14,7 @@ L["Disabled"] = true
 L["Raid Table Notice"] = "L-Click to open Raid table, R-Click to open Options"
 L["Display settings"] = true
 L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Every options are saved [per chracter]|r"
+L["(Global) Set tooltip scale"] = "(Global) Set tooltip scale(%)"
 L["Show floating UI frame"] = true
 L["Floating UI width"] = true
 L["Floating UI height"] = true
