@@ -39,7 +39,7 @@ local dbDefault = {
 }
 
 local _TranslationTable = {
-    ["color"    ] = function(_, _, color) return ((color and color ~= "") and "|cff"..color or "|r"), false end,
+    ["color"    ] = function(_, _, color) return ((color and color ~= "") and "|cff"..color or "|r"), true end,
     ["item"     ] = function(db, option)
                         local _, itemLink = C_Item.GetItemInfo(option)
                         if itemLink then
@@ -314,13 +314,14 @@ function SavedClassic:InitPlayerDB()
         playerdb.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
                                 L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
         playerdb.info2_2 = format("[%s/ffffff][%s:%s] [%s]",
-                                L["color"], L["currency"], L["JP"], L["color"] )
+                                L["color"], L["currency"], L["JP"], L["color"])
     else
         playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                 L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
         playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
                                 L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["Elder"], L["currency"], L["Lesser"], L["currency"], L["Ironpaw"], L["currency"], L["August"], L["color"])
-        playerdb.info2_2 = ""
+        playerdb.info2_2 = format("[%s:256883/ffffff]",
+                                L["item"])
     end
 
     playerdb.info3 = true
@@ -525,7 +526,7 @@ end
 function SavedClassic:BAG_UPDATE_DELAYED()
     local db = self.db.realm[player]
     local infoStr = db.info1_1..db.info1_2..db.info2_1..db.info2_2
-    local itemList = string.gmatch(infoStr, "%["..L["item"]..":([^]]+)%]")
+    local itemList = string.gmatch(infoStr, "%["..L["item"]..":([^]/]+)[%]/]")
 
     for item in itemList do -- item link or ID or name
         local _, itemLink = C_Item.GetItemInfo(item)
@@ -533,9 +534,6 @@ function SavedClassic:BAG_UPDATE_DELAYED()
             local itemID = self:StripLink(itemLink)
             db.itemCount[itemID] = C_Item.GetItemCount(itemLink, true) or 0
         end
-    end
-    for id, _ in pairs(self.items) do
-        db.itemCount[id] = C_Item.GetItemCount(id, true) or 0
     end
 end
 
@@ -744,18 +742,22 @@ end
 function SavedClassic:TranslateCharacterWord(db, strBefore, keyword, option, color)
     local tKeyword = _TranslationTable[keyword]
     local result = strBefore
-    local wrapColor = true
+    local colorKeyword = false
     if tKeyword then
         if type(tKeyword) == "function" then    -- [color], [item], [currency] need option
-            result, wrapColor = tKeyword(db, option, color)    -- arg color is only for [color] keyword
+            result, colorKeyword = tKeyword(db, option, color)  -- Don't escape for 'color' keyword
         else
             result = db[tKeyword] or strBefore
             if type(result) == "table" then
                 result = strBefore
             end
         end
-        if wrapColor and color and color ~= "" then
-            result = "|cff"..color..result.."|r"
+        if color and color~= "" then
+            if colorKeyword then
+                result = result
+            else
+                result = "|cff"..color..result.."|r"
+            end
         end
     end
     return result
@@ -769,15 +771,19 @@ end
 function SavedClassic:TranslateInstanceWord(instance, strBefore, keyword, color)
     local tKeyword = _TranslationTable[keyword]
     local result = strBefore
-    local wrapColor = true
+    local colorKeyword = false
     if tKeyword then
         if type(tKeyword) == "function" then
-            result, wrapColor = tKeyword(instance, _, color)
+            result, colorKeyword = tKeyword(instance, _, color) -- Don't escape for 'color' keyword
         else
             result = instance[tKeyword] or strBefore
         end
-        if wrapColor and color and color ~= "" then
-            result = "|cff"..color..result.."|r"
+        if color and color~= "" then
+            if colorKeyword then
+                result = result
+            else
+                result = "|cff"..color..result.."|r"
+            end
         end
     end
     return result
