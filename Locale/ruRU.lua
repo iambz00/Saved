@@ -15,7 +15,7 @@ L["Raid Table Notice"] = "ЛКМ — открыть таблицу рейдов,
 L["Display settings"] = "Настройки отображения"
 L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Все настройки сохраняются [для каждого персонажа]|r"
 L["Show floating UI frame"] = "Показать всплывающее окно интерфейса"
-L["(Global) Set tooltip scale"] = "(Global) Set tooltip scale(%)"
+L["(Global) Set tooltip scale"] = "(Глобальный) Установить масштаб подсказки (%)"
 L["Floating UI width"] = "Ширина всплывающего окна"
 L["Floating UI height"] = "Высота всплывающего окна"
 L["Desc - Frame"] = "|cff00ff00■|r |cffccaa00Shift — перетаскивание для перемещения окна|r"
@@ -203,3 +203,4 @@ L["Blackwing Lair"              ] = "Логово Крыла Тьмы"
 L["Molten Core"                 ] = "Огненные Недра"
 
 end
+
