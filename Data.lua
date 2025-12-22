@@ -3,7 +3,7 @@ local addonName, _ = ...
 SavedClassic = LibStub("AceAddon-3.0"):NewAddon(addonName, "AceEvent-3.0")
 SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
-SavedClassic.version = "5.5.3.1"
+SavedClassic.version = "5.5.3.2"
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
@@ -41,7 +41,7 @@ SavedClassic.currencies = {
     [752] = { altName = L["Mogu"    ]:lower() }, -- Mogu Rune of Fate 운명의 모구 룬
     [776] = { altName = L["Seal"    ]:lower() }, -- Warforged Seal 전쟁벼림 인장
     [777] = { altName = L["Timeless"]:lower() }, -- Timeless Coin 영원의 주화
-    [3350]= { altName = L["August"  ]:lower() }, -- August Stone Fragment 천신석 파편
+    [3414]= { altName = L["August"  ]:lower() }, -- August Stone Shard 천신석 조각
     [402] = { altName = L["Ironpaw" ]:lower() }, -- Ironpaw Token 아이언포우 징표
     [789] = { altName = L["Bloody"  ]:lower() }, -- Bloody Coin 피투성이 동전
 
@@ -50,7 +50,7 @@ SavedClassic.currencies = {
         396,395,        -- Valor, Justice
         390,1901,       -- Conquest, Honor
         697,738,752,776, -- Raid related
-        3350,           -- Elemental Rune Dungeon
+        3414,           -- Elemental Rune Dungeon
         777,            -- Timeless Isle
         402,            -- Cooking
         789,            -- PvP
