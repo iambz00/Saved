@@ -12,10 +12,10 @@ L["Enabled"] = "Включено"
 L["Disabled"] = "Отключено"
 
 L["Raid Table Notice"] = "ЛКМ — открыть таблицу рейдов, ПКМ — открыть настройки"
-L["Display settings"] = "Настройки отображения"
-L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Все настройки сохраняются [для каждого персонажа]|r"
+L["Display"] = "отображения"
+L["Tooltip"] = "подсказке"
+L["Set tooltip scale"] = "Установить масштаб подсказки (%)"
 L["Show floating UI frame"] = "Показать всплывающее окно интерфейса"
-L["(Global) Set tooltip scale"] = "(Глобальный) Установить масштаб подсказки (%)"
 L["Floating UI width"] = "Ширина всплывающего окна"
 L["Floating UI height"] = "Высота всплывающего окна"
 L["Desc - Frame"] = "|cff00ff00■|r |cffccaa00Shift — перетаскивание для перемещения окна|r"
@@ -42,13 +42,8 @@ L["Tooltip - Heroic instances"] = "Всплывающая подсказка —
 L["Lines of heroic instances"] = "Строки для героических подземелий"
 L["Show in one-line"] = "Показать в одной строке"
 
-L["Select character"] = "Выбор персонажа"
-L["Reset selected character"] = "Сбросить выбранного персонажа"
-L["Are you really want to reset?"] = "Вы действительно хотите сбросить настройки?"
-L["Reset all characters"] = "Сбросить всех персонажей"
-L["Copy settings to"] = "Настройки копирования на"
-L["Copy"] = "Копировать"
-L["Confirm copy"] = "Настройки копирования перезапишут информацию о персонаже/подземелье."
+L["Common"] = true
+L["LowLevel"] = true
 
 -- Localized Translation Table
 L["color"     ] = true
@@ -203,4 +198,3 @@ L["Blackwing Lair"              ] = "Логово Крыла Тьмы"
 L["Molten Core"                 ] = "Огненные Недра"
 
 end
-

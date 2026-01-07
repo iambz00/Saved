@@ -12,9 +12,9 @@ L["Enabled"] = true
 L["Disabled"] = true
 
 L["Raid Table Notice"] = "L-Click to open Raid table, R-Click to open Options"
-L["Display settings"] = true
-L["Desc - Common"] = "|cff00ff00■|r |cffccaa00Every options are saved [per chracter]|r"
-L["(Global) Set tooltip scale"] = "(Global) Set tooltip scale(%)"
+L["Display"] = true
+L["Tooltip"] = true
+L["Set tooltip scale"] = "Set tooltip scale(%)"
 L["Show floating UI frame"] = true
 L["Floating UI width"] = true
 L["Floating UI height"] = true
@@ -42,13 +42,8 @@ L["Tooltip - Heroic instances"] = true
 L["Lines of heroic instances"] = true
 L["Show in one-line"] = true
 
-L["Select character"] = true
-L["Reset selected character"] = true
-L["Are you really want to reset?"] = true
-L["Reset all characters"] = true
-L["Copy settings to"] = true
-L["Copy"] = true
-L["Confirm copy"] = "Overwrite settings to target character"
+L["Common"] = true
+L["LowLevel"] = true
 
 -- Localized Translation Table
 L["color"     ] = true

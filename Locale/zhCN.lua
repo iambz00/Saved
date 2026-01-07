@@ -12,9 +12,9 @@ L["Enabled"] = "启用"
 L["Disabled"] = "禁用"
 
 L["Raid Table Notice"] = "左键点击打开表格, 右键点击打开设置"
-L["Display settings"] = "显示设置"
-L["Desc - Common"] = "|cff00ff00■|r |cffccaa00每个配置已保存 [单角色]|r"
-L["(Global) Set tooltip scale"] = "(Global) Set tooltip scale(%)"
+L["Display"] = "显示"
+L["Tooltip"] = "提示"
+L["Set tooltip scale"] = "Set tooltip scale(%)"
 L["Show floating UI frame"] = "显示悬浮窗"
 L["Floating UI width"] = "悬浮窗宽度"
 L["Floating UI height"] = "悬浮窗高度"
@@ -42,13 +42,8 @@ L["Tooltip - Heroic instances"] = "提示 - 英雄本信息"
 L["Lines of heroic instances"] = "英雄本信息行"
 L["Show in one-line"] = "单行显示"
 
-L["Select character"] = "选择角色"
-L["Reset selected character"] = "重置选择的角色"
-L["Are you really want to reset?"] = "你确定要重置吗？"
-L["Reset all characters"] = "重置所有角色"
-L["Copy settings to"] = "复制设置到"
-L["Copy"] = "复制"
-L["Confirm copy"] = "将设置覆盖到目标角色上"
+L["Common"] = true
+L["LowLevel"] = true
 
 -- Localized Translation Table
 L["color"     ] = true

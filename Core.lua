@@ -12,21 +12,57 @@ local _, class, _ = UnitClass("player")
 local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
 local dbDefault = {
-    realm = {
-        [player] = {
-            frameX = 100,   frameY = 25,
-            showInfoPer = "realm",
-            showTotalGold = true,
-            hideLevelUnder = 1,
-            sortOrder = "level",
-            sortOption = 0,
-            currentFirst = true,
+    global = {
+        version = SavedClassic.version,
+        maxQty = { },
+    },
+    profile = {
+        scale = 100,
+        frameShow = false,
+        frameX = 100,   frameY = 25,
+        minimapIcon = { hide = false },
+        showInfoPer = "realm",
+        showTotalGold = true,
+        hideLevelUnder = 1,
+        currentFirst = true,
+        sortOrder = "level",
+        sortOption = 0,
+        exclude = "",
 
+        info1 = true,
+        info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
+                    L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"]),
+        info1_2 = format("\n[%s:%s/ffee99]", L["currency"], L["gold"]),
+        info2 = true,
+        info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
+                    L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["Mogu"], L["currency"], L["Lesser"], L["currency"], L["Ironpaw"], L["currency"], L["August"], L["color"]),
+        info2_2 = format("[%s:256883/ffffff]",
+                    L["item"]),
+        info3 = true,
+        info3oneline = true,
+        info3_1 = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"]),
+        info3_2 = format("[%s]", L["time"]),
+        info4 = true,
+        info4oneline = true,
+        info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"]),
+        info4_2 = format("[%s/ffff99]", L["time"]),
+    },
+    realm = {   -- Character-Specific
+        ["**"] = {  -- Default for every Characters
             default = true,
-            minimapIcon = { hide = false },
+            name = "",
+            coloredName = "",
+
+            raids = { },
+            heroics = { },
+            tradeSkills = { },
+            itemCount = { },
+            currencyCount = { },
+
+            zone = "",
+            subzone = "",
 
             expCurrent = -1, expMax = -1, expPercent = -1, ExpRest = -1,
-
             honorPoint = -1, arenaPoint = -1,
             dqComplete = -1, dqMax = -1, dqReset = -1,
 
@@ -34,7 +70,7 @@ local dbDefault = {
             gearAvgLevel = -1,
             gearEquippedLevel = -1,
             exclude = "",
-        }
+        },
     }
 }
 
@@ -165,35 +201,7 @@ local function SavedClassic_GetCurrencyInfo(id)
 end
 
 function SavedClassic:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault)
-
-    -- Reset old db
-    if not self.db.global.version then
-        self:ResetWholeDB()
-    elseif self.db.global.version < "4.4.0.7" then
-        p(L["Reset due to update"](self.db.global.version, self.version))
-        self:ResetWholeDB()
-    elseif self.db.global.version < "4.4.1.3" then
-        for _, saved in pairs(self.db.realm) do
-            for id, currency in pairs(saved.currencyCount or {}) do
-                currency.quantity = tonumber(currency.quantity or currency.total)
-                currency.total = nil
-                if currency.maxQuantity then
-                    self.db.global.maxQty = self.db.global.maxQty or {}
-                    local oldMax = self.db.global.maxQty[id] or 0
-                    if currency.maxQuantity > oldMax then
-                        self.db.global.maxQty[id] = oldMax
-                    end
-                    currency.maxQuantity = nil
-                end
-            end
-        end
-    end
-
-    self.db.global.version = self.version
-
-    if self.db.realm[player].default then self:InitPlayerDB() end
-
+    self:InitDB()
     self:SetOrder()
 
     self:InitUI()
@@ -253,30 +261,60 @@ function SavedClassic:OnDisable()
     p(L["Disabled"])
 end
 
-function SavedClassic:SetOrder()
+function SavedClassic:InitDB()
+    self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault, L["Common"])
+
+    -- Reset Old DB
+    if self.db.global.version < "5.5.3.3" then
+        p(L["Reset due to update"](self.db.global.version, self.version))
+        self:ResetWholeDB()
+    end
+
     local db = self.db.realm[player]
+    db = self.db.realm[player] or { }
+    db.name = player
+    db.coloredName = RAID_CLASS_COLORS[class]:WrapTextInColorCode(player)
+
+    if db.default then
+        if UnitLevel("player") < GetMaxPlayerLevel() then
+            self.db:SetProfile(L["LowLevel"])
+            if not tContains(self.db:GetProfiles(), L["LowLevel"]) then
+                self.db.profile.info1_1 = format("\n[%s/00ff00]■[%s] [[%s/ffffff]:[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
+                                        L["color"], L["color"], L["level"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
+                self.db.profile.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
+                                        L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
+                self.db.profile.info2_2 = format("[%s/ffffff][%s:%s] [%s]",
+                                        L["color"], L["currency"], L["JP"], L["color"])
+            end
+        end
+    end
+    db.default = false
+end
+
+function SavedClassic:SetOrder()
+    local profile = self.db.profile
     local exclude = { }
     self.order = { }
 
-    for ch in string.gmatch(db.exclude, "[^%s,;]*") do
+    for ch in string.gmatch(profile.exclude, "[^%s,;]*") do
         exclude[ch] = true
     end
 
-    for ch, chdb in pairs(self.db.realm) do
+    for ch, cdb in pairs(self.db.realm) do
         if not exclude[ch] then
-            table.insert(self.order, chdb)
+            table.insert(self.order, cdb)
         end
     end
     table.sort(self.order,
         function(a, b)
-            if db.currentFirst then
+            if profile.currentFirst then
                 if a.name == player then return true end
                 if b.name == player then return false end
             end
-            local aa = a[db.sortOrder] or 0
-            local bb = b[db.sortOrder] or 0
+            local aa = a[profile.sortOrder] or 0
+            local bb = b[profile.sortOrder] or 0
 
-            if db.sortOrder == "gold" then
+            if profile.sortOrder == "gold" then
                 aa = a.currencyCount[0] and a.currencyCount[0].quantity or 0
                 bb = b.currencyCount[0] and b.currencyCount[0].quantity or 0
             end
@@ -284,7 +322,7 @@ function SavedClassic:SetOrder()
             if aa == bb then
                 return a.name < b.name
             else
-                if db.sortOption == 1 then
+                if profile.sortOption == 1 then
                     return aa < bb
                 else
                     return aa > bb
@@ -294,78 +332,9 @@ function SavedClassic:SetOrder()
     )
 end
 
-function SavedClassic:InitPlayerDB()
-    local playerdb = self.db.realm[player]
-    local classColor = RAID_CLASS_COLORS[class]
-
-    playerdb.default = false
-    playerdb.name = player
-    playerdb.coloredName = classColor:WrapTextInColorCode(player)
-
-    playerdb.info1 = true
-    playerdb.info1_1 = ""
-    playerdb.info1_2 = format("\n[%s:%s/ffee99]", L["currency"], L["gold"])
-    playerdb.info2 = true
-    playerdb.info2_1 = ""
-
-    if UnitLevel("player") < GetMaxPlayerLevel() then
-        playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s/ffffff]:[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
-                                L["color"], L["color"], L["level"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
-        playerdb.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
-                                L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
-        playerdb.info2_2 = format("[%s/ffffff][%s:%s] [%s]",
-                                L["color"], L["currency"], L["JP"], L["color"])
-    else
-        playerdb.info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
-                                L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
-        playerdb.info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
-                                L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["Elder"], L["currency"], L["Lesser"], L["currency"], L["Ironpaw"], L["currency"], L["August"], L["color"])
-        playerdb.info2_2 = format("[%s:256883/ffffff]",
-                                L["item"])
-    end
-
-    playerdb.info3 = true
-    playerdb.info3_1 = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"])
-    playerdb.info3_2 = format("[%s]", L["time"])
-    playerdb.info4 = true
-    playerdb.info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"])
-    playerdb.info4_2 = format("[%s/ffff99]", L["time"])
-
-    playerdb.info3oneline = true
-    playerdb.info4oneline = true
-
-    playerdb.raids = { }
-    playerdb.heroics = { }
-    playerdb.tradeSkills = { }
-    playerdb.itemCount = { }
-    playerdb.currencyCount = { }
-
-    playerdb.zone = ""
-    playerdb.subzone = ""
-
-    playerdb.lastUpdate = time()
-    playerdb.frameShow = false
-
-    self:PLAYER_MONEY()
-    self:PLAYER_XP_UPDATE()
-end
-
-function SavedClassic:ResetPlayerDB()
-    for k,_ in pairs(self.db.realm[player]) do
-        self.db.realm[player][k] = nil
-    end
-    for k,v in pairs(dbDefault.realm[player]) do
-        self.db.realm[player][k] = v
-    end
-    self:InitPlayerDB()
-    self:SaveInfo()
-end
-
 function SavedClassic:ResetWholeDB()
     self.db:ResetDB()
-    self.db.global.version = self.version
-    self.db.global.maxQty = {}
-    self:InitPlayerDB()
+    self:InitDB()
     self:SetOrder()
     self.totalMoney = 0
     self:SaveInfo()
@@ -377,8 +346,7 @@ end
 
 function SavedClassic:SaveInfo()
     local db = self.db.realm[player]
-    local classColor = RAID_CLASS_COLORS[class]
-    db.coloredName = classColor:WrapTextInColorCode(player)
+    db.coloredName = RAID_CLASS_COLORS[class]:WrapTextInColorCode(player)
     local quests = GetQuestsCompleted()
     local raids, heroics = { }, { }
     local currentTime = time()
@@ -524,8 +492,9 @@ function SavedClassic:ClearItemCount()
 end
 
 function SavedClassic:BAG_UPDATE_DELAYED()
+    local profile = self.db.profile
     local db = self.db.realm[player]
-    local infoStr = db.info1_1..db.info1_2..db.info2_1..db.info2_2
+    local infoStr = profile.info1_1..profile.info1_2..profile.info2_1..profile.info2_2
     local itemList = string.gmatch(infoStr, "%["..L["item"]..":([^]/]+)[%]/]")
 
     for item in itemList do -- item link or ID or name
@@ -558,7 +527,6 @@ function SavedClassic:CurrencyUpdate()
             db.currencyCount[currencyID] = { quantity = tonumber(info.quantity) }
             if info.useTotalEarnedForMaxQty then
                 db.currencyCount[currencyID]["totalEarned"] = info.totalEarned or 0
-                --db.currencyCount[currencyID]["maxQuantity"] = info.maxQuantity
                 if info.maxQuantity and info.maxQuantity > 0 then
                     self.db.global.maxQty = self.db.global.maxQty or {}
                     self.db.global.maxQty[currencyID] = info.maxQuantity
@@ -570,9 +538,10 @@ function SavedClassic:CurrencyUpdate()
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
+    local profile = self.db.profile
     local db = self.db.realm[player]
     local realm = ""
-    if db.showInfoPer == "realm" then realm = " - " .. GetRealmName() end
+    if profile.showInfoPer == "realm" then realm = " - " .. GetRealmName() end
 
     if not self.ui.noticed then
         p(L["Raid Table Notice"])
@@ -582,25 +551,36 @@ function SavedClassic:ShowInfoTooltip(tooltip)
     self:SaveInfo()
 
     local totalGold = ""
-    if db.showTotalGold then
+    if profile.showTotalGold then
         totalGold = floor((self.totalMoney + db.currencyCount[0].quantity) / 10000).. self.currencies[1].icon
     end
     tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold)
 
-    if db.showInfoPer == "realm" then
+    if profile.showInfoPer == "realm" then
+        -- local profileName = self.db:GetCurrentProfile()
         for _, v in ipairs(self.order) do
-            if v.level < db.hideLevelUnder then
+            if v.level < profile.hideLevelUnder then
             else
                 self:ShowInstanceInfo(tooltip, v.name)
             end
         end
+        -- self.db:SetProfile(profileName)
     else
         self:ShowInstanceInfo(tooltip, player)
     end
 end
 
-function SavedClassic:ShowInstanceInfo(tooltip, character)
+function SavedClassic:GetProfile(character)
+    local profileName = SavedClassicDB.profileKeys[character.." - "..GetRealmName()]
+    return profileName, SavedClassicDB.profiles[profileName]
+end
 
+function SavedClassic:ShowInstanceInfo(tooltip, character)
+    -- self.db:SetProfile(SavedClassicDB.profileKeys[character.." - "..GetRealmName()])
+    local _, profile = self:GetProfile(character)
+    if not getmetatable(profile) then
+        setmetatable(profile, { __index = function(_, k) return dbDefault.profile[k] end })
+    end
     local db = self.db.realm[character]
     local currentTime = time()
 
@@ -639,14 +619,14 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     db.restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
     db.restPercent = floor(db.restXP / db.expMax * 100)
 
-    if db.info1 then
-        local line1_1 = self:TranslateCharacter(db.info1_1, db)
-        local line1_2 = self:TranslateCharacter(db.info1_2, db)
+    if profile.info1 then
+        local line1_1 = self:TranslateCharacter(profile.info1_1, db)
+        local line1_2 = self:TranslateCharacter(profile.info1_2, db)
         tooltip:AddDoubleLine(line1_1, line1_2)
     end
-    if db.info2 then
-        local line2_1 = self:TranslateCharacter(db.info2_1, db)
-        local line2_2 = self:TranslateCharacter(db.info2_2, db)
+    if profile.info2 then
+        local line2_1 = self:TranslateCharacter(profile.info2_1, db)
+        local line2_2 = self:TranslateCharacter(profile.info2_2, db)
         tooltip:AddDoubleLine(line2_1, line2_2)
     end
 
@@ -661,8 +641,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
         end
     end
     db.raids = db.raids or {}
-    if db.info3 then
-        if db.info3oneline then
+    if profile.info3 then
+        if profile.info3oneline then
             local oneline = ""
             local lit = {}
             for i = 1, #db.raids do
@@ -694,8 +674,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                 local instance = db.raids[i]
                 local remain = SecondsToTime(instance.reset - time())
                 if remain and ( remain ~= "" ) then
-                    local line3_1 = self:TranslateInstance(db.info3_1, instance)
-                    local line3_2 = self:TranslateInstance(db.info3_2, instance)
+                    local line3_1 = self:TranslateInstance(profile.info3_1, instance)
+                    local line3_2 = self:TranslateInstance(profile.info3_2, instance)
                     tooltip:AddDoubleLine(line3_1, line3_2)
                 end
             end
@@ -706,8 +686,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     end
 
     db.heroics = db.heroics or {}
-    if db.info4 then
-        if db.info4oneline then
+    if profile.info4 then
+        if profile.info4oneline then
             local oneline = ""
             for i = 1, #db.heroics do
                 local instance = db.heroics[i]
@@ -725,8 +705,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                 local instance = db.heroics[i]
                 local remain = SecondsToTime(instance.reset - time())
                 if remain and ( remain ~= "" ) then
-                    local line4_1 = self:TranslateInstance(db.info4_1, instance)
-                    local line4_2 = self:TranslateInstance(db.info4_2, instance)
+                    local line4_1 = self:TranslateInstance(profile.info4_1, instance)
+                    local line4_2 = self:TranslateInstance(profile.info4_2, instance)
                     tooltip:AddDoubleLine(line4_1, line4_2)
                 end
             end
@@ -790,12 +770,12 @@ function SavedClassic:TranslateInstanceWord(instance, strBefore, keyword, color)
 end
 
 function SavedClassic:InitUI()
-    local db = self.db.realm[player]
+    local profile = self.db.profile
     local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent, "BackdropTemplate")
     self.ui = ui
     ui:EnableMouse(true)
-    ui:SetWidth(db.frameX)
-    ui:SetHeight(db.frameY)
+    ui:SetWidth(profile.frameX)
+    ui:SetHeight(profile.frameY)
     ui:SetMovable(true)
     ui:SetBackdrop({
         bgFile = "Interface/TutorialFrame/TutorialFrameBackground",
@@ -826,7 +806,7 @@ function SavedClassic:InitUI()
             GameTooltip:SetPoint("BOTTOM", s , "TOP")
         end
         self:ShowInfoTooltip(GameTooltip)
-        GameTooltip:SetScale((self.db.global.scale or 100) / 100)
+        GameTooltip:SetScale((profile.scale or 100) / 100)
         GameTooltip:Show()
     end)
     ui:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -850,7 +830,7 @@ function SavedClassic:InitUI()
         GameTooltip:Show()
     end)
 
-    if self.db.realm[player].frameShow then
+    if profile.frameShow then
         self.ui:Show()
     else
         self.ui:Hide()
@@ -872,10 +852,10 @@ function SavedClassic:InitDBIcon()
         end,
         OnTooltipShow = function(tooltip)
             self:ShowInfoTooltip(tooltip)
-            tooltip:SetScale((self.db.global.scale or 100) / 100)
+            tooltip:SetScale((self.db.profile.scale or 100) / 100)
         end,
     })
-    self.icon:Register(self.name, self.iconLDB, self.db.realm[player].minimapIcon)
+    self.icon:Register(self.name, self.iconLDB, self.db.profile.minimapIcon)
 end
 
 function SavedClassic:ToggleConfig()
@@ -1094,59 +1074,35 @@ function SavedClassic:BuildCurrencyInfo()
 end
 
 function SavedClassic:BuildOptions()
-    local rdb = self.db.realm
-    local ch = player
-    local copyTo = ""
-    local names = {}
-    local order = self.order
-    for i = 1, #order do
-        names[order[i].name] = rdb[order[i].name].coloredName
-    end
-
-    local db = self.db.realm[player]
     self.optionsTable = {
-        name = self.name .. " option",
+        name = self.name,
         handler = self,
         type = 'group',
-        get = function(info) return rdb[ch][info[#info]] end,
-        set = function(info, value) rdb[ch][info[#info]] = value end,
+        childGroups = "tab",
+        get = function(info) return self.db.profile[info[#info]] end,
+        set = function(info, value) self.db.profile[info[#info]] = value end,
         args = {
-            show = {
-                name = L["Display settings"],
+            display = {
+                name = L["Display"],
                 type = "group",
-                inline = true,
-                order = 11,
-                get = function(info) return db[info[#info]] end,
-                set = function(info, value) db[info[#info]] = value end,
+                order = 10,
                 args = {
                     scale = {
-                        name = L["(Global) Set tooltip scale"],
+                        name = L["Set tooltip scale"],
                         type = "range",
                         min = 60,
                         max = 150,
                         step = 5,
                         order = 51,
-                        get = function(info) return self.db.global.scale or 100 end,
-                        set = function(info, value)
-                            self.db.global.scale = value
-                        end,
                     },
-                    blank1 = {
-                        name = "",
-                        type = "description",
-                        order = 52,
-                    },
+                    blank11 = { name = "", type = "description", order = 52, },
                     frameShow = {
                         name = L["Show floating UI frame"],
                         type = "toggle",
                         order = 101,
                         set = function(info, value)
-                            db[info[#info] ] = value
-                            if value then
-                                self.ui:Show()
-                            else
-                                self.ui:Hide()
-                            end
+                            self.db.profile[info[#info]] = value
+                            if value then self.ui:Show() else self.ui:Hide() end
                         end,
                     },
                     frameX = {
@@ -1157,7 +1113,7 @@ function SavedClassic:BuildOptions()
                         step = 1,
                         order = 102,
                         set = function(info, value)
-                            db.frameX = value
+                            self.db.profile[info[#info]] = value
                             self.ui:SetWidth(value)
                         end
                     },
@@ -1169,7 +1125,7 @@ function SavedClassic:BuildOptions()
                         step = 1,
                         order = 103,
                         set = function(info, value)
-                            db.frameY = value
+                            self.db.profile[info[#info]] = value
                             self.ui:SetHeight(value)
                         end
                     },
@@ -1178,20 +1134,16 @@ function SavedClassic:BuildOptions()
                         type = "description",
                         order = 104
                     },
-                    showMinimapIcon = {
+                    minimapIcon = {
                         name = L["Show minimap icon"],
                         type = "toggle",
                         order = 111,
-                        get = function(info)
-                            return not db.minimapIcon.hide
+                        get = function(_)
+                            return not self.db.profile.minimapIcon.hide
                         end,
                         set = function(info, value)
-                            db.minimapIcon.hide = not value
-                            if value then
-                                self.icon:Show(self.name)
-                            else
-                                self.icon:Hide(self.name)
-                            end
+                            self.db.profile[info[#info]].hide = not value
+                            if value then self.icon:Show(self.name) else self.icon:Hide(self.name) end
                         end,
                     },
                     showInfoPer = {
@@ -1221,7 +1173,7 @@ function SavedClassic:BuildOptions()
                         name = L["Show current chracter first"],
                         type = "toggle",
                         set = function(info, value)
-                            db[info[#info]] = value
+                            self.db.profile[info[#info]] = value
                             self:SetOrder()
                         end,
                         order = 141
@@ -1239,7 +1191,7 @@ function SavedClassic:BuildOptions()
                             elapsed = L["elapsed"],
                         },
                         set = function(info, value)
-                            db[info[#info]] = value
+                            self.db.profile[info[#info]] = value
                             self:SetOrder()
                         end,
                         order = 151,
@@ -1260,194 +1212,142 @@ function SavedClassic:BuildOptions()
                         width = "full",
                         order = 161,
                         set = function(info, value)
-                                db[info[#info]] = value
+                                self.db.profile[info[#info]] = value
                                 self:SetOrder()
                             end,
                     },
-                }
-            },
-            character = {
-                name = L["Select character"],
-                type = "select",
-                values = names,
-                set = function(info, k) ch = k return k end,
-                get = function(info) return ch end,
-                order = 21
-            },
-            resetButton1 = {
-                name = L["Reset selected character"],
-                type = "execute",
-                func = function()
-                        if player == ch then
-                            self:ResetPlayerDB()
-                        else
-                            rdb[ch] = nil
-                            ch = player
-                            self:SetOrder()
-                        end
-                    end,
-                confirm = function() return L["Are you really want to reset?"] end,
-                order = 22
-            },
-            resetButton2 = {
-                name = L["Reset all characters"],
-                type = "execute",
-                func = function() self:ResetWholeDB() end,
-                confirm = function() return L["Are you really want to reset?"] end,
-                order = 23
-            },
-            infoChar = {
-                name = L["Tooltip - Character info."],
-                type = "group",
-                inline = true,
-                order = 31,
-                args = {
-                    info1 = {
-                        name = L["Line 1 of char info."],
-                        type = "toggle",
-                        width = "full",
-                        order = 11
-                    },
-                    info2 = {
-                        name = L["Line 2 of char info."],
-                        type = "toggle",
-                        width = "full",
-                        order = 21
-                    },
-                    info1_1 = {
-                        name = L["Left"],
-                        type = "input",
-                        width = 2.5,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 12
-                    },
-                    info1_2 = {
-                        name = L["Right"],
-                        type = "input",
-                        width = 1,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 13
-                    },
-                    info2_1 = {
-                        name = L["Left"],
-                        type = "input",
-                        width = 2.5,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 22
-                    },
-                    info2_2 = {
-                        name = L["Right"],
-                        type = "input",
-                        width = 1,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 23
-                    },
                 },
             },
-
-            infoRaid = {
-                name = L["Tooltip - Raid instances"],
+            tooltip = {
+                name = L["Tooltip"],
                 type = "group",
-                inline = true,
-                order = 41,
+                order = 20,
                 args = {
-                    info3 = {
-                        name = L["Lines of raid instances"],
-                        type = "toggle",
-                        order = 30
-                    },
-                    info3oneline = {
-                        name = L["Show in one-line"],
-                        type = "toggle",
+                    infoChar = {
+                        name = L["Tooltip - Character info."],
+                        type = "group",
+                        inline = true,
                         order = 31,
+                        args = {
+                            info1 = {
+                                name = L["Line 1 of char info."],
+                                type = "toggle",
+                                width = "full",
+                                order = 11
+                            },
+                            info1_1 = {
+                                name = L["Left"],
+                                type = "input",
+                                width = 2,
+                                multiline = 2,
+                                desc = function() self.usage_character:Show() end,
+                                order = 12
+                            },
+                            info1_2 = {
+                                name = L["Right"],
+                                type = "input",
+                                width = 1,
+                                multiline = 2,
+                                desc = function() self.usage_character:Show() end,
+                                order = 13
+                            },
+                            info2 = {
+                                name = L["Line 2 of char info."],
+                                type = "toggle",
+                                width = "full",
+                                order = 21
+                            },
+                            info2_1 = {
+                                name = L["Left"],
+                                type = "input",
+                                width = 2,
+                                multiline = 2,
+                                desc = function() self.usage_character:Show() end,
+                                order = 22
+                            },
+                            info2_2 = {
+                                name = L["Right"],
+                                type = "input",
+                                width = 1,
+                                multiline = 2,
+                                desc = function() self.usage_character:Show() end,
+                                order = 23
+                            },
+                        },
                     },
-                    info3_1 = {
-                        name = L["Left"],
-                        type = "input",
-                        width = 2.5,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 32
+                    infoRaid = {
+                        name = L["Tooltip - Raid instances"],
+                        type = "group",
+                        inline = true,
+                        order = 41,
+                        args = {
+                            info3 = {
+                                name = L["Lines of raid instances"],
+                                type = "toggle",
+                                order = 1
+                            },
+                            info3oneline = {
+                                name = L["Show in one-line"],
+                                type = "toggle",
+                                order = 2,
+                            },
+                            blank31 = { name = "", type = "description", order = 10, },
+                            info3_1 = {
+                                name = L["Left"],
+                                type = "input",
+                                width = 2,
+                                multiline = 2,
+                                desc = function() self.usage_character:Show() end,
+                                order = 21
+                            },
+                            info3_2 = {
+                                name = L["Right"],
+                                type = "input",
+                                width = 1,
+                                multiline = 2,
+                                desc = function() self.usage_character:Show() end,
+                                order = 22
+                            },
+                        },
                     },
-                    info3_2 = {
-                        name = L["Right"],
-                        type = "input",
-                        width = 1,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 33
+                    infoHeroic = {
+                        name = L["Tooltip - Heroic instances"],
+                        type = "group",
+                        inline = true,
+                        order = 51,
+                        args = {
+                            info4 = {
+                                name = L["Lines of heroic instances"],
+                                type = "toggle",
+                                order = 1,
+                            },
+                            info4oneline = {
+                                name = L["Show in one-line"],
+                                type = "toggle",
+                                order = 2,
+                            },
+                            blank41 = { name = "", type = "description", order = 10, },
+                            info4_1 = {
+                                name = L["Left"],
+                                type = "input",
+                                width = 2,
+                                multiline = 2,
+                                desc = function() self.usage_character:Show() end,
+                                order = 21
+                            },
+                            info4_2 = {
+                                name = L["Right"],
+                                type = "input",
+                                width = 1,
+                                multiline = 2,
+                                desc = function() self.usage_character:Show() end,
+                                order = 22
+                            },
+                        },
                     },
                 },
             },
-
-            infoHeroic = {
-                name = L["Tooltip - Heroic instances"],
-                type = "group",
-                inline = true,
-                order = 51,
-                args = {
-                    info4 = {
-                        name = L["Lines of heroic instances"],
-                        type = "toggle",
-                        order = 30,
-                    },
-                    info4oneline = {
-                        name = L["Show in one-line"],
-                        type = "toggle",
-                        order = 31,
-                    },
-                    info4_1 = {
-                        name = L["Left"],
-                        type = "input",
-                        width = 2.5,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 32
-                    },
-                    info4_2 = {
-                        name = L["Right"],
-                        type = "input",
-                        width = 1,
-                        multiline = 2,
-                        desc = function() self.usage_character:Show() end,
-                        order = 33
-                    },
-                },
-            },
-
-            copySettings = {
-                name = L["Copy settings to"],
-                type = "select",
-                values = names,
-                set = function(info, k) copyTo = k return k end,
-                get = function(info) return copyTo end,
-                order = 91
-            },
-            copyButton = {
-                name = L["Copy"],
-                type = "execute",
-                func = function()
-                    local tdb = self.db.realm[copyTo]
-                    tdb.info1 = rdb[ch].info1
-                    tdb.info1_1 = rdb[ch].info1_1
-                    tdb.info1_2 = rdb[ch].info1_2
-                    tdb.info2 = rdb[ch].info2
-                    tdb.info2_1 = rdb[ch].info2_1
-                    tdb.info2_2 = rdb[ch].info2_2
-                    tdb.info3 = rdb[ch].info3
-                    tdb.info3_1 = rdb[ch].info3_1
-                    tdb.info3_2 = rdb[ch].info3_2
-                    tdb.info4 = rdb[ch].info4
-                    tdb.info4_1 = rdb[ch].info4_1
-                    tdb.info4_2 = rdb[ch].info4_2
-                end,
-                confirm = function() return L["Confirm copy"] end,
-                order = 92
-            },
+            profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
         },
     }
 end
