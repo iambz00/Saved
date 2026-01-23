@@ -13,39 +13,37 @@ local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
 
 local dbDefault = {
     global = {
-        version = SavedClassic.version,
         maxQty = { },
     },
     profile = {
-        scale = 100,
-        frameShow = false,
-        frameX = 100,   frameY = 25,
-        minimapIcon = { hide = false },
-        showInfoPer = "realm",
-        showTotalGold = true,
-        hideLevelUnder = 1,
-        currentFirst = true,
-        sortOrder = "level",
-        sortOption = 0,
-        exclude = "",
+        TOOLTIP_SCALE = 100,
+        FLOAT_UI = false,
+        FLOAT_UI_W = 100,    FLOAT_UI_H = 25,
+        MINIMAP_ICON = { hide = false },
+        DISPLAY_SCOPE = "realm",
+        TOTAL_GOLD = true,
+        HIDE_LEVEL = 1,
+        CURRENT_1ST = true,
+        SORT_BY = "level",
+        SORT_ORDER = 0,
+        EXCLUDE = "",
 
-        info1 = true,
-        info1_1 = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
+        INFO1 = true,
+        INFO1_L = format("\n[%s/00ff00]■[%s] [[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                     L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"]),
-        info1_2 = format("\n[%s:%s/ffee99]", L["currency"], L["gold"]),
-        info2 = true,
-        info2_1 = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
+        INFO1_R = format("\n[%s:%s/ffee99]", L["currency"], L["gold"]),
+        INFO2 = true,
+        INFO2_L = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s] [%s:%s][%s]",
                     L["color"], L["currency"], L["VP"], L["currency"], L["JP"], L["currency"], L["conquest"], L["currency"], L["honor"], L["currency"], L["Mogu"], L["currency"], L["Lesser"], L["currency"], L["Ironpaw"], L["currency"], L["August"], L["color"]),
-        info2_2 = format("[%s:256883/ffffff]",
-                    L["item"]),
-        info3 = true,
-        info3oneline = true,
-        info3_1 = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"]),
-        info3_2 = format("[%s]", L["time"]),
-        info4 = true,
-        info4oneline = true,
-        info4_1 = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"]),
-        info4_2 = format("[%s/ffff99]", L["time"]),
+        INFO2_R = format("[%s:256883/ffffff]", L["item"]),
+        INFO3 = true,
+        INFO3_SHORT = true,
+        INFO3_L = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"]),
+        INFO3_R = format("[%s]", L["time"]),
+        INFO4 = true,
+        INFO4_SHORT = true,
+        INFO4_L = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"]),
+        INFO4_R = format("[%s/ffff99]", L["time"]),
     },
     realm = {   -- Character-Specific
         ["**"] = {  -- Default for every Characters
@@ -69,7 +67,6 @@ local dbDefault = {
             lastUpdate = -1,
             gearAvgLevel = -1,
             gearEquippedLevel = -1,
-            exclude = "",
         },
     }
 }
@@ -191,6 +188,35 @@ local _TranslationTable = {
 }
 setmetatable(_TranslationTable, { __index = function(t,k) return t.byLocale[k] and t[t.byLocale[k] ] or k end })
 
+local profile_exchange = {
+    scale =         "TOOLTIP_SCALE",
+    frameShow =     "FLOAT_UI",
+    frameX =        "FLOAT_UI_W",
+    frameY =        "FLOAT_UI_H",
+    minimapIcon =   "MINIMAP_ICON",
+    showInfoPer =   "DISPLAY_SCOPE",
+    showTotalGold = "TOTAL_GOLD",
+    hideLevelUnder= "HIDE_LEVEL",
+    currentFirst =  "CURRENT_1ST",
+    sortOrder =     "SORT_BY",
+    sortOption =    "SORT_ORDER",
+    exclude =       "EXCLUDE",
+    info1 =         "INFO1",
+    info1_1 =       "INFO1_L",
+    info1_2 =       "INFO1_R",
+    info2 =         "INFO2",
+    info2_1 =       "INFO2_L",
+    info2_2 =       "INFO2_R",
+    info3 =         "INFO3",
+    info3oneline =  "INFO3_SHORT",
+    info3_1 =       "INFO3_L",
+    info3_2 =       "INFO3_R",
+    info4 =         "INFO4",
+    info4oneline =  "INFO4_SHORT",
+    info4_1 =       "INFO4_L",
+    info4_2 =       "INFO4_R",
+}
+
 local function SavedClassic_GetCurrencyInfo(id)
     id = tonumber(id) or 0
     if id > 3 then
@@ -209,7 +235,7 @@ function SavedClassic:OnInitialize()
     self:InitRaidTable()
 
     self:BuildCurrencyInfo()
-    self:BuildOptions() -- Build some tables and self.optionsTable
+    self:BuildOptions() -- Build self.optionsTable
     LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, self.optionsTable)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions(self.name, self.name, nil)
     self:InitUsageTable()
@@ -235,10 +261,12 @@ function SavedClassic:OnInitialize()
 
     self:RegisterEvent("TIME_PLAYED_MSG")
     ChatFrame_DisplayTimePlayed_Original = ChatFrame_DisplayTimePlayed
+    self.requestTimePlayedPending = false
     ChatFrame_DisplayTimePlayed = function(...)
-        if not SavedClassic.requestTimePlayed then
+        if not self.requestTimePlayedPending then
             ChatFrame_DisplayTimePlayed_Original(...)
         end
+        self.requestTimePlayedPending = false
     end
 
     self.totalMoney = 0 -- Total money except current character
@@ -265,9 +293,19 @@ function SavedClassic:InitDB()
     self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault, L["Common"])
 
     -- Reset Old DB
+    self.db.global.version = self.db.global.version or "5.5.3.3"
     if self.db.global.version < "5.5.3.3" then
         p(L["Reset due to update"](self.db.global.version, self.version))
         self:ResetWholeDB()
+    elseif self.db.global.version < "5.5.3.4" then
+        for _, profile in pairs(SavedClassicDB.profiles) do
+            for old, new in pairs(profile_exchange) do
+                if profile[old] ~= nil then
+                    profile[new] = profile[old]
+                    profile[old] = nil
+                end
+            end
+        end
     end
 
     local db = self.db.realm[player]
@@ -279,11 +317,11 @@ function SavedClassic:InitDB()
         if UnitLevel("player") < GetMaxPlayerLevel() then
             self.db:SetProfile(L["LowLevel"])
             if not tContains(self.db:GetProfiles(), L["LowLevel"]) then
-                self.db.profile.info1_1 = format("\n[%s/00ff00]■[%s] [[%s/ffffff]:[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
+                self.db.profile.INFO1_L = format("\n[%s/00ff00]■[%s] [[%s/ffffff]:[%s]] [%s] [%s/ffffff]([%s]: [%s])[%s]",
                                         L["color"], L["color"], L["level"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
-                self.db.profile.info2_1 = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
+                self.db.profile.INFO2_L = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
                                         L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
-                self.db.profile.info2_2 = format("[%s/ffffff][%s:%s] [%s]",
+                self.db.profile.INFO2_R = format("[%s/ffffff][%s:%s] [%s]",
                                         L["color"], L["currency"], L["JP"], L["color"])
             end
         end
@@ -296,7 +334,7 @@ function SavedClassic:SetOrder()
     local exclude = { }
     self.order = { }
 
-    for ch in string.gmatch(profile.exclude, "[^%s,;]*") do
+    for ch in string.gmatch(profile.EXCLUDE, "[^%s,;]*") do
         exclude[ch] = true
     end
 
@@ -307,14 +345,14 @@ function SavedClassic:SetOrder()
     end
     table.sort(self.order,
         function(a, b)
-            if profile.currentFirst then
+            if profile.CURRENT_1ST then
                 if a.name == player then return true end
                 if b.name == player then return false end
             end
-            local aa = a[profile.sortOrder] or 0
-            local bb = b[profile.sortOrder] or 0
+            local aa = a[profile.SORT_BY] or 0
+            local bb = b[profile.SORT_BY] or 0
 
-            if profile.sortOrder == "gold" then
+            if profile.SORT_BY == "gold" then
                 aa = a.currencyCount[0] and a.currencyCount[0].quantity or 0
                 bb = b.currencyCount[0] and b.currencyCount[0].quantity or 0
             end
@@ -322,7 +360,7 @@ function SavedClassic:SetOrder()
             if aa == bb then
                 return a.name < b.name
             else
-                if profile.sortOption == 1 then
+                if profile.SORT_ORDER == 1 then
                     return aa < bb
                 else
                     return aa > bb
@@ -423,7 +461,7 @@ function SavedClassic:QUEST_TURNED_IN()
 end
 
 function SavedClassic:RequestTimePlayed()
-    self.requestTimePlayed = true
+    self.requestTimePlayedPending = true
     RequestTimePlayed()
 end
 
@@ -431,9 +469,6 @@ function SavedClassic:TIME_PLAYED_MSG(_, played_total, played_level)
     local db = self.db.realm[player]
     db.played_total = played_total
     db.played_level = played_level
-    C_Timer.After(1, function()
-        self.requestTimePlayed = false
-    end)
 end
 
 function SavedClassic:PLAYER_XP_UPDATE()
@@ -494,7 +529,7 @@ end
 function SavedClassic:BAG_UPDATE_DELAYED()
     local profile = self.db.profile
     local db = self.db.realm[player]
-    local infoStr = profile.info1_1..profile.info1_2..profile.info2_1..profile.info2_2
+    local infoStr = profile.INFO1_L..profile.INFO1_R..profile.INFO2_L..profile.INFO2_R
     local itemList = string.gmatch(infoStr, "%["..L["item"]..":([^]/]+)[%]/]")
 
     for item in itemList do -- item link or ID or name
@@ -540,8 +575,8 @@ end
 function SavedClassic:ShowInfoTooltip(tooltip)
     local profile = self.db.profile
     local db = self.db.realm[player]
-    local realm = ""
-    if profile.showInfoPer == "realm" then realm = " - " .. GetRealmName() end
+    local titleRealm = ""
+    if profile.DISPLAY_SCOPE == "realm" then titleRealm = " - " .. GetRealmName() end
 
     if not self.ui.noticed then
         p(L["Raid Table Notice"])
@@ -551,37 +586,65 @@ function SavedClassic:ShowInfoTooltip(tooltip)
     self:SaveInfo()
 
     local totalGold = ""
-    if profile.showTotalGold then
+    if profile.TOTAL_GOLD then
         totalGold = floor((self.totalMoney + db.currencyCount[0].quantity) / 10000).. self.currencies[1].icon
     end
-    tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold)
+    tooltip:AddDoubleLine(MSG_PREFIX .. titleRealm .. MSG_SUFFIX, totalGold)
 
-    if profile.showInfoPer == "realm" then
-        -- local profileName = self.db:GetCurrentProfile()
-        for _, v in ipairs(self.order) do
-            if v.level < profile.hideLevelUnder then
+    if profile.DISPLAY_SCOPE == "character" then
+        self:ShowInstanceInfo(tooltip, player)
+    else
+        -- if profile.DISPLAY_SCOPE == "realm" then
+        for _, cdb in ipairs(self.order) do
+            if cdb.level < profile.HIDE_LEVEL then
             else
-                self:ShowInstanceInfo(tooltip, v.name)
+                self:ShowInstanceInfo(tooltip, cdb.name)
             end
         end
-        -- self.db:SetProfile(profileName)
-    else
-        self:ShowInstanceInfo(tooltip, player)
+
+        if profile.DISPLAY_SCOPE == "account" then
+            local n = 2
+            for realm, rdb in pairs(SavedClassicDB.realm) do
+                if realm ~= GetRealmName() then
+                    local nextTooltip = CreateFrame("GameTooltip", addonName.."Info"..n)
+                    nextTooltip:SetOwner(tooltip, "ANCHOR_NONE")
+                    nextTooltip:SetPoint("TOPRIGHT", tooltip, "TOPLEFT")
+                    for ch, cdb in pairs(rdb) do
+                        if (cdb.level or 0) < profile.HIDE_LEVEL then
+                        else
+                            self:ShowInstanceInfo(tooltip, ch, realm)
+                        end
+                    end
+                    tooltip = nextTooltip
+                    n = n + 1
+                end
+            end
+        end
     end
 end
 
-function SavedClassic:GetProfile(character)
-    local profileName = SavedClassicDB.profileKeys[character.." - "..GetRealmName()]
+function SavedClassic:GetProfile(character, realm)
+    local profileName = SavedClassicDB.profileKeys[character.." - "..realm]
     return profileName, SavedClassicDB.profiles[profileName]
 end
 
-function SavedClassic:ShowInstanceInfo(tooltip, character)
-    -- self.db:SetProfile(SavedClassicDB.profileKeys[character.." - "..GetRealmName()])
-    local _, profile = self:GetProfile(character)
+function SavedClassic:ShowInstanceInfo(tooltip, character, realm)
+    local db
+    if realm then
+        db = SavedClassicDB.realm[realm][character]
+        if not getmetatable(db) then
+            setmetatable(db, { __index = function(_, k) return dbDefault.realm["**"][k] end })
+        end
+    else
+        realm = GetRealmName()
+        db = self.db.realm[character]
+    end
+
+    local _, profile = self:GetProfile(character, realm)
     if not getmetatable(profile) then
         setmetatable(profile, { __index = function(_, k) return dbDefault.profile[k] end })
     end
-    local db = self.db.realm[character]
+
     local currentTime = time()
 
     local tsstr = ""
@@ -619,14 +682,14 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     db.restXP = floor(min(db.expRest + (currentTime - db.lastUpdate) / 28800 * 0.05 * db.expMax, db.expMax * 1.5))
     db.restPercent = floor(db.restXP / db.expMax * 100)
 
-    if profile.info1 then
-        local line1_1 = self:TranslateCharacter(profile.info1_1, db)
-        local line1_2 = self:TranslateCharacter(profile.info1_2, db)
+    if profile.INFO1 then
+        local line1_1 = self:TranslateCharacter(profile.INFO1_L, db)
+        local line1_2 = self:TranslateCharacter(profile.INFO1_R, db)
         tooltip:AddDoubleLine(line1_1, line1_2)
     end
-    if profile.info2 then
-        local line2_1 = self:TranslateCharacter(profile.info2_1, db)
-        local line2_2 = self:TranslateCharacter(profile.info2_2, db)
+    if profile.INFO2 then
+        local line2_1 = self:TranslateCharacter(profile.INFO2_L, db)
+        local line2_2 = self:TranslateCharacter(profile.INFO2_R, db)
         tooltip:AddDoubleLine(line2_1, line2_2)
     end
 
@@ -641,8 +704,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
         end
     end
     db.raids = db.raids or {}
-    if profile.info3 then
-        if profile.info3oneline then
+    if profile.INFO3 then
+        if profile.INFO3_SHORT then
             local oneline = ""
             local lit = {}
             for i = 1, #db.raids do
@@ -674,8 +737,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                 local instance = db.raids[i]
                 local remain = SecondsToTime(instance.reset - time())
                 if remain and ( remain ~= "" ) then
-                    local line3_1 = self:TranslateInstance(profile.info3_1, instance)
-                    local line3_2 = self:TranslateInstance(profile.info3_2, instance)
+                    local line3_1 = self:TranslateInstance(profile.INFO3_L, instance)
+                    local line3_2 = self:TranslateInstance(profile.INFO3_R, instance)
                     tooltip:AddDoubleLine(line3_1, line3_2)
                 end
             end
@@ -686,8 +749,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
     end
 
     db.heroics = db.heroics or {}
-    if profile.info4 then
-        if profile.info4oneline then
+    if profile.INFO4 then
+        if profile.INFO4_SHORT then
             local oneline = ""
             for i = 1, #db.heroics do
                 local instance = db.heroics[i]
@@ -705,8 +768,8 @@ function SavedClassic:ShowInstanceInfo(tooltip, character)
                 local instance = db.heroics[i]
                 local remain = SecondsToTime(instance.reset - time())
                 if remain and ( remain ~= "" ) then
-                    local line4_1 = self:TranslateInstance(profile.info4_1, instance)
-                    local line4_2 = self:TranslateInstance(profile.info4_2, instance)
+                    local line4_1 = self:TranslateInstance(profile.INFO4_L, instance)
+                    local line4_2 = self:TranslateInstance(profile.INFO4_R, instance)
                     tooltip:AddDoubleLine(line4_1, line4_2)
                 end
             end
@@ -774,8 +837,8 @@ function SavedClassic:InitUI()
     local ui = CreateFrame("Button", self.name.."FloatingUI", UIParent, "BackdropTemplate")
     self.ui = ui
     ui:EnableMouse(true)
-    ui:SetWidth(profile.frameX)
-    ui:SetHeight(profile.frameY)
+    ui:SetWidth(profile.FLOAT_UI_W)
+    ui:SetHeight(profile.FLOAT_UI_H)
     ui:SetMovable(true)
     ui:SetBackdrop({
         bgFile = "Interface/TutorialFrame/TutorialFrameBackground",
@@ -806,7 +869,7 @@ function SavedClassic:InitUI()
             GameTooltip:SetPoint("BOTTOM", s , "TOP")
         end
         self:ShowInfoTooltip(GameTooltip)
-        GameTooltip:SetScale((profile.scale or 100) / 100)
+        GameTooltip:SetScale((profile.TOOLTIP_SCALE or 100) / 100)
         GameTooltip:Show()
     end)
     ui:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -830,7 +893,7 @@ function SavedClassic:InitUI()
         GameTooltip:Show()
     end)
 
-    if profile.frameShow then
+    if profile.FLOAT_UI then
         self.ui:Show()
     else
         self.ui:Hide()
@@ -852,10 +915,10 @@ function SavedClassic:InitDBIcon()
         end,
         OnTooltipShow = function(tooltip)
             self:ShowInfoTooltip(tooltip)
-            tooltip:SetScale((self.db.profile.scale or 100) / 100)
+            tooltip:SetScale((self.db.profile.TOOLTIP_SCALE or 100) / 100)
         end,
     })
-    self.icon:Register(self.name, self.iconLDB, self.db.profile.minimapIcon)
+    self.icon:Register(self.name, self.iconLDB, self.db.profile.MINIMAP_ICON)
 end
 
 function SavedClassic:ToggleConfig()
@@ -1074,21 +1137,21 @@ function SavedClassic:BuildCurrencyInfo()
 end
 
 function SavedClassic:BuildOptions()
-    self.optionsTable = {
+    SavedClassic.optionsTable = {
         name = self.name,
         handler = self,
-        type = 'group',
+        type = "group",
         childGroups = "tab",
         get = function(info) return self.db.profile[info[#info]] end,
         set = function(info, value) self.db.profile[info[#info]] = value end,
         args = {
             display = {
-                name = L["Display"],
+                name = L["DISPLAY"],
                 type = "group",
                 order = 10,
                 args = {
-                    scale = {
-                        name = L["Set tooltip scale"],
+                    TOOLTIP_SCALE = {
+                        name = L["TOOLTIP_SCALE"],
                         type = "range",
                         min = 60,
                         max = 150,
@@ -1096,8 +1159,8 @@ function SavedClassic:BuildOptions()
                         order = 51,
                     },
                     blank11 = { name = "", type = "description", order = 52, },
-                    frameShow = {
-                        name = L["Show floating UI frame"],
+                    FLOAT_UI = {
+                        name = L["FLOAT_UI"],
                         type = "toggle",
                         order = 101,
                         set = function(info, value)
@@ -1105,8 +1168,8 @@ function SavedClassic:BuildOptions()
                             if value then self.ui:Show() else self.ui:Hide() end
                         end,
                     },
-                    frameX = {
-                        name = L["Floating UI width"],
+                    FLOAT_UI_W = {
+                        name = L["FLOAT_UI_W"],
                         type = "range",
                         min = 80,
                         max = 200,
@@ -1117,8 +1180,8 @@ function SavedClassic:BuildOptions()
                             self.ui:SetWidth(value)
                         end
                     },
-                    frameY = {
-                        name = L["Floating UI height"],
+                    FLOAT_UI_H = {
+                        name = L["FLOAT_UI_H"],
                         type = "range",
                         min = 20,
                         max = 50,
@@ -1130,47 +1193,48 @@ function SavedClassic:BuildOptions()
                         end
                     },
                     frameDesc = {
-                        name = L["Desc - Frame"],
+                        name = L["FLOAT_UI_DESCRIPTION"],
                         type = "description",
                         order = 104
                     },
-                    minimapIcon = {
-                        name = L["Show minimap icon"],
+                    MINIMAP_ICON = {
+                        name = L["MINIMAP_ICON"],
                         type = "toggle",
                         order = 111,
                         get = function(_)
-                            return not self.db.profile.minimapIcon.hide
+                            return not self.db.profile.MINIMAP_ICON.hide
                         end,
                         set = function(info, value)
                             self.db.profile[info[#info]].hide = not value
                             if value then self.icon:Show(self.name) else self.icon:Hide(self.name) end
                         end,
                     },
-                    showInfoPer = {
-                        name = L["Show info"],
+                    DISPLAY_SCOPE = {
+                        name = L["DISPLAY_SCOPE"],
                         type = "select",
                         values = {
-                            char = L["per Character"],
-                            realm = L["per Realm"]
+                            char = L["Character"],
+                            realm = L["Realm"],
+                            account = L["Account"],
                         },
                         style = "radio",
                         order = 121
                     },
-                    showTotalGold = {
-                        name = L["Show total gold"],
+                    TOTAL_GOLD = {
+                        name = L["TOTAL_GOLD"],
                         type = "toggle",
                         order = 122,
                     },
-                    hideLevelUnder = {
-                        name = L["Hide info from level under"],
+                    HIDE_LEVEL = {
+                        name = L["HIDE_LEVEL"],
                         type = "range",
                         min = 1,
                         max = GetMaxPlayerLevel(),
                         step = 1,
                         order = 131
                     },
-                    currentFirst = {
-                        name = L["Show current chracter first"],
+                    CURRENT_1ST = {
+                        name = L["CURRENT_1ST"],
                         type = "toggle",
                         set = function(info, value)
                             self.db.profile[info[#info]] = value
@@ -1178,8 +1242,8 @@ function SavedClassic:BuildOptions()
                         end,
                         order = 141
                     },
-                    sortOrder = {
-                        name = L["Sort Order"],
+                    SORT_BY = {
+                        name = L["SORT_BY"],
                         type = "select",
                         values = {
                             name    = L["name"],
@@ -1196,8 +1260,8 @@ function SavedClassic:BuildOptions()
                         end,
                         order = 151,
                     },
-                    sortOption = {
-                        name = L["Sort Option"],
+                    SORT_ORDER = {
+                        name = L["SORT_ORDER"],
                         type = "select",
                         values = {
                             [0] = L["Descending"],
@@ -1206,8 +1270,8 @@ function SavedClassic:BuildOptions()
                         style = "radio",
                         order = 152,
                     },
-                    exclude = {
-                        name = L["Exclude Characters"];
+                    EXCLUDE = {
+                        name = L["EXCLUDE"];
                         type = "input",
                         width = "full",
                         order = 161,
@@ -1219,23 +1283,23 @@ function SavedClassic:BuildOptions()
                 },
             },
             tooltip = {
-                name = L["Tooltip"],
+                name = L["TOOLTIP"],
                 type = "group",
                 order = 20,
                 args = {
                     infoChar = {
-                        name = L["Tooltip - Character info."],
+                        name = L["TOOLTIP_CHARACTER"],
                         type = "group",
                         inline = true,
                         order = 31,
                         args = {
-                            info1 = {
-                                name = L["Line 1 of char info."],
+                            INFO1 = {
+                                name = L["INFO1"],
                                 type = "toggle",
                                 width = "full",
                                 order = 11
                             },
-                            info1_1 = {
+                            INFO1_L = {
                                 name = L["Left"],
                                 type = "input",
                                 width = 2,
@@ -1243,7 +1307,7 @@ function SavedClassic:BuildOptions()
                                 desc = function() self.usage_character:Show() end,
                                 order = 12
                             },
-                            info1_2 = {
+                            INFO1_R = {
                                 name = L["Right"],
                                 type = "input",
                                 width = 1,
@@ -1251,13 +1315,13 @@ function SavedClassic:BuildOptions()
                                 desc = function() self.usage_character:Show() end,
                                 order = 13
                             },
-                            info2 = {
-                                name = L["Line 2 of char info."],
+                            INFO2 = {
+                                name = L["INFO2"],
                                 type = "toggle",
                                 width = "full",
                                 order = 21
                             },
-                            info2_1 = {
+                            INFO2_L = {
                                 name = L["Left"],
                                 type = "input",
                                 width = 2,
@@ -1265,7 +1329,7 @@ function SavedClassic:BuildOptions()
                                 desc = function() self.usage_character:Show() end,
                                 order = 22
                             },
-                            info2_2 = {
+                            INFO2_R = {
                                 name = L["Right"],
                                 type = "input",
                                 width = 1,
@@ -1276,23 +1340,23 @@ function SavedClassic:BuildOptions()
                         },
                     },
                     infoRaid = {
-                        name = L["Tooltip - Raid instances"],
+                        name = L["TOOLTIP_RAID"],
                         type = "group",
                         inline = true,
                         order = 41,
                         args = {
-                            info3 = {
-                                name = L["Lines of raid instances"],
+                            INFO3 = {
+                                name = L["INFO3"],
                                 type = "toggle",
                                 order = 1
                             },
-                            info3oneline = {
-                                name = L["Show in one-line"],
+                            INFO3_SHORT = {
+                                name = L["INFO_SHORT"],
                                 type = "toggle",
                                 order = 2,
                             },
                             blank31 = { name = "", type = "description", order = 10, },
-                            info3_1 = {
+                            INFO3_L = {
                                 name = L["Left"],
                                 type = "input",
                                 width = 2,
@@ -1300,7 +1364,7 @@ function SavedClassic:BuildOptions()
                                 desc = function() self.usage_character:Show() end,
                                 order = 21
                             },
-                            info3_2 = {
+                            INFO3_R = {
                                 name = L["Right"],
                                 type = "input",
                                 width = 1,
@@ -1311,23 +1375,23 @@ function SavedClassic:BuildOptions()
                         },
                     },
                     infoHeroic = {
-                        name = L["Tooltip - Heroic instances"],
+                        name = L["TOOLTIP_HEROIC"],
                         type = "group",
                         inline = true,
                         order = 51,
                         args = {
-                            info4 = {
-                                name = L["Lines of heroic instances"],
+                            INFO4 = {
+                                name = L["INFO4"],
                                 type = "toggle",
                                 order = 1,
                             },
-                            info4oneline = {
-                                name = L["Show in one-line"],
+                            INFO4_SHORT = {
+                                name = L["INFO_SHORT"],
                                 type = "toggle",
                                 order = 2,
                             },
                             blank41 = { name = "", type = "description", order = 10, },
-                            info4_1 = {
+                            INFO4_L = {
                                 name = L["Left"],
                                 type = "input",
                                 width = 2,
@@ -1335,7 +1399,7 @@ function SavedClassic:BuildOptions()
                                 desc = function() self.usage_character:Show() end,
                                 order = 21
                             },
-                            info4_2 = {
+                            INFO4_R = {
                                 name = L["Right"],
                                 type = "input",
                                 width = 1,
