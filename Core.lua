@@ -318,6 +318,7 @@ function SavedClassic:InitDB()
             end
         end
     end
+    self.db.global.version = self.version
 
     local db = self.db.realm[player]
     db = self.db.realm[player] or { }
@@ -1293,7 +1294,7 @@ function SavedClassic:BuildOptions()
                         type = "select",
                         values = {
                             [0] = L["Descending"],
-                            [1] = L["Asscending"],
+                            [1] = L["Ascending"],
                         },
                         style = "radio",
                         order = 152,
