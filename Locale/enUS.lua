@@ -22,6 +22,7 @@ L["MINIMAP_ICON"] = "Minimap Icon"
 L["DISPLAY_SCOPE"] = "Display Scope"
 L["Character"] = true
 L["Realm"] = true
+L["Account"] = true
 L["TOTAL_GOLD"] = "Total Gold"
 L["HIDE_LEVEL"] = "Hide Character Below Level"
 L["CURRENT_1ST"] = "Current Chracter First"

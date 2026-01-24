@@ -9,7 +9,18 @@ local MSG_SUFFIX = " |cff00ff00■|r"
 
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
-local p = function(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
+local function p(str) print(MSG_PREFIX..str..MSG_SUFFIX) end
+local function reverse(direction)
+    if direction == "LEFT" then
+        return "RIGHT"
+    elseif direction == "RIGHT" then
+        return "LEFT"
+    elseif direction == "TOP" then
+        return "BOTTOM"
+    elseif direction == "BOTTOM" then
+        return "TOP"
+    end
+end
 
 local dbDefault = {
     global = {
@@ -330,20 +341,23 @@ function SavedClassic:InitDB()
 end
 
 function SavedClassic:SetOrder()
+    self.order = self:GetSorted(self.db.realm)
+end
+
+function SavedClassic:GetSorted(rdb)
     local profile = self.db.profile
     local exclude = { }
-    self.order = { }
+    local order = { }
 
     for ch in string.gmatch(profile.EXCLUDE, "[^%s,;]*") do
         exclude[ch] = true
     end
-
-    for ch, cdb in pairs(self.db.realm) do
+    for ch, cdb in pairs(rdb) do
         if not exclude[ch] then
-            table.insert(self.order, cdb)
+            table.insert(order, cdb)
         end
     end
-    table.sort(self.order,
+    table.sort(order,
         function(a, b)
             if profile.CURRENT_1ST then
                 if a.name == player then return true end
@@ -368,6 +382,7 @@ function SavedClassic:SetOrder()
             end
         end
     )
+    return order
 end
 
 function SavedClassic:ResetWholeDB()
@@ -575,49 +590,61 @@ end
 function SavedClassic:ShowInfoTooltip(tooltip)
     local profile = self.db.profile
     local db = self.db.realm[player]
-    local titleRealm = ""
-    if profile.DISPLAY_SCOPE == "realm" then titleRealm = " - " .. GetRealmName() end
 
     if not self.ui.noticed then
         p(L["Raid Table Notice"])
         self.ui.noticed = true
     end
-
     self:SaveInfo()
 
-    local totalGold = ""
-    if profile.TOTAL_GOLD then
-        totalGold = floor((self.totalMoney + db.currencyCount[0].quantity) / 10000).. self.currencies[1].icon
-    end
-    tooltip:AddDoubleLine(MSG_PREFIX .. titleRealm .. MSG_SUFFIX, totalGold)
-
-    if profile.DISPLAY_SCOPE == "character" then
+    if profile.DISPLAY_SCOPE == "char" then
+        tooltip:AddDoubleLine(MSG_PREFIX .. MSG_SUFFIX)
         self:ShowInstanceInfo(tooltip, player)
     else
         -- if profile.DISPLAY_SCOPE == "realm" then
+        local totalGold = ""
+        if profile.TOTAL_GOLD then
+            totalGold = floor((self.totalMoney + db.currencyCount[0].quantity) / 10000).. self.currencies[1].icon
+        end
+        tooltip:AddDoubleLine(MSG_PREFIX .. " - " .. GetRealmName() .. MSG_SUFFIX, totalGold)
         for _, cdb in ipairs(self.order) do
             if cdb.level < profile.HIDE_LEVEL then
             else
                 self:ShowInstanceInfo(tooltip, cdb.name)
             end
         end
+    end
 
-        if profile.DISPLAY_SCOPE == "account" then
-            local n = 2
-            for realm, rdb in pairs(SavedClassicDB.realm) do
-                if realm ~= GetRealmName() then
-                    local nextTooltip = CreateFrame("GameTooltip", addonName.."Info"..n)
-                    nextTooltip:SetOwner(tooltip, "ANCHOR_NONE")
-                    nextTooltip:SetPoint("TOPRIGHT", tooltip, "TOPLEFT")
-                    for ch, cdb in pairs(rdb) do
-                        if (cdb.level or 0) < profile.HIDE_LEVEL then
-                        else
-                            self:ShowInstanceInfo(tooltip, ch, realm)
-                        end
-                    end
-                    tooltip = nextTooltip
-                    n = n + 1
+    if profile.DISPLAY_SCOPE == "account" then
+        local n = 2
+        for realm, rdb in pairs(SavedClassicDB.realm) do
+            if realm ~= GetRealmName() then
+                if not tooltip.nextTooltip then
+                    tooltip.nextTooltip = CreateFrame("GameTooltip", tooltip:GetName()..addonName..n, tooltip, "GameTooltipTemplate")
                 end
+                tooltip.nextTooltip:SetOwner(tooltip, "ANCHOR_NONE")
+                tooltip.nextTooltip.attachDirection = tooltip.attachDirection or "LEFT"
+                tooltip.nextTooltip:SetPoint("TOP"..reverse(tooltip.attachDirection), tooltip, "TOP"..tooltip.attachDirection)
+                tooltip = tooltip.nextTooltip
+                local totalGold = ""
+                local order = self:GetSorted(rdb)
+                if profile.TOTAL_GOLD then
+                    totalGold = 0
+                    for _, cdb in ipairs(order) do
+                        totalGold = totalGold + floor((cdb.currencyCount[0].quantity) / 10000)
+                    end
+                    totalGold = totalGold .. self.currencies[1].icon
+                end
+
+                tooltip:AddDoubleLine(MSG_PREFIX .. realm .. MSG_SUFFIX, totalGold)
+                for _, cdb in ipairs(order) do
+                    if (cdb.level or 0) < profile.HIDE_LEVEL then
+                    else
+                        self:ShowInstanceInfo(tooltip, cdb.name, realm)
+                    end
+                end
+                tooltip:Show()
+                n = n + 1
             end
         end
     end
@@ -859,15 +886,14 @@ function SavedClassic:InitUI()
 
     --ui:SetUserPlaced(true)
     ui:SetScript("OnEnter", function(s)
-        local divider = GetScreenHeight() / 2
-        local cursorY = select(2, GetCursorPosition())
         GameTooltip:Hide()
-        GameTooltip:SetOwner(s, "ANCHOR_NONE", 0, 0)
-        if cursorY > divider then
-            GameTooltip:SetPoint("TOP", s , "BOTTOM")
-        else
-            GameTooltip:SetPoint("BOTTOM", s , "TOP")
-        end
+        GameTooltip:SetOwner(s, "ANCHOR_NONE")
+        local cursorX, cursorY = GetCursorPosition()
+        local anchorY = (cursorY < GetScreenHeight() / 2) and "TOP" or "BOTTOM"
+        local anchorX = (cursorX < GetScreenWidth() / 2) and "RIGHT" or "LEFT"
+        GameTooltip:SetPoint(reverse(anchorY)..anchorX, s, anchorY..anchorX)
+        GameTooltip.attachDirection = anchorX
+
         self:ShowInfoTooltip(GameTooltip)
         GameTooltip:SetScale((profile.TOOLTIP_SCALE or 100) / 100)
         GameTooltip:Show()
@@ -914,6 +940,8 @@ function SavedClassic:InitDBIcon()
             end
         end,
         OnTooltipShow = function(tooltip)
+            local cursorX, _ = GetCursorPosition()
+            tooltip.attachDirection = (cursorX < GetScreenWidth() / 2) and "RIGHT" or "LEFT"
             self:ShowInfoTooltip(tooltip)
             tooltip:SetScale((self.db.profile.TOOLTIP_SCALE or 100) / 100)
         end,
