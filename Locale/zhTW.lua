@@ -1,47 +1,47 @@
 local addonName, _ = ...
-local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "zhCN")
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "zhTW")
 
 if L then
-L["Transmute"] = "转换"
+L["Transmute"] = "轉換"
 
-L["Reset due to update"] = function(oldv, newv) return "因版本更新而重置部分或全部数据 ("..oldv.." -> "..newv.. ")" end
-L["extended"] = "(扩展)"
+L["Reset due to update"] = function(oldv, newv) return "因版本更新而重置部分或者全部數據 ("..oldv.." -> "..newv.. ")" end
+L["extended"] = "(擴展)"
 
-L["minites"] = "分钟"
-L["Enabled"] = "启用"
+L["minites"] = "分鐘"
+L["Enabled"] = "啟用"
 L["Disabled"] = "禁用"
 
-L["Raid Table Notice"] = "左键点击打开表格, 右键点击打开设置"
-L["DISPLAY"] = "显示"
+L["Raid Table Notice"] = "左鍵點擊打開進度表格, 右鍵點擊打開設置"
+L["DISPLAY"] = "顯示"
 L["TOOLTIP_SCALE"] = "Tooltip Scale(%)"
-L["FLOAT_UI"] = "悬浮窗"
-L["FLOAT_UI_W"] = "悬浮窗宽度"
-L["FLOAT_UI_H"] = "悬浮窗高度"
-L["FLOAT_UI_DESCRIPTION"] = "|cff00ff00■|r |cffccaa00Shift - 拖动来移动框架|r"
-L["MINIMAP_ICON"] = "显示小地图按钮"
-L["DISPLAY_SCOPE"] = "显示范围"
+L["FLOAT_UI"] = "懸浮窗"
+L["FLOAT_UI_W"] = "懸浮窗寬度"
+L["FLOAT_UI_H"] = "懸浮窗高度"
+L["FLOAT_UI_DESCRIPTION"] = "|cff00ff00■|r |cffccaa00Shift - 拖動來移動框架|r"
+L["MINIMAP_ICON"] = "顯示小地圖按鈕"
+L["DISPLAY_SCOPE"] = "顯示範圍"
 L["Character"] = "角色"
-L["Realm"] = "服务器"
-L["Account"] = "账号"
+L["Realm"] = "伺服器"
+L["Account"] = "帳號"
 L["TOTAL_GOLD"] = "總金"
-L["HIDE_LEVEL"] = "低于等级隐藏信息"
-L["CURRENT_1ST"] = "当前角色优先"
-L["SORT_BY"] = "排序依据"
-L["SORT_ORDER"] = "排序顺序"
+L["HIDE_LEVEL"] = "低於等級隱藏信息"
+L["CURRENT_1ST"] = "優先顯示當前角色"
+L["SORT_BY"] = "排序依據"
+L["SORT_ORDER"] = "排序順序"
 L["Descending"] = "降序"
 L["Asscending"] = "升序"
-L["EXCLUDE"] = "不想看见的角色(用英文逗号或者空格分割)"
+L["EXCLUDE"] = "不想看見的角色(用英文逗號或者空格分隔)"
 L["TOOLTIP"] = "提示"
 L["TOOLTIP_CHARACTER"] = "提示 - 角色信息"
 L["INFO1"] = "角色信息第一行"
 L["INFO2"] = "角色信息第二行"
 L["Left"] = "左"
 L["Right"] = "右"
-L["TOOLTIP_RAID"] = "提示 - 团本信息"
-L["INFO3"] = "团本信息行"
+L["TOOLTIP_RAID"] = "提示 - 團本信息"
+L["INFO3"] = "團本信息行"
 L["TOOLTIP_HEROIC"] = "提示 - 英雄本信息"
 L["INFO4"] = "英雄本信息行"
-L["INFO_SHORT"] = "单行显示"
+L["INFO_SHORT"] = "單行顯示"
 
 L["Common"] = true
 L["LowLevel"] = true
@@ -84,23 +84,23 @@ L["arena"   ] = true
 -- Usage
 L["Usage_Character"] = {
     { "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r" },
-    { "[name]"          , "名称(职业颜色)"  , "[name2]"         , "名称(无颜色)"    },
+    { "[name]"          , "名稱(職業顏色)"  , "[name2]"         , "名稱(無顏色)"  },
     { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
-    { "[elapsed]"       , "自上次更新经过的时间", "[cooldown]"     , "专业技能冷却时间"    },
-    { "[item:name]"     , "[item:name]"     , "图标和价格",            },
+    { "[elapsed]"       , "自上次更新經過的時間", "[cooldown]"     , "專業技能冷卻時間"    },
+    { "[item:name]"     , "[item:name]"     , "物品圖標和數量"  ,               },
     { "[dqCom]"         , "[dqReset]"       ,   },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
-                        , "颜色开始(RGB 代码)", "[color]"         , "颜色结束"   },
+                        , "顏色開始(RGB 代碼)", "[color]"         , "顏色結束"  },
     { " |cffff0000!|r 通過在末尾添加 /###### 著色",             },
-    { "[currency:name]" , "图标和价格"      ,  },
+    { "[currency:name]" , "物品圖標和數量"  ,   },
 }
 L["Usage_Instance"] = {
-    { "|cff00ff00■|r |cffccaa00Keywords for Instance info|r",   },
-    { "[instName]"      , "副本名称"        , "[difficulty]"    , "大小和难度"  },
-    { "[progress]"      , "BOSS击杀数量"    , "[bosses]"        , "BOSS数量"    },
-    { "[time]"          , "重置时间"        , "[instID]"        , "副本 ID"     },
+    { "|cff00ff00■|r |cffccaa00使用方法 - 副本信息|r",   },
+    { "[instName]"      , "副本名稱"        , "[difficulty]"    , "大小和難度"  },
+    { "[progress]"      , "BOSS擊殺數量"    , "[bosses]"        , "BOSS數量"       },
+    { "[time]"          , "重置時間"        , "[instID]"        , "副本 ID" },
 }
 -- Abbreviation
 L["H2_Hellfire Ramparts"]         = "HR"
@@ -153,36 +153,36 @@ L["R1_Ruins of Ahn'Qiraj"       ] = "RAQ"
 L["R1_Blackwing Lair"           ] = "BW"
 L["R1_Molten Core"              ] = "MC"
 -- Full Name
-L["Mogu'shan Vaults"            ] = "魔古山宝库"
-L["Heart of Fear"               ] = "恐惧之心"
-L["Terrace of Endless Spring"   ] = "永春台"
-L["Throne of Thunder"           ] = "雷电王座"
-L["Siege of Orgrimmar"          ] = "决战奥格瑞玛"
-L["Dragon Soul"                 ] = "巨龙之魂"
-L["Firelands"                   ] = "火焰之地"
-L["Throne of the Four Winds"    ] = "风神王座"
-L["Blackwing Descent"           ] = "黑翼血环"
-L["The Bastion of Twilight"     ] = "暮光堡垒"
-L["Baradin Hold"                ] = "巴拉丁监狱"
-L["Icecrown Citadel"            ] = "冰冠堡垒"
-L["The Ruby Sanctum"            ] = "红玉圣殿"
-L["Trial of the Crusader"       ] = "十字军的试炼"
-L["Ulduar"                      ] = "奥杜尔"
-L["Naxxramas"                   ] = "纳克萨玛斯"
-L["The Eye of Eternity"         ] = "永恒之眼"
-L["The Obsidian Sanctum"        ] = "黑曜石圣殿"
-L["Onyxia's Lair"               ] = "奥妮克希亚的巢穴"
-L["Vault of Archavon"           ] = "阿尔卡冯的宝库"
-L["The Sunwell"                 ] = "太阳之井"
-L["Black Temple"                ] = "黑暗神殿"
-L["-Hyjal"                      ] = "海加尔山之战"
-L["-Serpentshrine Cavern"       ] = "盘牙湖泊：毒蛇神殿"
-L["Tempest Keep"                ] = "风暴要塞"
-L["Karazhan"                    ] = "卡拉赞"
-L["Gruul's Lair"                ] = "格鲁尔的巢穴"
-L["Magtheridon's Lair"          ] = "玛瑟里顿的巢穴"
-L["Ahn'Qiraj Temple"            ] = "安其拉神殿"
-L["Ruins of Ahn'Qiraj"          ] = "安其拉废墟"
+L["Mogu'shan Vaults"            ] = "魔古山寶庫"
+L["Heart of Fear"               ] = "恐懼之心"
+L["Terrace of Endless Spring"   ] = "豐泉台"
+L["Throne of Thunder"           ] = "雷霆王座"
+L["Siege of Orgrimmar"          ] = "圍攻奧格瑪"
+L["Dragon Soul"                 ] = "巨龍之魂"
+L["Firelands"                   ] = "火源之界"
+L["Throne of the Four Winds"    ] = "四風王座"
+L["Blackwing Descent"           ] = "黑翼陷窟"
+L["The Bastion of Twilight"     ] = "暮光堡壘"
+L["Baradin Hold"                ] = "巴拉丁堡"
+L["Icecrown Citadel"            ] = "冰冠城塞"
+L["The Ruby Sanctum"            ] = "晶紅聖所"
+L["Trial of the Crusader"       ] = "十字軍試煉"
+L["Ulduar"                      ] = "奧杜亞"
+L["Naxxramas"                   ] = "納克薩瑪斯"
+L["The Eye of Eternity"         ] = "永恆之眼"
+L["The Obsidian Sanctum"        ] = "黑曜聖所"
+L["Onyxia's Lair"               ] = "奧妮克希亞的巢穴"
+L["Vault of Archavon"           ] = "亞夏梵穹殿"
+L["The Sunwell"                 ] = "太陽之井"
+L["Black Temple"                ] = "黑暗神廟"
+L["-Hyjal"                      ] = "海加爾山之戰"
+L["-Serpentshrine Cavern"       ] = "盤牙:毒蛇神殿洞穴"
+L["Tempest Keep"                ] = "風暴要塞"
+L["Karazhan"                    ] = "卡拉贊"
+L["Gruul's Lair"                ] = "戈魯爾之巢"
+L["Magtheridon's Lair"          ] = "瑪瑟里頓的巢穴"
+L["Ahn'Qiraj Temple"            ] = "安其拉神廟"
+L["Ruins of Ahn'Qiraj"          ] = "安其拉廢墟"
 L["Blackwing Lair"              ] = "黑翼之巢"
 L["Molten Core"                 ] = "熔火之心"
 
