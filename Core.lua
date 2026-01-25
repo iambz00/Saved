@@ -388,7 +388,6 @@ end
 
 function SavedClassic:ResetWholeDB()
     self.db:ResetDB()
-    self:InitDB()
     self:SetOrder()
     self.totalMoney = 0
     self:SaveInfo()
