@@ -2,12 +2,9 @@ local addonName, _ = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "zhTW")
 
 if L then
-L["Transmute"] = "轉換"
-
 L["Reset due to update"] = function(oldv, newv) return "因版本更新而重置部分或者全部數據 ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(擴展)"
 
-L["minites"] = "分鐘"
 L["Enabled"] = "啟用"
 L["Disabled"] = "禁用"
 
@@ -75,40 +72,29 @@ L["bosses"    ] = true
 L["time"      ] = true
 L["playedtotal"] = true
 L["playedlevel"] = true
--- Localized Currency Name
+-- Currency
 L["gold"    ] = true
 L["silver"  ] = true
 L["copper"  ] = true
-L["honor"   ] = true
-L["conquest"] = true
-L["JP"      ] = true
-L["VP"      ] = true
-L["Darkmoon"] = true
--- MoP
-L["Elder"   ] = true
-L["Lesser"  ] = true
-L["Mogu"    ] = true
-L["Seal"    ] = true
-L["Timeless"] = true
-L["August"  ] = true
-L["Ironpaw" ] = true
-L["Bloody"  ] = true
 -- Usage
 L["Usage_Character"] = {
-    { "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r" },
+    { "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r" , "" , "Shift 點擊以新增至設定欄位" },
     { "[name]"          , "名稱(職業顏色)"  , "[name2]"         , "名稱(無顏色)"  },
     { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "自上次更新經過的時間", "[cooldown]"     , "專業技能冷卻時間"    },
-    { "[item:name]"     , "[item:name]"     , "物品圖標和數量"  ,               },
+    { "[item:name]"     , "[item:ID]"       , "或物品連結"      , "物品圖標和數量"  },
     { "[dqCom]"         , "[dqReset]"       , "[playedtotal]"   , "[playedlevel]" },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "顏色開始(RGB 代碼)", "[color]"         , "顏色結束"  },
     { " |cffff0000!|r 通過在末尾添加 /###### 著色",             },
-    { "[currency:name]" , "[currency:ID]"   , "物品圖標和數量",     },
-    { " |cffff0000!|r Valor/Conquest Style" ,  "", "[currency:VP-3]", "|T463447:14:14|t960(4460/9600)"   },
-    { "[currency:VP-2]" , "|T463447:14:14|t960(|cFFFF75755140|r)", "[currency:VP-1]"   , "|T463447:14:14|t960(-5140)"   },
+    { "[currency:ID]"   , "或貨幣連結（在貨幣分頁 Shift 點擊）" , "" , "物品圖標和數量",    },
+    { "[currency:gold]" , "[currency:silver]", "[currency:copper]"  ,   },
+    { " |cffff0000!|r 有上限的貨幣顯示方式（未指定時自動於 0 與 2 間選擇）" , },
+    { "[currency:396-0]", "|T463447:14:14|t960" , "[currency:396-1]", "|T463447:14:14|t960(-5140)", },
+    { "[currency:396-2]", "|T463447:14:14|t960(|cFFFF75755140|r)" , "[currency:396-3]" , "|T463447:14:14|t960(4460/9600)" }
+
 }
 L["Usage_Instance"] = {
     { "|cff00ff00■|r |cffccaa00使用方法 - 副本信息|r",   },
@@ -198,4 +184,18 @@ L["Ruins of Ahn'Qiraj"          ] = "安其拉廢墟"
 L["Blackwing Lair"              ] = "黑翼之巢"
 L["Molten Core"                 ] = "熔火之心"
 
+-- Should be removed later
+L["honor"   ] = true
+L["conquest"] = true
+L["JP"      ] = true
+L["VP"      ] = true
+L["Darkmoon"] = true
+L["Elder"   ] = true
+L["Lesser"  ] = true
+L["Mogu"    ] = true
+L["Seal"    ] = true
+L["Timeless"] = true
+L["August"  ] = true
+L["Ironpaw" ] = true
+L["Bloody"  ] = true
 end

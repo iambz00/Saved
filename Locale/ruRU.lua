@@ -2,12 +2,9 @@ local addonName, _ = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "ruRU")
 
 if L then
-L["Transmute"] = "Трансмутация"
-
 L["Reset due to update"] = function(oldv, newv) return "Сброс некоторых или всех данных из-за обновления версии ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(расширение)"
 
-L["minites"] = "м"
 L["Enabled"] = "Включено"
 L["Disabled"] = "Отключено"
 
@@ -75,40 +72,28 @@ L["bosses"    ] = true
 L["time"      ] = true
 L["playedtotal"] = true
 L["playedlevel"] = true
--- Localized Currency Name
+-- Currency
 L["gold"    ] = true
 L["silver"  ] = true
 L["copper"  ] = true
-L["honor"   ] = true
-L["conquest"] = true
-L["JP"      ] = true
-L["VP"      ] = true
-L["Darkmoon"] = true
--- MoP
-L["Elder"   ] = true
-L["Lesser"  ] = true
-L["Mogu"    ] = true
-L["Seal"    ] = true
-L["Timeless"] = true
-L["August"  ] = true
-L["Ironpaw" ] = true
-L["Bloody"  ] = true
 -- Usage
 L["Usage_Character"] = {
-    { "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r" },
+    { "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r" , "" , "Shift‑клик — добавить в окно настроек" },
     { "[name]"          , "Имя (цвет класса)", "[name2]"        , "Имя (без цвета)"  },
     { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "Прошедшее время после последнего обновления", "[cooldown]"     , "Перезарядка навыков профессии"    },
-    { "[item:aимя]"     , "[item:name]"     , "значок и количество",            },
+    { "[item:name]"     , "[item:ID]"       , "или ссылка"      , "значок и количество" },
     { "[dqCom]"         , "[dqReset]"       , "[playedtotal]"   , "[playedlevel]" },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "Цвет начала(RGB кодировка)", "[color]"         , "Цвет окончания"   },
     { " |cffff0000!|r Цвет, добавляя /###### в конец",             },
-    { "[currency:имя]"  , "[currency:ID]"   , "значок и количество",  },
-    { " |cffff0000!|r Valor/Conquest Style" ,  "", "[currency:VP-3]", "|T463447:14:14|t960(4460/9600)"   },
-    { "[currency:VP-2]" , "|T463447:14:14|t960(|cFFFF75755140|r)", "[currency:VP-1]"   , "|T463447:14:14|t960(-5140)"   },
+    { "[currency:ID]"  , "или ссылка на валюту (Shift‑клик во вкладке валют)" , "" , "значок и количество",  },
+    { "[currency:gold]" , "[currency:silver]", "[currency:copper]"  ,   },
+    { " |cffff0000!|r Формат отображения валют с лимитом (автовыбор между 0 и 2)"   ,   },
+    { "[currency:396-0]", "|T463447:14:14|t960" , "[currency:396-1]", "|T463447:14:14|t960(-5140)", },
+    { "[currency:396-2]", "|T463447:14:14|t960(|cFFFF75755140|r)" , "[currency:396-3]" , "|T463447:14:14|t960(4460/9600)" }
 }
 L["Usage_Instance"] = {
     { "|cff00ff00■|r |cffccaa00Использование - Информация о подземелье|r",   },
@@ -198,4 +183,18 @@ L["Ruins of Ahn'Qiraj"          ] = "Руины Ан'Киража"
 L["Blackwing Lair"              ] = "Логово Крыла Тьмы"
 L["Molten Core"                 ] = "Огненные Недра"
 
+-- Should be removed later
+L["honor"   ] = true
+L["conquest"] = true
+L["JP"      ] = true
+L["VP"      ] = true
+L["Darkmoon"] = true
+L["Elder"   ] = true
+L["Lesser"  ] = true
+L["Mogu"    ] = true
+L["Seal"    ] = true
+L["Timeless"] = true
+L["August"  ] = true
+L["Ironpaw" ] = true
+L["Bloody"  ] = true
 end
