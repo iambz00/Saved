@@ -1523,6 +1523,28 @@ function SavedClassic:BuildOptions()
                     },
                 },
             },
+            abbreviation = {
+                name = "ABBREVIATION",
+                type = "group",
+                order = 30,
+                get = function(info) return self.db.global.instance.raid[info[#info]].name end,
+                set = function(info, value) end,
+                -- set = nil,
+                args = (function()
+                    local ret = { }
+                    local i = 1
+                    for name, body in pairs(self.db.global.instance.raid) do
+                        ret[name] = {
+                            name = name,
+                            type = "input",
+                            width = 1,
+                            order = i,
+                        }
+                        i = i + 10
+                    end
+                    return ret
+                end)(),
+            },
             profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
         },
     }
