@@ -2,12 +2,9 @@ local addonName, _ = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true)
 
 if L then
-L["Transmute"] = true
-
 L["Reset due to update"] = function(oldv, newv) return "Reset some or entire data due to version update ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(extended)"
 
-L["minites"] = "m"
 L["Enabled"] = true
 L["Disabled"] = true
 
@@ -25,7 +22,7 @@ L["Realm"] = true
 L["Account"] = true
 L["TOTAL_GOLD"] = "Total Gold"
 L["HIDE_LEVEL"] = "Hide Character Below Level"
-L["CURRENT_1ST"] = "Current Chracter First"
+L["CURRENT_1ST"] = "Current Character First"
 L["SORT_BY"] = "Sort By"
 L["SORT_ORDER"] = "Sort Order"
 L["Descending"] = true
@@ -75,40 +72,28 @@ L["bosses"    ] = true
 L["time"      ] = true
 L["playedtotal"] = true
 L["playedlevel"] = true
--- Localized Currency Name
+-- Currency
 L["gold"    ] = true
 L["silver"  ] = true
 L["copper"  ] = true
-L["honor"   ] = true
-L["conquest"] = true
-L["JP"      ] = true
-L["VP"      ] = true
-L["Darkmoon"] = true
--- MoP
-L["Elder"   ] = true
-L["Lesser"  ] = true
-L["Mogu"    ] = true
-L["Seal"    ] = true
-L["Timeless"] = true
-L["August"  ] = true
-L["Ironpaw" ] = true
-L["Bloody"  ] = true
 -- Usage
 L["Usage_Character"] = {
-    { "|cff00ff00■|r |cffccaa00Keywords for Character info|r" },
-    { "[name]"          , "Name(color)"     , "[name2]"         , "Name(no color)"  },
+    { "|cff00ff00■|r |cffccaa00Keywords for Character info|r" , "" , "Shift-Click to insert into editbox" },
+    { "[name]"          , "Name(class color)" , "[name2]"       , "Name(no color)"  },
     { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "After last update", "[cooldown]"     , "Tradeskill cooldowns"    },
-    { "[item:name]"     , "[item:name]"     , "Item Icon and Count",            },
+    { "[item:name]"     , "[item:ID]"       , "or Item link"    , "Icon and count" },
     { "[dqCom]"         , "[dqReset]"       , "[playedtotal]"   , "[playedlevel]" },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "Color start(RGB)", "[color]"         , "Color end"   },
-    { "! attach /###### to any keyword to apply color",             },
-    { "[currency:name]" , "[currency:ID]"   , "Currency Icon and Count",  },
-    { " |cffff0000!|r Valor/Conquest Style" ,  "", "[currency:VP-3]", "|T463447:14:14|t960(4460/9600)"   },
-    { "[currency:VP-2]" , "|T463447:14:14|t960(|cFFFF75755140|r)", "[currency:VP-1]"   , "|T463447:14:14|t960(-5140)"   },
+    { " |cffff0000!|r Append /###### to any keyword to apply color" ,   },
+    { "[currency:ID]"   , "or Currency link(Shift-click on currency tab)" , "" , "Icon and amount", },
+    { "[currency:gold]" , "[currency:silver]", "[currency:copper]"  ,   },
+    { " |cffff0000!|r Display type for capped currency(auto-selects between 0 and 2 if unspecified)" ,  },
+    { "[currency:396-0]", "|T463447:14:14|t960" , "[currency:396-1]", "|T463447:14:14|t960(-5140)", },
+    { "[currency:396-2]", "|T463447:14:14|t960(|cFFFF75755140|r)" , "[currency:396-3]" , "|T463447:14:14|t960(4460/9600)" }
 }
 L["Usage_Instance"] = {
     { "|cff00ff00■|r |cffccaa00Keywords for Instance info|r",   },
@@ -198,4 +183,18 @@ L["Ruins of Ahn'Qiraj"          ] = true
 L["Blackwing Lair"              ] = true
 L["Molten Core"                 ] = true
 
+-- Should be removed later
+L["honor"   ] = true
+L["conquest"] = true
+L["JP"      ] = true
+L["VP"      ] = true
+L["Darkmoon"] = true
+L["Elder"   ] = true
+L["Lesser"  ] = true
+L["Mogu"    ] = true
+L["Seal"    ] = true
+L["Timeless"] = true
+L["August"  ] = true
+L["Ironpaw" ] = true
+L["Bloody"  ] = true
 end
