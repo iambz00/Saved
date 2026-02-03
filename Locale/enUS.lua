@@ -7,7 +7,6 @@ L["Transmute"] = true
 L["Reset due to update"] = function(oldv, newv) return "Reset some or entire data due to version update ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(extended)"
 
-L["minites"] = "m"
 L["Enabled"] = true
 L["Disabled"] = true
 
@@ -25,7 +24,7 @@ L["Realm"] = true
 L["Account"] = true
 L["TOTAL_GOLD"] = "Total Gold"
 L["HIDE_LEVEL"] = "Hide Character Below Level"
-L["CURRENT_1ST"] = "Current Chracter First"
+L["CURRENT_1ST"] = "Current Character First"
 L["SORT_BY"] = "Sort By"
 L["SORT_ORDER"] = "Sort Order"
 L["Descending"] = true
@@ -83,17 +82,17 @@ L["honor"   ] = true
 L["arena"   ] = true
 -- Usage
 L["Usage_Character"] = {
-    { "|cff00ff00■|r |cffccaa00Keywords for Character info|r" },
-    { "[name]"          , "Name(color)"     , "[name2]"         , "Name(no color)"  },
+    { "|cff00ff00■|r |cffccaa00Keywords for Character info|r" , "" , "Shift-Click to insert into editbox" },
+    { "[name]"          , "Name(class color)" , "[name2]"       , "Name(no color)"  },
     { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "After last update", "[cooldown]"     , "Tradeskill cooldowns"    },
-    { "[item:name]"     , "[item:name]"     , "Item Icon and Count",            },
+    { "[item:name]"     , "[item:ID]"       , "or Item link"    , "Icon and count" },
     { "[dqCom]"         , "[dqReset]"       ,   },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
                         , "Color start(RGB)", "[color]"         , "Color end"   },
-    { "! attach /###### to any keyword to apply color",             },
+    { " |cffff0000!|r Append /###### to any keyword to apply color" ,   },
     { "[currency:name]" , "Currency Icon and Count",  },
 }
 L["Usage_Instance"] = {

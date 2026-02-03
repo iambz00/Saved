@@ -61,20 +61,21 @@
 ]]
 
 local library = "LibTable"
+local version = 2
 assert(LibStub, format("%s requires LibStub", library))
 
 ---@class LibTable
-local lib, oldminor = LibStub:NewLibrary(library, 1)
+local lib, oldminor = LibStub:NewLibrary(library, version)
 if not lib then return end
 oldminor = oldminor or 0
 
 local DEFAULT_WIDTH = 32
-local DEFAULT_HEIGHTS = 18
+local DEFAULT_HEIGHT = 18
 local DEFAULT_SIZE = {
     rows = 1,
     cols = 2,
     widths = DEFAULT_WIDTH,
-    heights = DEFAULT_HEIGHTS,
+    heights = DEFAULT_HEIGHT,
 }
 
 lib.tables = lib.tables or { }
@@ -104,10 +105,13 @@ function LibTable_SetOption(tbl, options)
 end
 
 function LibTable_Resize(tbl, size)
-    size = size or tbl.size
+    tbl.size = tbl.size or { }
+    for k, v in pairs(tbl.size) do
+        size[k] = size[k] or v
+    end
     tbl.size = size
     size.widths = size.widths or DEFAULT_WIDTH
-    size.heights = size.heights or DEFAULT_HEIGHTS
+    size.heights = size.heights or DEFAULT_HEIGHT
     if type(size.widths) == "number" then size.widths = { size.widths } end
     if type(size.heights) == "number" then size.heights = { size.heights } end
     local name = tbl:GetName()
@@ -127,7 +131,10 @@ function LibTable_Resize(tbl, size)
     -- Consists of tr, td like HTML table
     tbl.tr = tbl.tr or {}
     for row = 1, size.rows do
-        local tr = tbl.tr[row] or CreateFrame("Button", name.."Row"..row, tbl)
+        local tr = tbl.tr[row]
+        if not tr then
+            tr = CreateFrame("Button", name.."Row"..row, tbl)
+        end
         tr:SetSize(1, size.heights[row])
         if row == 1 then    -- if 1st row
             tr:SetPoint("TOPLEFT", size.borders.left, - size.borders.top)
@@ -137,9 +144,16 @@ function LibTable_Resize(tbl, size)
         tr.td = tr.td or {}
         local xoffset = 0
         for col = 1, size.cols do
-            local td = tr.td[col] or tr:CreateFontString(tr:GetName().."Col"..col, "ARTWORK", "GameFontNormal")
+            local td = tr.td[col]
+            if not td then
+                td = CreateFrame("Button", tr:GetName().."Col"..col, tr)
+                td.text = td:CreateFontString(td:GetName().."Text", "ARTWORK", "GameFontNormal")
+                td.text:SetPoint("CENTER", td, "CENTER")
+            end
             xoffset = xoffset + (size.widths[col-1] or 0)
             td:SetPoint("LEFT", xoffset, 0)
+            td:SetWidth(size.widths[col] or size.widths[#size.widths])
+            td:SetHeight(size.heights[row] or size.heights[#size.heights])
             td.row = row
             td.col = col
             tr.td[col] = td
@@ -161,10 +175,10 @@ function LibTable_SetTable(tbl, mode, vtbl)
     -- Data exceed range are clipped
     for row = 1, #tbl.tr do
         for col = 1, #tbl.tr[row].td do
-            if mode == "value" then
-                local value = vtbl[row] and vtbl[row][col]
-                if value then   -- Nil DOESN'T change value
-                    tbl.tr[row].td[col]:SetText(value)
+            if mode == "text" then
+                local text = vtbl[row] and vtbl[row][col]
+                if text then   -- Nil DOESN'T change value
+                    tbl.tr[row].td[col].text:SetText(text)
                 end
             elseif mode == "data" then
                 -- Nil changes data
@@ -174,7 +188,7 @@ function LibTable_SetTable(tbl, mode, vtbl)
     end
 end
 
-function LibTable_SetRange(tbl, mode, rows, cols, value)
+function LibTable_SetRange(tbl, mode, rows, cols, data)
     if type(rows) == "number" then rows = { rows } end
     if type(cols) == "number" then cols = { cols } end
     if type(rows) == "boolean" and rows then
@@ -190,28 +204,36 @@ function LibTable_SetRange(tbl, mode, rows, cols, value)
             if row <= tbl.size.rows and col <= tbl.size.cols then
                 local cell = tbl.tr[row].td[col]
                 if mode == "text" then
-                    if value then   -- nil DOESN'T change value
-                        cell:SetText(value)
+                    if data then   -- nil DOESN'T change data
+                        cell.text:SetText(data)
                     end
                 elseif mode =="data" then
                     -- nil changes data
-                    cell.data = value
+                    cell.data = data
                 elseif mode == "callbacks" then
-                    for event, script in pairs(value) do
+                    for event, script in pairs(data) do
                         cell:SetScript(event, script)
                     end
                 elseif mode == "options" then
-                    for func, arg in pairs(value) do
+                    for func, arg in pairs(data) do
                         if type(arg) == "table" then
-                            cell[func](cell, unpack(arg))
+                            if cell[func] then
+                                cell[func](cell, unpack(arg))
+                            elseif cell.text[func] then
+                                cell.text[func](cell.text, unpack(arg))
+                            end
                         else
-                            cell[func](cell, arg)
+                            if cell[func] then
+                                cell[func](cell, arg)
+                            elseif cell.text[func] then
+                                cell.text[func](cell.text, arg)
+                            end
                         end
                     end
                 elseif mode == "justify" then
-                    LibTable_Cell_Justify(tbl, row, col, strlower(value))
-                elseif mode == "functions" and type(value) == "function" then
-                    value(tbl, cell)
+                    LibTable_Cell_Justify(tbl, row, col, strlower(data))
+                elseif mode == "functions" and type(data) == "function" then
+                    data(tbl, cell)
                 end
             end
         end
@@ -226,16 +248,17 @@ function LibTable_Cell_Justify(tbl, row, col, method)
         xoffset = xoffset + tbl.size.widths[c]
     end
     if method == "left" then
-        cell:SetPoint("LEFT", xoffset, 0)
-        cell:SetJustifyH("LEFT")
+        cell.text:ClearAllPoints()
+        cell.text:SetPoint("LEFT", cell, "LEFT")
+        cell.text:SetJustifyH("LEFT")
     elseif method == "center" then
-        xoffset = xoffset + math.floor(tbl.size.widths[col] / 2)
-        cell:SetSize(tbl.size.widths[col], tbl.size.heights[row])
-        cell:SetPoint("CENTER", xoffset, 0)
+        cell.text:ClearAllPoints()
+        cell.text:SetPoint("CENTER", cell, "CENTER")
+        cell.text:SetJustifyH("CENTER")
     elseif method == "right" then
-        xoffset = xoffset + tbl.size.widths[col]
-        cell:SetPoint("RIGHT", xoffset - 1, 0)
-        cell:SetJustifyH("RIGHT")
+        cell.text:ClearAllPoints()
+        cell.text:SetPoint("RIGHT", cell, "RIGHT")
+        cell.text:SetJustifyH("RIGHT")
     end
 end
 
@@ -258,7 +281,7 @@ function lib:CreateTable(name, parent, size, options, callbacks)
     tbl.Resize       =  function(...) return LibTable_Resize(...) end
     tbl.SetOption    =  function(...) return LibTable_SetOption(...) end
     tbl.SetCallback  =  function(...) return LibTable_SetCallback(...) end
-    tbl.SetTable     =  function(stbl, vtbl) return LibTable_SetTable(stbl, "value", vtbl) end
+    tbl.SetTable     =  function(stbl, vtbl) return LibTable_SetTable(stbl, "text", vtbl) end
     tbl.SetTableData =  function(stbl, dtbl) return LibTable_SetTable(stbl, "data", dtbl) end
     tbl.SetRange     =  function(stbl, rows, cols, text) return LibTable_SetRange(stbl, "text", rows, cols, text) end
     tbl.SetRangeData =  function(stbl, rows, cols, data) return LibTable_SetRange(stbl, "data", rows, cols, data) end

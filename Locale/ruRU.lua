@@ -7,7 +7,6 @@ L["Transmute"] = "Трансмутация"
 L["Reset due to update"] = function(oldv, newv) return "Сброс некоторых или всех данных из-за обновления версии ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(расширение)"
 
-L["minites"] = "м"
 L["Enabled"] = "Включено"
 L["Disabled"] = "Отключено"
 
@@ -83,12 +82,12 @@ L["honor"   ] = true
 L["arena"   ] = true
 -- Usage
 L["Usage_Character"] = {
-    { "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r" },
+    { "|cff00ff00■|r |cffccaa00Использование - Информация о персонаже|r" , "" , "Shift‑клик — добавить в окно настроек" },
     { "[name]"          , "Имя (цвет класса)", "[name2]"        , "Имя (без цвета)"  },
     { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "Прошедшее время после последнего обновления", "[cooldown]"     , "Перезарядка навыков профессии"    },
-    { "[item:aимя]"     , "[item:name]"     , "значок и количество",            },
+    { "[item:имя]"      , "[item:ID]"       , "значок и количество",            },
     { "[dqCom]"         , "[dqReset]"       ,   },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"

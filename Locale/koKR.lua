@@ -7,7 +7,6 @@ L["Transmute"] = "변환"
 L["Reset due to update"] = function(oldv, newv) return "업데이트로 인해 일부 또는 모든 정보를 리셋합니다. ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(연장)"
 
-L["minites"] = "분"
 L["Enabled"] = "활성화"
 L["Disabled"] = "비활성화"
 
@@ -83,12 +82,12 @@ L["honor"   ] = "명예"
 L["arena"   ] = "투기장"
 -- Usage
 L["Usage_Character"] = {
-    { "|cff00ff00■|r |cffccaa00캐릭터별 정보 키워드|r" },
+    { "|cff00ff00■|r |cffccaa00캐릭터 정보 키워드|r" , "" ,"시프트 클릭으로 설정창에 추가" },
     { "[이름]"          , "캐릭터명(직업색상)"  , "[이름2]"         , "캐릭터명(색상없음)"  },
     { "[레벨]"          , "[현재경험치]"        , "[최대경험치]"    , "[경험치%]"   },
     { "[휴경]"          , "[휴경%]"             , "[위치]"          , "[상세위치]"  },
     { "[경과시간]"      , "최종 접속 시간"      , "[전문기술]"      , "주요 전문기술 쿨다운"    },
-    { "[아이템:이름]"   , "[아이템:ID]"         , "아이콘과 수량"   ,   },
+    { "[아이템:이름]"   , "[아이템:ID]"         , "또는 아이템 링크", "아이콘과 수량"   ,   },
     { "[일퀘완료]"      , "[일퀘리셋]"          ,   },
     { "[템렙]"          , "[평균템렙]"          , "[착용템렙]"      ,   },
     { "[색/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
@@ -144,7 +143,7 @@ L["R2_Sunwell Plateau"          ] = "태양샘"
 L["R2_Black Temple"             ] = "검사"
 L["R2_Battle for Mount Hyjal"   ] = "하이잘"
 L["R2_Serpentshrine Cavern"     ] = "불뱀"
-L["R2_The Eye"                  ] = "폭요"
+L["R2_Tempest Keep"             ] = "폭요"
 L["R2_Karazhan"                 ] = "카라잔"
 L["R2_Gruul's Lair"             ] = "그룰"
 L["R2_Magtheridon's Lair"       ] = "마그"

@@ -6,6 +6,10 @@ local LibTable = LibStub:GetLibrary("LibTable")
 
 local MSG_PREFIX = "|cff00ff00■ |cffffaa00Saved!|r "
 local MSG_SUFFIX = " |cff00ff00■|r"
+local COLOR_PATTERNS = {
+    argb    = "|c[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]",
+    other   = "|cn[^:]*:"  -- Global color, Item quality
+}
 
 local player , _ = UnitName("player")
 local _, class, _ = UnitClass("player")
@@ -21,10 +25,17 @@ local function reverse(direction)
         return "TOP"
     end
 end
+local function _CI(pattern)     -- Return case-insensitive pattern. i.e. "xyz" => "[Xx][Yy][Zz]"
+    return pattern:gsub("(%a)", function(c) return format("[%s%s]", c:upper(), c:lower()) end)
+end
 
 local dbDefault = {
     global = {
-        maxQty = { },
+        currencyList = { },
+        instance = {
+            heroic = { },
+            raid = { },
+        },
     },
     profile = {
         TOOLTIP_SCALE = 100,
@@ -46,7 +57,7 @@ local dbDefault = {
         INFO2 = true,
         INFO2_L = format("   [%s/ffffff][%s:%s] [%s:%s] [%s:%s][%s]",
                     L["color"], L["item"], 29434, L["currency"], L["arena"], L["currency"], L["honor"], L["color"]),
-        INFO2_R = format("[%s:256883/ffffff]", L["item"]),
+        INFO2_R = "",
         INFO3 = true,
         INFO3_SHORT = true,
         INFO3_L = format("   [%s] ([%s]) [%s]/[%s]", L["instName"], L["difficulty"], L["progress"], L["bosses"]),
@@ -81,6 +92,11 @@ local dbDefault = {
     }
 }
 
+do  -- Remove after complete
+    dbDefault.global.instance.raid = SavedClassic.instance.raid
+    dbDefault.global.instance.heroic = SavedClassic.instance.heroic
+end
+
 local _TranslationTable = {
     ["color"    ] = function(_, _, color) return ((color and color ~= "") and "|cff"..color or "|r"), true end,
     ["item"     ] = function(db, option)
@@ -94,50 +110,13 @@ local _TranslationTable = {
                         end
                     end,
     ["currency" ] = function(db, option)
-                        local currency_type
-                        option:gsub("([^-]*)-(.*)", function(a, b) -- Dash-Separated option
-                            option = a
-                            if type(option) == "string" then
-                                option = option:lower()
+                        local currencyID = tonumber(option) or SavedClassic.currencies[option].currencyID
+                        if currencyID then
+                            local saved_currency = db.currencyCount[currencyID] or { }
+                            if not SavedClassic.db.global.currencyList[currencyID] then
+                                SavedClassic:CurrencyListUpdate()
                             end
-                            currency_type = b
-                        end)
-                        local id = tonumber(option)
-                        local currency = id and SavedClassic.currencies[id] or SavedClassic.currencies[option]
-                        if currency then
-                            local result = ""
-                            id = currency.id
-                            local saved_currency = db.currencyCount[id] or { }
-                            local maxQuantity = SavedClassic.db.global.maxQty[id] or 0
-                            if maxQuantity > 0 then -- if currency has max quantity
-                                if not currency_type or currency_type == "" then
-                                    -- Show 'Earnable' amount(Type-2) for Valor, Conquest when no type specified
-                                    -- If MaxQuantity >= 10000 then hide 'Earnable' (Type-0)
-                                    -- But 'Earnable' <= 1600 show 'Earnable' (For those who work hard every week)
-                                    currency_type = "0"
-                                    local totalEarned = saved_currency.totalEarned or 0
-                                    local earnable = maxQuantity - totalEarned
-                                    if (earnable <= 1600) or (maxQuantity < 10000) then
-                                        currency_type = "2"
-                                    end
-                                end
-                            else     -- if currency doesn't have max quantity, force type-0
-                                currency_type = "0"
-                            end
-                            if     currency_type == "0" then  -- Type-0: [Icon][Quantity]
-                                result = currency.icon..(saved_currency.quantity or "")
-                            elseif currency_type == "1" then  -- Type-1: [Icon][Quantity]([Earnable])
-                                local earnable = (saved_currency.totalEarned or 0) - maxQuantity     -- Earnable is MINUS value
-                                result = currency.icon..(saved_currency.quantity or "").."("..earnable..")"
-                            elseif currency_type == "2" then  -- Type-2: [Icon][Quantity]([Earnable])
-                                local earnable = maxQuantity - (saved_currency.totalEarned or 0)     -- Earnable is RED font
-                                result = currency.icon..(saved_currency.quantity or "").."(|c".."FFFF7575"..earnable.."|r)"
-                            elseif currency_type == "3" then  -- Type-3: [Icon][Quantity]([Earned]/[MaxQuantity])
-                                result = currency.icon..(saved_currency.quantity or "").."("..(saved_currency.totalEarned or 0).."/"..maxQuantity..")"
-                            end
-                            return result
-                        else
-                            return ""
+                            return SavedClassic.db.global.currencyList[currencyID].icon..(saved_currency.quantity or "")
                         end
                     end,
     ["name"     ] = "coloredName",
@@ -200,7 +179,8 @@ setmetatable(_TranslationTable, { __index = function(t,k) return t.byLocale[k] a
 
 local function SavedClassic_GetCurrencyInfo(id)
     id = tonumber(id) or 0
-    if id > 5 then
+    -- There is no actual currency under 40, for all expansions
+    if id > 10 then
         return C_CurrencyInfo.GetCurrencyInfo(id)
     else
         return nil
@@ -278,7 +258,20 @@ function SavedClassic:InitDB()
     if self.db.global.version < "2.5.5.1" then
         p(L["Reset due to update"](self.db.global.version, self.version))
         self:ResetWholeDB()
+    elseif self.db.global.version < "2.5.5.4" then
+        for _, profile in pairs(SavedClassicDB.profiles) do
+            for _, key in ipairs({"INFO1_L", "INFO1_R", "INFO2_L", "INFO2_R"}) do
+                if profile[key] then
+                    -- Strip keyword-wrapped hyperlink
+                    for _, pattern in pairs(COLOR_PATTERNS) do
+                        profile[key] = profile[key]:gsub("%[[^][:]*:("..pattern.."|H[^|]*|h[^|]*|h|r)%]", "%1")
+                    end
+                end
+            end
+        end
+        self:CurrencyListUpdate()
     end
+
     self.db.global.version = self.version
 
     local db = self.db.realm[player]
@@ -294,8 +287,6 @@ function SavedClassic:InitDB()
                                         L["color"], L["color"], L["level"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"])
                 self.db.profile.INFO2_L = format("   [%s/cc66ff][%s]/[%s] ([%s]%%)[%s] [%s/66ccff]+[%s] ([%s]%%)[%s]",
                                         L["color"], L["expCur"], L["expMax"], L["exp%"], L["color"], L["color"], L["expRest"], L["expRest%"], L["color"])
-                self.db.profile.INFO2_R = format("[%s/ffffff][%s:%s] [%s]",
-                                        L["color"], L["currency"], L["JP"], L["color"])
             end
         end
     end
@@ -387,7 +378,7 @@ function SavedClassic:SaveInfo()
     end
 
     table.sort(raids, function(a,b)
-        local aa, bb = self.abbr.raid[a.name], self.abbr.raid[b.name]
+        local aa, bb = self.instance.raid[a.name], self.instance.raid[b.name]
         if aa and aa.order and bb and bb.order then
             return ( aa.order < bb.order ) or ( aa.order == bb.order and a.difficultyName < b.difficultyName )
         else
@@ -493,14 +484,21 @@ end
 function SavedClassic:BAG_UPDATE_DELAYED()
     local profile = self.db.profile
     local db = self.db.realm[player]
-    local infoStr = profile.INFO1_L..profile.INFO1_R..profile.INFO2_L..profile.INFO2_R
-    local itemList = string.gmatch(infoStr, "%["..L["item"]..":([^]/]+)[%]/]")
-
-    for item in itemList do -- item link or ID or name
-        local _, itemLink = C_Item.GetItemInfo(item)
-        if itemLink then
-            local itemID = self:StripLink(itemLink)
-            db.itemCount[itemID] = C_Item.GetItemCount(itemLink, true) or 0
+    local patterns = {
+        "%[".._CI(L["item"])..":([%d]*)[%]/-]", -- from keyword [item:ID]
+        "|Hitem:([^:|]*)"                       -- from hyperlink
+    }
+    for _, key in ipairs({"INFO1_L", "INFO1_R", "INFO2_L", "INFO2_R"}) do
+        if profile[key] then
+            for _, pattern in pairs(patterns) do
+                for itemID in profile[key]:gmatch(pattern) do
+                    local _, itemLink = C_Item.GetItemInfo(itemID)
+                    if itemLink then
+                        local itemID = self:StripLink(itemLink)
+                        db.itemCount[itemID] = C_Item.GetItemCount(itemLink, true) or 0
+                    end
+                end
+            end
         end
     end
 end
@@ -519,21 +517,59 @@ function SavedClassic:PLAYER_MONEY()
 end
 
 function SavedClassic:CurrencyUpdate()
+    local gdb = self.db.global
     local db = self.db.realm[player]
-    for _, currencyID in pairs(self.currencies.order) do
+    for currencyID, body in pairs(gdb.currencyList) do
         local info = SavedClassic_GetCurrencyInfo(currencyID)
         if info then
             db.currencyCount[currencyID] = { quantity = tonumber(info.quantity) }
             if info.useTotalEarnedForMaxQty then
-                db.currencyCount[currencyID]["totalEarned"] = info.totalEarned or 0
+                db.currencyCount[currencyID].totalEarned = info.totalEarned or 0
                 if info.maxQuantity and info.maxQuantity > 0 then
-                    self.db.global.maxQty = self.db.global.maxQty or {}
-                    self.db.global.maxQty[currencyID] = info.maxQuantity
+                    body.maxQuantity = info.maxQuantity
                 end
             end
         end
     end
     self:PLAYER_MONEY()
+end
+
+-- Gather currency ID reference from all profiles
+function SavedClassic:CurrencyListUpdate()
+    local currencyList = { }
+    local patterns = {
+        "%[".._CI(L["currency"])..":([%d]*)[%]/-]", -- from keyword [currency:ID]
+        "|Hcurrency:([^:|]*)"                       -- from hyperlink
+    }
+    for moneyID, body in pairs(self.currencies) do
+        currencyList[moneyID] = {
+            name = body.name,
+            icon = body.icon,
+        }
+    end
+    for _, profile in pairs(self.db.profiles) do
+        for _, key in ipairs({"INFO1_L", "INFO1_R", "INFO2_L", "INFO2_R"}) do
+            if profile[key] then
+                for _, pattern in pairs(patterns) do
+                    for currencyID in profile[key]:gmatch(pattern) do
+                        currencyID = tonumber(currencyID)
+                        if not currencyList[currencyID] then
+                            local info = SavedClassic_GetCurrencyInfo(currencyID) or { }
+                            if info then
+                                currencyList[currencyID] = {
+                                    name = info.name,
+                                    icon = "|T"..info.iconFileID..":14:14:2:0|t",
+                                    maxQuantity = info.maxQuantity,
+                                    useTotalEarnedForMaxQty = info.useTotalEarnedForMaxQty
+                                }
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    self.db.global.currencyList = currencyList
 end
 
 function SavedClassic:ShowInfoTooltip(tooltip)
@@ -669,16 +705,27 @@ function SavedClassic:ShowInstanceInfo(tooltip, character, realm)
         tooltip:AddDoubleLine(line2_1, line2_2)
     end
 
+    local worldboss = ""
+    if db.worldboss then
+        for _, boss in pairs(db.worldboss) do
+            local remain = SecondsToTime(boss.reset - time())
+            if remain and ( remain ~= "" ) then
+                local name = boss.name
+                worldboss = worldboss..name.." "
+            end
+        end
+    end
     db.raids = db.raids or {}
     if profile.INFO3 then
         if profile.INFO3_SHORT then
+            local raidList = self.db.global.instance.raid
             local oneline = ""
             local lit = {}
             for i = 1, #db.raids do
                 local instance = db.raids[i]
                 local remain = SecondsToTime(instance.reset - time())
                 if remain and ( remain ~= "" ) then
-                    local name = self.abbr.raid[instance.name] and self.abbr.raid[instance.name].name or instance.name
+                    local name = raidList[instance.name] and raidList[instance.name].abbr or instance.name
                     local size = instance.difficultyName:gsub("[^0-9]*","")
                     local li  = lit[#lit]
                     if not li or li and li.name ~= name then
@@ -716,7 +763,7 @@ function SavedClassic:ShowInstanceInfo(tooltip, character, realm)
                 local instance = db.heroics[i]
                 local remain = SecondsToTime(instance.reset - time())
                 if remain and ( remain ~= "" ) then
-                    oneline = oneline.." "..(self.abbr.heroic[instance.name] or instance.name)
+                    oneline = oneline.." "..(self.instance.heroic[instance.name] or instance.name)
                 end
             end
             if oneline ~= "" then
@@ -738,8 +785,17 @@ function SavedClassic:ShowInstanceInfo(tooltip, character, realm)
 end
 
 function SavedClassic:TranslateCharacter(line, db)
-    -- [keyword] [keyword:option] [keyword/color] [keyword:option/color]
-    return line:gsub("%]?|h%[?", "|h"):gsub("(%[([^]^[^/^:]*):?([^]^[^/]*)/?([^]^[]*)%])", function(...) return self:TranslateCharacterWord(db, ...) end )
+    -- [keyword] [keyword:option] [keyword/color] [keyword:option/color] hyperlink |c[color]|Htype:payload:...[text]|h|r
+    for _, pattern in pairs(COLOR_PATTERNS) do
+        line = line:gsub(pattern.."|H([^:]*):([^:|]*):?[^|]*|h[^|]*|h|r", function(linkType, linkOption)
+            if linkType == "item" then
+                return format("[%s:%s]", L["item"], linkOption)
+            elseif linkType == "currency" then
+                return format("[%s:%s]", L["currency"], linkOption)
+            end
+        end)
+    end
+    return line:gsub("(%[([^][/:]*):?([^][/]*)/?([^][]*)%])", function(...) return self:TranslateCharacterWord(db, ...) end )
 end
 
 function SavedClassic:TranslateCharacterWord(db, strBefore, keyword, option, color)
@@ -768,7 +824,7 @@ end
 
 function SavedClassic:TranslateInstance(line, instance)
     -- [keyword] [keyword/color]
-    return line:gsub("(%[([^]^[^/]*)/?([^]^[]*)%])", function(...) return self:TranslateInstanceWord(instance, ...) end )
+    return line:gsub("(%[([^][/]*)/?([^][]*)%])", function(...) return self:TranslateInstanceWord(instance, ...) end )
 end
 
 function SavedClassic:TranslateInstanceWord(instance, strBefore, keyword, color)
@@ -947,14 +1003,14 @@ function SavedClassic:ToggleRaidTable()
         table.insert(olit, k)
     end
     table.sort(olit, function(a,b)
-        return (self.abbr.raid[a].order or -400) < (self.abbr.raid[b].order or -400)
+        return (self.instance.raid[a].order or -200) < (self.instance.raid[b].order or -200)
     end)
 
     local data = {}
     -- 1st Row(Title, Headers)
     local row1 = { MSG_PREFIX }
     for _, v in ipairs(olit) do
-        local color = self.abbr.raid[v].color
+        local color = self.instance.raid[v].color
         if color then
             table.insert(row1, WrapTextInColorCode(v, color))
         else
@@ -1011,69 +1067,51 @@ end
 function SavedClassic:BuildUsageTable()
     local uc = self.usage_character
     local uctbl = L["Usage_Character"]
-    local ucdtbl = { }
-    local function CreateHyperlinkAndColor(_, cell)
-        local text = cell:GetText() or ""
-        text = text:gsub("|c[Ff][Ff]......", ""):gsub("|r", "") -- strip color
+    local function _Clickable(_, cell)
+        local text = cell.text:GetText() or ""
+        for _, pattern in pairs(COLOR_PATTERNS) do text = text:gsub(pattern, ""):gsub("|r", "") end -- Strip color
         local _, _, keyword = text:find("^(%[[^]]+%])")
-        if cell.data or keyword then
-            local link = format("|Haddon:%s:|h%s|h", addonName, cell.data or keyword)
-            cell:SetTextColor(0.8, 0.67, 0)  -- #ccaa00 - gold color
-            cell:SetText(link)
-            cell.data = nil
+        if keyword then
+            local link = format("%s", keyword)      -- Link text(Actually, it's not a link)
+            cell.text:SetTextColor(0.8, 0.67, 0)    -- #ccaa00 - gold color
+            cell:RegisterForClicks("LeftButtonDown")
+            cell:SetScript("OnClick", function(_, _)
+                if IsShiftKeyDown() then
+                    ChatFrameUtil.InsertLink(link)
+                end
+            end)
         end
     end
+
     uc:Resize({ rows = #uctbl, cols = 4, widths = 100 })
     uc:SetRangeOption(true, true, { SetTextColor={ 0.9, 0.9, 0.9 } })
-    --
-    for i, _ in ipairs(uctbl) do
-        ucdtbl[i] = { }
-    end
-
-    -- Here goes Currencies
-    -- Gold, Silver, Copper at 1st line
-    table.insert(uctbl, {
-        format("%s %s", self.currencies[1].icon, self.currencies[1].altName),
-        format("%s %s", self.currencies[2].icon, self.currencies[2].altName),
-        format("%s %s", self.currencies[3].icon, self.currencies[3].altName),
-    })
-    table.insert(ucdtbl, {
-        format("[%s:%s]", L["currency"], self.currencies[1].altName),
-        format("[%s:%s]", L["currency"], self.currencies[2].altName),
-        format("[%s:%s]", L["currency"], self.currencies[3].altName),
-    })
-    -- Next, 4 currencies at one line
-    table.insert(uctbl, {})
-    table.insert(ucdtbl, {})
-    for _, id in pairs(self.currencies.order) do
-        if id > 3 then
-            local currency = self.currencies[id]
-            if currency then
-                if #uctbl[#uctbl] >= 4 then
-                    table.insert(uctbl, {})
-                    table.insert(ucdtbl, {})
-                end
-                table.insert(uctbl[#uctbl], format("%s %s", currency.icon, currency.altName))
-                table.insert(ucdtbl[#ucdtbl], format("[%s:%s]", L["currency"], currency.altName))
-            end
-        end
-    end
-
+    uc:SetRangeCallback(true, true, { OnMouseDown = function() uc:StartMoving() end, OnMouseUp = function() uc:StopMovingOrSizing() end })
     uc:SetTable(uctbl)
-    uc:SetTableData(ucdtbl)
-    uc:RangeFunction(true, true, CreateHyperlinkAndColor)
+    uc:SetRangeJustify(true, true, "left")
+    uc:RangeFunction(true, true, _Clickable)
 
     local ui = self.usage_instance
     local uitbl = L["Usage_Instance"]
     ui:Resize({ rows = #uitbl, cols = 4, widths = 100 })
     ui:SetRangeOption(true, true, { SetTextColor={ 0.9, 0.9, 0.9 } })
+    ui:SetRangeCallback(true, true, { OnMouseDown = function() uc:StartMoving() end, OnMouseUp = function() uc:StopMovingOrSizing() end })
     ui:SetTable(uitbl)
-    ui:RangeFunction(true, true, CreateHyperlinkAndColor)
+    ui:SetRangeJustify(true, true, "left")
+    ui:RangeFunction(true, true, _Clickable)
 end
 
 function SavedClassic:BuildCurrencyInfo()
-    if UnitFactionGroup("player") == "Alliance" then
-        self.currencies[1901].icon = "|T136998:14:14:0:0:14:14:0:8:0:8|t"
+    for _, id in pairs(self.currencies.order) do
+        local currency = self.currencies[id]
+        if currency then
+            if not currency.icon then
+                local info = SavedClassic_GetCurrencyInfo(id)
+                if info then
+                    currency.name = info.name
+                    currency.icon = "|T"..info.iconFileID..":14:14|t"
+                end
+            end
+        end
     end
 end
 
@@ -1233,6 +1271,10 @@ function SavedClassic:BuildOptions()
                         type = "group",
                         inline = true,
                         order = 31,
+                        set = function(info, value)
+                            self.db.profile[info[#info]] = value
+                            self:CurrencyListUpdate()
+                        end,
                         args = {
                             INFO1 = {
                                 name = L["INFO1"],

@@ -7,7 +7,6 @@ L["Transmute"] = "转换"
 L["Reset due to update"] = function(oldv, newv) return "因版本更新而重置部分或全部数据 ("..oldv.." -> "..newv.. ")" end
 L["extended"] = "(扩展)"
 
-L["minites"] = "分钟"
 L["Enabled"] = "启用"
 L["Disabled"] = "禁用"
 
@@ -83,12 +82,12 @@ L["honor"   ] = true
 L["arena"   ] = true
 -- Usage
 L["Usage_Character"] = {
-    { "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r" },
+    { "|cff00ff00■|r |cffccaa00使用方法 - 角色信息|r" , "" , "Shift 点击以添加到设置框" },
     { "[name]"          , "名称(职业颜色)"  , "[name2]"         , "名称(无颜色)"    },
     { "[level]"         , "[expCur]"        , "[expMax]"        , "[exp%]"      },
     { "[expRest]"       , "[expRest%]"      , "[zone]"          , "[subzone]"   },
     { "[elapsed]"       , "自上次更新经过的时间", "[cooldown]"     , "专业技能冷却时间"    },
-    { "[item:name]"     , "[item:name]"     , "图标和价格",            },
+    { "[item:name]"     , "[item:ID]"       , "或物品链接"      , "图标和数量"      },
     { "[dqCom]"         , "[dqReset]"       ,   },
     { "[ilvl]"          , "[ilvl_avg]"      , "[ilvl_equip]"    ,   },
     { "[color/|cffff0000##|r|cff00ff00##|r|cff0000ff##|r]"
