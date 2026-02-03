@@ -72,7 +72,6 @@ local dbDefault = {
             subzone = "",
 
             expCurrent = -1, expMax = -1, expPercent = -1, ExpRest = -1,
-            honorPoint = -1, arenaPoint = -1,
             dqComplete = -1, dqMax = -1, dqReset = -1,
 
             lastUpdate = -1,
@@ -239,7 +238,7 @@ function SavedClassic:OnInitialize()
     self:RegisterEvent("BAG_UPDATE_DELAYED")
     self:RegisterEvent("QUEST_TURNED_IN")
 
-    self:RegisterEvent("CHAT_MSG_COMBAT_HONOR_GAIN", "PVPCurrency")
+    self:RegisterEvent("CHAT_MSG_COMBAT_HONOR_GAIN", "CurrencyUpdate")
 
     self:RegisterEvent("TIME_PLAYED_MSG")
     ChatFrame_DisplayTimePlayed_Original = ChatFrame_DisplayTimePlayed
@@ -517,12 +516,6 @@ function SavedClassic:PLAYER_MONEY()
     db.currencyCount[1] = { quantity = floor(money / 10000) }
     db.currencyCount[2] = { quantity = floor(money % 10000 / 100) }
     db.currencyCount[3] = { quantity = floor(money % 100) }
-end
-
-function SavedClassic:PVPCurrency()
-	local db = self.db.realm[player]
-	db.honorPoint = PVPFrameHonorPoints:GetText()
-	db.arenaPoint = PVPFrameArenaPoints:GetText()
 end
 
 function SavedClassic:CurrencyUpdate()
@@ -1080,7 +1073,7 @@ end
 
 function SavedClassic:BuildCurrencyInfo()
     if UnitFactionGroup("player") == "Alliance" then
-        self.currencies[4].icon = "|T136998:14:14:0:0:14:14:0:8:0:8|t"
+        self.currencies[1901].icon = "|T136998:14:14:0:0:14:14:0:8:0:8|t"
     end
 end
 

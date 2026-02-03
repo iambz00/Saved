@@ -19,10 +19,10 @@ SavedClassic.currencies = {
     [1]   = { altName = L["gold"    ]:lower(), icon = "|T237618:14:14:2:0|t" }, -- Gold
     [2]   = { altName = L["silver"  ]:lower(), icon = "|T237620:14:14:2:0|t" }, -- Silver
     [3]   = { altName = L["copper"  ]:lower(), icon = "|T237617:14:14:2:0|t" }, -- Copper
-    [4]   = { altName = L["honor"   ]:lower(), icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" }, -- Honor point - fix alliance on initializing
-    [5]   = { altName = L["arena"   ]:lower(), icon = "|T136729:14:14:2:0|t" }, -- Arena Point
+    [1901]= { altName = L["honor"   ]:lower(), icon = "|T137000:14:14:0:0:14:14:0:8:0:8|t" }, -- Honor point - fix alliance on initializing
+    [1900]= { altName = L["arena"   ]:lower(), icon = "|T136729:14:14:2:0|t" }, -- Arena Point
     order = {
-        1,2,3,4,5
+        1,2,3,1900,1901
     }
 }
 setmetatable(SavedClassic.currencies, { __index = 
