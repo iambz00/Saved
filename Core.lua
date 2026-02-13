@@ -474,10 +474,10 @@ function SavedClassic:SaveInfo()
             instance.reset = remain + currentTime
             instance.extended = extended and L["extended"] or ""
             if isRaid then
-                self:AddInstance(intance.name, "raid")
+                self:AddInstance(instance.name, "raid")
                 table.insert(raids, instance)
             else
-                self:AddInstance(intance.name, "heroic")
+                self:AddInstance(instance.name, "heroic")
                 table.insert(heroics, instance)
             end
         end
