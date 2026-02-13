@@ -25,14 +25,14 @@ local function reverse(direction)
         return "TOP"
     end
 end
-local function _CI(pattern)     -- Return case-insensitive pattern. i.e. "xyz" => "[Xx][Yy][Zz]"
+local function _CI(pattern) -- Return case-insensitive pattern. i.e. "xyz" => "[Xx][Yy][Zz]"
     return pattern:gsub("(%a)", function(c) return format("[%s%s]", c:upper(), c:lower()) end)
 end
 
 local dbDefault = {
     global = {
         currencyList = { },
-        instance = {
+        abbreviation = {
             heroic = { },
             raid = { },
         },
@@ -64,7 +64,7 @@ local dbDefault = {
         INFO3_R = format("[%s]", L["time"]),
         INFO4 = true,
         INFO4_SHORT = true,
-        INFO4_L = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][/%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"]),
+        INFO4_L = format("   [%s/ffff99][%s] ([%s]) [%s]/[%s][%s]", L["color"], L["instName"], L["difficulty"], L["progress"], L["bosses"], L["color"]),
         INFO4_R = format("[%s/ffff99]", L["time"]),
     },
     realm = {   -- Character-Specific
@@ -92,11 +92,6 @@ local dbDefault = {
         },
     }
 }
-
-do  -- Remove after complete
-    dbDefault.global.instance.raid = SavedClassic.instance.raid
-    dbDefault.global.instance.heroic = SavedClassic.instance.heroic
-end
 
 local _TranslationTable = {
     ["color"    ] = function(_, _, color) return ((color and color ~= "") and "|cff"..color or "|r"), true end,
@@ -335,7 +330,7 @@ end
 function SavedClassic:InitDB()
     self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault, L["Common"])
 
-    -- Reset Old DB
+    -- Convert old DB
     self.db.global.version = self.db.global.version or "5.5.3.3"
     if self.db.global.version < "5.5.3.3" then
         p(L["Reset due to update"](self.db.global.version, self.version))
@@ -350,6 +345,7 @@ function SavedClassic:InitDB()
             end
         end
     elseif self.db.global.version < "5.5.3.6" then
+        self.db.global.maxQty = nil
         local function _Convert(currency, old)
             return "["..currency..":"..(_Conversion.currency[old:lower()] or 0)
         end
@@ -449,6 +445,18 @@ function SavedClassic:RequestRaidInfo()
     RequestRaidInfo()   -- RequestRaidInfo() triggers UPDATE_INSTANCE_INFO
 end
 
+function SavedClassic:AddInstance(name, type)
+    if type == "raid" then
+        if not self.db.global.abbreviation.raid[name] then
+            self.db.global.abbreviation.raid[name] = self.instance.raid[name] and self.instance.raid[name].abbr or name
+        end
+    else    -- "heroic"
+        if not self.db.global.abbreviation.heroic[name] then
+            self.db.global.abbreviation.heroic[name] = self.instance.heroic[name] or name
+        end
+    end
+end
+
 function SavedClassic:SaveInfo()
     local db = self.db.realm[player]
     db.coloredName = RAID_CLASS_COLORS[class]:WrapTextInColorCode(player)
@@ -464,14 +472,12 @@ function SavedClassic:SaveInfo()
         instance.name, instance.id, remain, _, isLocked, extended, _, isRaid, _, instance.difficultyName, instance.numBoss, instance.progress = GetSavedInstanceInfo(i)
         if isLocked or extended then
             instance.reset = remain + currentTime
-            if extended then
-                instance.extended = L["extended"]
-            else
-                instance.extended = ""
-            end
+            instance.extended = extended and L["extended"] or ""
             if isRaid then
+                self:AddInstance(intance.name, "raid")
                 table.insert(raids, instance)
             else
+                self:AddInstance(intance.name, "heroic")
                 table.insert(heroics, instance)
             end
         end
@@ -845,14 +851,14 @@ function SavedClassic:ShowInstanceInfo(tooltip, character, realm)
     db.raids = db.raids or {}
     if profile.INFO3 then
         if profile.INFO3_SHORT then
-            local raidList = self.db.global.instance.raid
+            local abbreviation = self.db.global.abbreviation.raid
             local oneline = ""
             local lit = {}
             for i = 1, #db.raids do
                 local instance = db.raids[i]
                 local remain = SecondsToTime(instance.reset - time())
                 if remain and ( remain ~= "" ) then
-                    local name = raidList[instance.name] and raidList[instance.name].abbr or instance.name
+                    local name = abbreviation[instance.name] and abbreviation[instance.name] or instance.name
                     local size = instance.difficultyName:gsub("[^0-9]*","")
                     local li  = lit[#lit]
                     if not li or li and li.name ~= name then
@@ -891,12 +897,14 @@ function SavedClassic:ShowInstanceInfo(tooltip, character, realm)
     db.heroics = db.heroics or {}
     if profile.INFO4 then
         if profile.INFO4_SHORT then
+            local abbreviation = self.db.global.abbreviation.heroic
             local oneline = ""
             for i = 1, #db.heroics do
                 local instance = db.heroics[i]
                 local remain = SecondsToTime(instance.reset - time())
+                local name = abbreviation[instance.name] and abbreviation[instance.name] or instance.name
                 if remain and ( remain ~= "" ) then
-                    oneline = oneline.." "..(self.instance.heroic[instance.name] or instance.name)
+                    oneline = oneline.." "..name
                 end
             end
             if oneline ~= "" then
@@ -1245,6 +1253,25 @@ function SavedClassic:BuildUsageTable()
 end
 
 function SavedClassic:BuildOptions()
+    -- Count all saved instances
+    for _, saved in pairs(self.db.realm) do
+        for _, raid in pairs(saved.raids) do
+            self:AddInstance(raid.name, "raid")
+        end
+        for _, heroic in pairs(saved.heroics) do
+            self:AddInstance(heroic.name, "heroic")
+        end
+    end
+    -- Sort for abbreviation
+    for _, instanceType in pairs(self.db.global.abbreviation) do
+        instanceType._SORTED = { }
+        for name, _ in pairs(instanceType) do
+            if name ~= "_SORTED" then
+                table.insert(instanceType._SORTED, name)
+            end
+        end
+        table.sort(instanceType._SORTED)
+    end
     SavedClassic.optionsTable = {
         name = self.name,
         handler = self,
@@ -1520,6 +1547,49 @@ function SavedClassic:BuildOptions()
                                 order = 22
                             },
                         },
+                    },
+                },
+            },
+            abbreviation = {
+                name = L["ABBREVIATION"],
+                type = "group",
+                order = 30,
+                args = {
+                    raid = {
+                        name = L["Raid instance"],
+                        type = "group",
+                        order = 10,
+                        get = function(info) return self.db.global.abbreviation.raid[info[#info]] end,
+                        set = function(info, value) self.db.global.abbreviation.raid[info[#info]] = value end,
+                        args = (function()
+                            local args = { }
+                            for i, name in ipairs(self.db.global.abbreviation.raid._SORTED) do
+                                args[name] = {
+                                    name = name,
+                                    type = "input",
+                                    order = i,
+                                }
+                            end
+                            return args
+                        end)(),
+                    },
+                    heroic = {
+                        name = L["Heroic instance"],
+                        type = "group",
+                        order = 20,
+                        get = function(info) return self.db.global.abbreviation.heroic[info[#info]] end,
+                        set = function(info, value) self.db.global.abbreviation.heroic[info[#info]] = value end,
+                        args = (function()
+                            local args = { }
+                            for i, name in ipairs(self.db.global.abbreviation.heroic._SORTED) do
+                                args[name] = {
+                                    name = name,
+                                    type = "input",
+                                    order = i,
+                                }
+                            end
+                            return args
+                        end)(),
                     },
                 },
             },

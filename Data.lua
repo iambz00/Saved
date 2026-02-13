@@ -5,17 +5,8 @@ SavedClassic.name = addonName
 --SavedClassic.version = GetAddOnMetadata(addonName, "Version")
 SavedClassic.version = "5.5.3.6"
 
-local expansion = ({
-    [LE_EXPANSION_CLASSIC] = "vanilla",
-    [LE_EXPANSION_BURNING_CRUSADE] = "tbc",
-    [LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "wotlk",
-    [LE_EXPANSION_CATACLYSM] = "cata",
-    [LE_EXPANSION_MISTS_OF_PANDARIA] = "mop",
-})[LE_EXPANSION_LEVEL_CURRENT]
-
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName, true)
 
--- if expansion == "mop" then
 SavedClassic.ts = {
     [114780] = { icon = "|T612100:14:14|t" }, -- (Alchemy) Transmute: Living Steel
     [131686] = { icon = "|T134139:14:14|t" }, -- (Jewelcrafting) Shared Cooldown
@@ -75,7 +66,7 @@ SavedClassic.instance.raid = {
     [L["Terrace of Endless Spring"] ] = { areaID = 6067, order = -503, abbr = L["R5_Terrace of Endless Spring"],color = "FF00D6B2" },
     [L["Throne of Thunder"]         ] = { areaID = 6622, order = -502, abbr = L["R5_Throne of Thunder"],        color = "FF00E284" },
     [L["Siege of Orgrimmar"]        ] = { areaID = 6738, order = -501, abbr = L["R5_Siege of Orgrimmar"],       color = "FF0FFFBB" },
-    -- [L["World Boss"]                ] = { order = -500,                                                     color = "FF8DFFC0" },
+    -- [L["World Boss"]                ] = { order = -500,                                                         color = "FF8DFFC0" },
     -- Cataclysm Raid
     [L["Dragon Soul"]               ] = { areaID = 5892, order = -406, abbr = L["R4_Dragon Soul"],              color = "FFB3001B" },
     [L["Firelands"]                 ] = { areaID = 5723, order = -405, abbr = L["R4_Firelands"],                color = "FFDE0A26" },

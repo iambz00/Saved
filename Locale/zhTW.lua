@@ -39,6 +39,9 @@ L["INFO3"] = "團本信息行"
 L["TOOLTIP_HEROIC"] = "提示 - 英雄本信息"
 L["INFO4"] = "英雄本信息行"
 L["INFO_SHORT"] = "單行顯示"
+L["ABBREVIATION"] = "縮寫"
+L["Raid instance"] = "團隊副本"
+L["Heroic instance"] = "英雄副本"
 
 L["Common"] = true
 L["LowLevel"] = true

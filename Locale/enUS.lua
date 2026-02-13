@@ -39,6 +39,9 @@ L["INFO3"] = "Lines of raid instances"
 L["TOOLTIP_HEROIC"] = "Tooltip - Heroic instances"
 L["INFO4"] = "Lines of heroic instances"
 L["INFO_SHORT"] = "Display as One-line"
+L["ABBREVIATION"] = "Abbreviation"
+L["Raid instance"] = true
+L["Heroic instance"] = true
 
 L["Common"] = true
 L["LowLevel"] = true
