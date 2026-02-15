@@ -331,19 +331,10 @@ function SavedClassic:InitDB()
     self.db = LibStub("AceDB-3.0"):New("SavedClassicDB", dbDefault, L["Common"])
 
     -- Convert old DB
-    self.db.global.version = self.db.global.version or "5.5.3.3"
-    if self.db.global.version < "5.5.3.3" then
+    self.db.global.version = self.db.global.version or "0"
+    if self.db.global.version < "5.5.3.4" then
         p(L["Reset due to update"](self.db.global.version, self.version))
         self:ResetWholeDB()
-    elseif self.db.global.version < "5.5.3.4" then
-        for _, profile in pairs(SavedClassicDB.profiles) do
-            for old, new in pairs(_Conversion.profile) do
-                if profile[old] ~= nil then
-                    profile[new] = profile[old]
-                    profile[old] = nil
-                end
-            end
-        end
     elseif self.db.global.version < "5.5.3.6" then
         self.db.global.maxQty = nil
         local function _Convert(currency, old)
