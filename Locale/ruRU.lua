@@ -109,7 +109,9 @@ L["World Boss"]     = true
 L["Galleon"]        = "G"
 L["Sha of Anger"]   = "S"
 L["Nalak"]          = "N"
-L["Oondasta"]       = "O"
+L["Oondasta"      ] = "D"
+L["Ordos"         ] = "O"
+
 -- Abbreviation
 L["H5_Shado-pan Monastery"      ] = "SPM"
 L["H5_Temple of the Jade Serpent"   ] = "TJS"

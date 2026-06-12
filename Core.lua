@@ -55,7 +55,7 @@ local dbDefault = {
                     L["color"], L["color"], L["name"], L["ilvl"], L["color"], L["zone"], L["subzone"], L["color"]),
         INFO1_R = format("\n[%s:%s/ffee99]", L["currency"], L["gold"]),
         INFO2 = true,
-        INFO2_L = format("   [%s/ffffff][%s:396] [%s:395] [%s:752] [%s:738] [%s:402] [%s:3414][%s]",
+        INFO2_L = format("   [%s/ffffff][%s:396] [%s:395] [%s:776] [%s:738] [%s:402] [%s:3414][%s]",
                     L["color"], L["currency"], L["currency"], L["currency"], L["currency"], L["currency"], L["currency"], L["color"]),
         INFO2_R = format("[%s:256883/ffffff]", L["item"]),
         INFO3 = true,
@@ -298,14 +298,6 @@ function SavedClassic:OnInitialize()
     self:RegisterEvent("CHAT_MSG_COMBAT_HONOR_GAIN", "CurrencyUpdate")
 
     self:RegisterEvent("TIME_PLAYED_MSG")
-    ChatFrame_DisplayTimePlayed_Original = ChatFrame_DisplayTimePlayed
-    self.requestTimePlayedPending = false
-    ChatFrame_DisplayTimePlayed = function(...)
-        if not self.requestTimePlayedPending then
-            ChatFrame_DisplayTimePlayed_Original(...)
-        end
-        self.requestTimePlayedPending = false
-    end
 
     self.totalMoney = 0 -- Total money except current character
     for character, saved in pairs(self.db.realm) do
@@ -507,7 +499,6 @@ function SavedClassic:SaveInfo()
     self:SaveTSCooldowns()
     self:QUEST_TURNED_IN()
     self:BAG_UPDATE_DELAYED()
-    self:RequestTimePlayed()
 end
 
 function SavedClassic:QUEST_TURNED_IN()
@@ -522,11 +513,6 @@ function SavedClassic:QUEST_TURNED_IN()
     end
     db.dqMax = GetMaxDailyQuests() or 0
     db.dqResetReal = time() + (GetQuestResetTime() or 0)    -- resolve game time to real time
-end
-
-function SavedClassic:RequestTimePlayed()
-    self.requestTimePlayedPending = true
-    RequestTimePlayed()
 end
 
 function SavedClassic:TIME_PLAYED_MSG(_, played_total, played_level)

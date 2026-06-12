@@ -110,6 +110,8 @@ L["Galleon"       ] = "갈"
 L["Sha of Anger"  ] = "샤"
 L["Nalak"         ] = "나"
 L["Oondasta"      ] = "운"
+L["Ordos"         ] = "오"
+
 -- Abbreviation
 L["H5_Shado-pan Monastery"    ] = "음영파"
 L["H5_Temple of the Jade Serpent" ] = "옥룡사"

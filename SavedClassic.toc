@@ -1,6 +1,6 @@
-## Interface: 50503
+## Interface: 50504
 ## Title: Saved! Classic
-## Version: 5.5.3.8
+## Version: 5.5.4.1
 ## X-Curse-Project-ID: 357612
 
 ## Notes-koKR: 인스턴스 귀속 정보 및 골드, 경험치 한눈에 보기
@@ -9,6 +9,20 @@
 ## SavedVariables: SavedClassicDB
 ## OptionalDeps: CallbackHandler-1.0, Ace3
 ## DefaultState: enabled
+
+## interface/icons/spell_arcane_teleportironforge.blp
+
+## Category: Dungeons & Raids
+## Category-deDE: Dungeons & Schlachtzüge
+## Category-esES: Mazmorras y bandas
+## Category-esMX: Calabozos y bandas
+## Category-frFR: Donjons et raids
+## Category-itIT: Spedizioni e incursioni
+## Category-koKR: 던전 및 공격대
+## Category-ptBR: Masmorras e Raides
+## Category-ruRU: Подземелья и рейды
+## Category-zhCN: 地下城和团队副本
+## Category-zhTW: 地城與團隊
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
