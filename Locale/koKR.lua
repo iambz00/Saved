@@ -111,6 +111,7 @@ L["Sha of Anger"  ] = "샤"
 L["Nalak"         ] = "나"
 L["Oondasta"      ] = "운"
 L["Ordos"         ] = "오"
+L["Celestials"    ] = "천신"
 
 -- Abbreviation
 L["H5_Shado-pan Monastery"    ] = "음영파"

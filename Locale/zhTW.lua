@@ -112,6 +112,7 @@ L["Sha of Anger"  ] = "S"
 L["Nalak"         ] = "N"
 L["Oondasta"      ] = "D"
 L["Ordos"         ] = "O"
+L["Celestials"    ] = "C"
 
 -- Abbreviation
 L["H5_Shado-pan Monastery"      ] = "SPM"
